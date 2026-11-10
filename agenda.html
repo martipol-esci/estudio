@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Horario y tareas · Estudio</title>
+<link rel="stylesheet" href="hub.css">
+</head><body><main style="max-width:760px">
+<a class="home" href="index.html">&larr; Inicio</a>
+<h1>🗓️ Horario y tareas</h1>
+<p class="mut" id="upd"></p>
+
+<h2>Tareas pendientes, por prioridad</h2>
+<div id="pend"></div>
+
+<h2>Próximas fechas</h2>
+<div id="fechas"></div>
+
+<h2>Horario de clases</h2>
+<div id="horario"></div>
+
+<h2>Entregadas</h2>
+<div id="hechas"></div>
+</main>
+<script src="datos.js"></script>
+<script>
+const D=DATOS,$=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fd=(s,o)=>new Date(s).toLocaleDateString('es-ES',o||{weekday:'long',day:'numeric',month:'long'});
+const fh=s=>new Date(s).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+const dia=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
+function falta(v){const ms=new Date(v)-Date.now(),dd=Math.round((dia(v)-dia(Date.now()))/864e5);
+  if(ms<0)return{txt:'Fuera de plazo',cls:'late'};
+  if(dd===0)return{txt:'Hoy · '+fh(v),cls:'late'};
+  if(dd===1)return{txt:'Mañana · '+fh(v),cls:'soon'};
+  if(dd<=3)return{txt:'En '+dd+' días',cls:'soon'};
+  return{txt:'En '+dd+' días',cls:''}}
+const chip=a=>{const x=D.asig[a];return `<span class="chip" style="--c:${x.color}">${x.emoji} ${esc(x.nombre)}</span>`};
+$('#upd').textContent='Leído de AulaESCI el '+fd(D.actualizado,{day:'numeric',month:'long'})+' a las '+fh(D.actualizado)+'. No se actualiza solo: pídele a Claude que lo vuelva a leer.';
+
+const P=D.tareas.filter(t=>t.estado==='pendiente'),H=D.tareas.filter(t=>t.estado!=='pendiente');
+$('#pend').innerHTML=P.length?P.map((t,i)=>{const f=falta(t.vence);
+  return `<div class="task" style="--c:${D.asig[t.asig].color}"><span class="num">${i+1}</span><div class="tb">
+  <div class="tt">${esc(t.t)}</div><div>${chip(t.asig)} <span class="mut">${esc(t.donde||'')}</span></div>
+  <div class="when"><b class="due ${f.cls}">${f.txt}</b> <span class="mut">· ${fd(t.vence)}, ${fh(t.vence)}</span></div>
+  <div class="mut why">${esc(t.porque)}</div></div></div>`}).join(''):'<div class="card good">No tienes ninguna entrega pendiente. 🎉</div>';
+
+$('#fechas').innerHTML=(D.fechas||[]).length?D.fechas.map(f=>`<div class="card"><b>${esc(f.t)}</b> ${chip(f.asig)}<br><span class="mut">${fd(f.desde,{day:'numeric',month:'long'})}${f.hasta?' – '+fd(f.hasta,{day:'numeric',month:'long'}):''}${f.nota?' · '+esc(f.nota):''}</span></div>`).join(''):'<p class="mut">Nada más en el calendario.</p>';
+
+const DIAS=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+$('#horario').innerHTML=D.horario?`<div class="card" style="overflow-x:auto"><table class="hor"><tr><th></th>${DIAS.map(d=>`<th>${d}</th>`).join('')}</tr>${D.horario.map(r=>`<tr><th>${esc(r.hora)}</th>${DIAS.map((_,i)=>{const c=r.dias[i];return c?`<td style="--c:${D.asig[c.asig].color}"><b>${esc(D.asig[c.asig].nombre)}</b>${c.aula?'<br><span class="mut">'+esc(c.aula)+'</span>':''}</td>`:'<td></td>'}).join('')}</tr>`).join('')}</table></div>`
+  :'<div class="card warn">AulaESCI no publica el horario de clases, así que todavía no está aquí. Pásale a Claude tu horario (una foto, un PDF o escrito) y lo añade.</div>';
+
+$('#hechas').innerHTML=H.length?H.map(t=>`<div class="card done">✅ <b>${esc(t.t)}</b> ${chip(t.asig)}<br><span class="mut">${esc(t.porque)}</span></div>`).join(''):'<p class="mut">Todavía ninguna.</p>';
+</script>
+</body></html>

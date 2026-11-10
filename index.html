@@ -10,6 +10,16 @@
 <h2>Asignaturas</h2>
 <div class="grid" id="subs"></div>
 
+<h2>Mi curso</h2>
+<div class="grid">
+  <a class="subj" href="agenda.html" style="--c:var(--c-age)">
+    <span class="em">🗓️</span><span class="nm">Horario y tareas</span>
+    <span class="pg" id="agpg">Entregas pendientes por prioridad</span><span class="go">Abrir →</span></a>
+  <a class="subj" href="notas.html" style="--c:var(--c-not)">
+    <span class="em">🎓</span><span class="nm">Calificaciones</span>
+    <span class="pg" id="ntpg">Notas y media por asignatura</span><span class="go">Abrir →</span></a>
+</div>
+
 <h2>Temario nuevo</h2>
 <a class="subj wide" href="actualizar.html" style="--c:var(--c-upd)">
   <span class="em">📤</span>
@@ -18,6 +28,12 @@
 </a>
 </main>
 <script src="temas.js"></script>
+<script src="datos.js"></script>
+<script>
+try{const P=DATOS.tareas.filter(t=>t.estado==='pendiente'),nx=P[0];
+  if(nx)document.getElementById('agpg').textContent=`${P.length} entrega${P.length>1?'s':''} pendiente${P.length>1?'s':''} · la primera: ${nx.t}`;
+  document.getElementById('ntpg').textContent=`${DATOS.notas.reduce((n,a)=>n+a.items.length,0)} notas en ${DATOS.notas.length} asignaturas`}catch(e){}
+</script>
 <script>
 const get=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 document.getElementById('subs').innerHTML=ASIG.map(a=>{
