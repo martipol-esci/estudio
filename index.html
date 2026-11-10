@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis asignaturas · Estudio</title>
+<link rel="stylesheet" href="hub.css">
+</head><body><main>
+<h1>📚 Mis asignaturas</h1>
+<p class="mut">Elige una asignatura para ver su temario y practicar.</p>
+
+<h2>Asignaturas</h2>
+<div class="grid" id="subs"></div>
+
+<h2>Temario nuevo</h2>
+<a class="subj wide" href="actualizar.html" style="--c:var(--c-upd)">
+  <span class="em">📤</span>
+  <span><span class="nm">Actualizar temario</span><br><span class="mut">Sube apuntes nuevos de cualquier asignatura, a un tema que ya tienes o como tema nuevo.</span></span>
+  <span class="go" id="updgo">Subir apuntes →</span>
+</a>
+</main>
+<script src="temas.js"></script>
+<script>
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+document.getElementById('subs').innerHTML=ASIG.map(a=>{
+  const P=get(a.prog,{});let n=0,ok=0;Object.values(P).forEach(x=>{n+=x.n||0;ok+=x.ok||0});
+  const pg=n?`${n} preguntas respondidas · ${Math.round(100*ok/n)}% de aciertos`:'Aún sin practicar en este dispositivo';
+  return `<a class="subj" href="${a.pagina}" style="--c:${a.color}">
+    <span class="em">${a.emoji}</span><span class="nm">${a.nombre}</span>
+    <span class="tags">${a.secciones.map(s=>`<span class="tag">${s}</span>`).join('')}</span>
+    <span class="pg">${pg}</span><span class="go">Abrir →</span></a>`}).join('');
+const pend=get('hub-pend',[]).filter(x=>!x.sent).length;
+if(pend)document.getElementById('updgo').textContent=`${pend} pendiente${pend>1?'s':''} de enviar →`;
+</script>
+</body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Actualizar temario · Estudio</title>
+<link rel="stylesheet" href="hub.css">
+</head><body><main style="max-width:760px">
+<a class="home" href="index.html">&larr; Inicio</a>
+<h1>📤 Actualizar temario</h1>
+<div class="card">
+  <b>Cómo funciona</b>
+  <ol class="steps mut">
+    <li>Elige la asignatura y el tema, y sube tus apuntes (PDF, Word o texto).</li>
+    <li>Descarga el paquete que se prepara.</li>
+    <li>Adjúntalo en el chat con Claude: lo convierte en teoría y ejercicios y actualiza la web.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <label class="f" style="margin-top:0">1 · ¿De qué asignatura es?</label>
+  <div class="row" id="asig"></div>
+
+  <label class="f" for="tgt">2 · ¿Dónde lo añado?</label>
+  <select id="tgt"></select>
+  <div id="newbox"><label class="f" for="newname">Nombre del tema nuevo <span class="mut" style="font-weight:400">(opcional)</span></label>
+  <input type="text" id="newname" placeholder="Por ejemplo: T5 · Negotiation" autocomplete="off"></div>
+
+  <label class="f" for="file">3 · Tus apuntes</label>
+  <input type="file" id="file" accept=".pdf,.docx,.txt,.md">
+  <p class="mut" style="margin:10px 0 4px">…o pega el texto:</p>
+  <textarea id="ptxt" placeholder="Pega aquí tus apuntes"></textarea>
+
+  <label class="f" for="note">Indicaciones para Claude <span class="mut" style="font-weight:400">(opcional)</span></label>
+  <input type="text" id="note" placeholder="Por ejemplo: entra en el examen del día 20, céntrate en las definiciones" autocomplete="off">
+
+  <div class="row" style="margin-top:14px"><button class="pri" id="go">Preparar paquete</button></div>
+  <div id="msg"></div>
+</div>
+
+<div class="card"><h3>Paquetes preparados</h3><div id="list"></div></div>
+</main>
+<script src="temas.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+let cur=LS.get('hub-asig',ASIG[0].id);if(!ASIG.some(a=>a.id===cur))cur=ASIG[0].id;
+let PEND=LS.get('hub-pend',[]);
+const TXT={};            /* texto de los paquetes de esta sesión, por si no cabe en el almacenamiento */
+const asig=id=>ASIG.find(a=>a.id===id);
+
+function drawAsig(){const a=asig(cur);
+  $('#asig').innerHTML=ASIG.map(x=>`<button data-a="${x.id}" class="${x.id===cur?'on':''}" style="--c:${x.color}">${x.emoji} ${x.nombre}</button>`).join('');
+  document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{cur=b.dataset.a;LS.set('hub-asig',cur);drawAsig()});
+  $('#tgt').innerHTML=`<option value="new">➕ Tema nuevo</option>`+a.temas.map(([n,t])=>`<option value="${esc(n)}">Añadir a ${esc(n===t?n:n+' · '+t)}</option>`).join('');
+  $('#newbox').hidden=false}
+$('#tgt').onchange=()=>{$('#newbox').hidden=$('#tgt').value!=='new'};
+
+/* ---- lectura de archivos (igual que en las apps originales) ---- */
+const loadScript=src=>new Promise((ok,ko)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el lector de archivos. Comprueba tu conexión.'));document.head.appendChild(s)});
+async function fileText(file){const n=file.name.toLowerCase();
+  if(/\.(txt|md|csv)$/.test(n))return await file.text();
+  if(n.endsWith('.docx')){if(!window.JSZip)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+    const z=await JSZip.loadAsync(await file.arrayBuffer());const xml=await z.file('word/document.xml').async('string');
+    const d=new DOMParser().parseFromString(xml,'application/xml');const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+    return [...d.getElementsByTagNameNS(W,'p')].map(p=>[...p.getElementsByTagNameNS(W,'t')].map(t=>t.textContent).join('')).filter(Boolean).join('\n')}
+  if(n.endsWith('.pdf')){if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const out=[];
+    for(let i=1;i<=pdf.numPages;i++){const c=await(await pdf.getPage(i)).getTextContent();out.push(c.items.map(x=>x.str+(x.hasEOL?'\n':' ')).join(''))}
+    return out.join('\n')}
+  throw new Error('Formato no admitido: usa PDF, Word (.docx) o .txt.')}
+
+/* ---- paquetes ---- */
+const destino=p=>p.target==='new'?`Tema nuevo${p.newname?': '+p.newname:''}`:`Añadir a ${p.target}${p.targetName&&p.targetName!==p.target?' · '+p.targetName:''}`;
+const textOf=p=>p.text!=null?p.text:(TXT[p.id]||'');
+function pkg(p){return `=== PAQUETE DE TEMARIO PARA CLAUDE ===
+Asignatura: ${asig(p.asig).nombre}
+Destino: ${destino(p)}
+Título: ${p.title}
+Fecha: ${new Date(p.at).toLocaleDateString('es-ES')}
+Indicaciones: ${p.note||'(ninguna)'}
+${p.scan?'AVISO: no se pudo leer texto del archivo (PDF escaneado). Se adjunta el archivo original aparte.\n':''}
+=== APUNTES ===
+${textOf(p)}
+`}
+const slug=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30);
+const fname=p=>`temario-${p.asig}-${slug(p.target==='new'?(p.newname||'tema-nuevo'):p.target)}-${new Date(p.at).toISOString().slice(0,10)}.txt`;
+function save(){if(!LS.set('hub-pend',PEND))LS.set('hub-pend',PEND.map(p=>({...p,text:null})))}
+function download(p){const u=URL.createObjectURL(new Blob([pkg(p)],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download=fname(p);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+
+function drawList(){const L=PEND.slice().sort((a,b)=>b.at-a.at);
+  if(!L.length){$('#list').innerHTML='<p class="mut">Todavía no has preparado ningún paquete.</p>';return}
+  $('#list').innerHTML=L.map(p=>{const a=asig(p.asig),has=!!textOf(p);
+    return `<div class="item ${p.sent?'sent':''}"><b>${a.emoji} ${esc(p.title)}</b> ${p.sent?'<span class="ok">· enviado ✓</span>':''}<br>
+    <span class="mut">${esc(a.nombre)} · ${esc(destino(p))} · ${new Date(p.at).toLocaleDateString('es-ES')}${has?` · ${Math.round(textOf(p).length/1000)||1} mil caracteres`:''}</span>
+    ${p.scan?'<div class="warn">No he podido leer texto de este archivo (parece un PDF escaneado). Adjunta también el archivo original en el chat.</div>':''}
+    ${!has&&!p.scan?'<div class="warn">El texto de este paquete ya no está guardado en este navegador. Vuelve a prepararlo si necesitas descargarlo.</div>':''}
+    <div class="row">${has||p.scan?`<button class="pri" data-dl="${p.id}">⬇ Descargar paquete</button><button data-cp="${p.id}">📋 Copiar</button>`:''}
+    <button data-st="${p.id}">${p.sent?'Marcar como pendiente':'✓ Ya lo he enviado'}</button><button data-rm="${p.id}">🗑 Eliminar</button></div></div>`}).join('');
+  const by=id=>PEND.find(p=>p.id===id);
+  document.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>download(by(b.dataset.dl)));
+  document.querySelectorAll('[data-cp]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(pkg(by(b.dataset.cp)));b.textContent='✓ Copiado'}catch(e){b.textContent='No se pudo copiar'}setTimeout(()=>{b.textContent='📋 Copiar'},1800)});
+  document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const p=by(b.dataset.st);p.sent=!p.sent;save();drawList()});
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const p=by(b.dataset.rm);if(!confirm(`¿Eliminar el paquete «${p.title}»?`))return;PEND=PEND.filter(x=>x!==p);delete TXT[p.id];save();drawList()})}
+
+$('#go').onclick=async()=>{const msg=t=>{$('#msg').innerHTML=t};const fi=$('#file').files[0],pt=$('#ptxt').value.trim();
+  if(!fi&&pt.length<40){msg('<p class="ko">Elige un archivo o pega un texto más largo.</p>');return}
+  const go=$('#go');go.disabled=true;
+  try{msg('<p class="mut">⏳ Leyendo el archivo…</p>');
+    let text=fi?await fileText(fi):pt;text=(text||'').trim();const scan=!!fi&&text.length<40;
+    const a=asig(cur),tg=$('#tgt').value,tn=(a.temas.find(t=>t[0]===tg)||[])[1]||'';
+    const p={id:'p'+Date.now().toString(36),asig:cur,target:tg,targetName:tn,newname:tg==='new'?$('#newname').value.trim():'',
+      title:fi?fi.name.replace(/\.[^.]+$/,''):(pt.split('\n')[0].slice(0,60)||'Apuntes'),note:$('#note').value.trim(),at:Date.now(),sent:false,scan,text:scan?'':text};
+    TXT[p.id]=p.text;PEND.push(p);save();drawList();
+    if(!scan)download(p);
+    msg(scan?'<div class="warn">No he encontrado texto en el archivo (parece escaneado). He guardado el paquete igualmente: adjunta también el PDF original en el chat con Claude.</div>'
+      :`<div class="good">✅ Paquete preparado y descargado (<b>${esc(fname(p))}</b>). Adjúntalo en el chat con Claude para que actualice la web.</div>`);
+    $('#file').value='';$('#ptxt').value='';$('#note').value='';$('#newname').value=''}
+  catch(e){msg(`<p class="ko">⚠️ ${esc(e&&e.message||'Algo ha fallado. Inténtalo de nuevo.')}</p>`)}
+  finally{go.disabled=false}};
+
+drawAsig();drawList();
+</script>
+</body></html>

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Français A1 · Práctica</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1c1a;--mut:#6b6b66;--card:#fff;--bd:#e2e0d8;--ac:#2f5bd8;--ok:#1d8a4b;--ko:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#ececea;--mut:#9a9a94;--card:#1f2024;--bd:#33343a;--ac:#7c9cff;--ok:#4cc27f;--ko:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#ececea;--mut:#9a9a94;--card:#1f2024;--bd:#33343a;--ac:#7c9cff;--ok:#4cc27f;--ko:#ff7b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 12px}h2{font-size:19px;margin:8px 0}h3{font-size:16px;margin:0 0 6px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:8px 14px;border-radius:10px;cursor:pointer}
+button.on,button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+button.ghost{background:transparent}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:10px 0;overflow-x:auto}
+.mut{color:var(--mut);font-size:14px}.ok{color:var(--ok)}.ko{color:var(--ko)}
+input{font:inherit;width:100%;box-sizing:border-box;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);margin:8px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--bd);padding:4px 8px;text-align:left}
+.bub{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 14px;margin:8px 0}
+.bot{border-left:4px solid var(--ac)}
+.rt{color:#d9534f;font-size:20px;font-weight:700;margin:0 0 6px}.inst{font-weight:700;border:3px solid #f2c200;border-radius:6px;padding:8px 12px;margin:8px 0}.b{color:var(--ac)}
+.tbl th{background:rgba(120,140,200,.2)}.tbl td,.tbl th{border:1px solid var(--bd)}.fr{border:3px solid #e02020;border-radius:6px;padding:8px 12px;margin:8px 0;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px}
+button.w{padding:4px 9px;margin:2px;border-radius:8px}button.g{border-color:var(--ok);color:var(--ok)}button.r{border-color:var(--ko);color:var(--ko);font-weight:700}
+.tip{border-top:1px solid var(--bd);padding:6px 0;font-size:15px}select{font:inherit;padding:6px;border-radius:8px;background:var(--card);color:var(--fg);border:1px solid var(--bd);max-width:100%}
+
+.ngt{font-weight:700;color:var(--ac);margin:14px 0 6px;font-size:15px}
+.ng{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:6px}
+.nc{display:flex;align-items:baseline;gap:6px;background:rgba(120,140,200,.10);border:1px solid var(--bd);border-radius:10px;padding:7px 8px;cursor:pointer;line-height:1.25;word-break:break-word}
+.nc:active{background:rgba(120,140,200,.28)}
+.nc .n{font-weight:800;color:#d9534f;min-width:20px;text-align:right;font-variant-numeric:tabular-nums}
+.nc .w{font-size:14px}
+.home{display:inline-block;margin:2px 0 6px;color:var(--ac);text-decoration:none;font-size:14.5px;font-weight:600}.home:hover{text-decoration:underline}</style></head><body><main>
+<a class="home" href="index.html">&larr; Inicio</a><h1>🇫🇷 Français A1</h1>
+<nav id="nav"></nav>
+<div id="view"></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const norm=s=>s.toLowerCase().replace(/[’‘`]/g,"'").normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/œ/g,'oe').replace(/[?!.,;:«»"]/g,'').replace(/\s+/g,' ').trim();
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+let VOICE=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices().filter(v=>/^fr/i.test(v.lang));let sv='';try{sv=localStorage.getItem('fr-voice')||''}catch(e){}
+const sc=v=>(v.name===sv?9:0)+(/natural|neural|online|premium|enhanced|améliorée|google|am[eé]lie|thomas|audrey|hortense|denise|henri|eloise|vivienne|remy/i.test(v.name)?2:0)+(/fr-FR/i.test(v.lang)?1:0);VOICE=vs.sort((a,b)=>sc(b)-sc(a))[0]||null}catch(e){}}
+try{speechSynthesis.onvoiceschanged=pickVoice;pickVoice()}catch(e){}
+function say(t,r){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';if(VOICE)u.voice=VOICE;u.rate=r||.9;speechSynthesis.speak(u)}catch(e){}}
+function listenOld(cb,err){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Puedes escribir la respuesta.');return}
+const r=new R();r.lang='fr-FR';r.interimResults=false;r.onresult=e=>cb(e.results[0][0].transcript);r.onerror=e=>err('No te he oído bien ('+e.error+'). Inténtalo otra vez o escríbelo.');try{r.start()}catch(e){err('No se pudo activar el micrófono.')}}
+let P={};try{P=JSON.parse(localStorage.getItem('fr-prog')||'{}')}catch(e){}
+function rec(c,ok){const x=P[c]=P[c]||{ok:0,n:0};x.n++;if(ok)x.ok++;try{localStorage.setItem('fr-prog',JSON.stringify(P))}catch(e){}}
+
+/* ===== DATOS (aquí se añade la teoría nueva) ===== */
+const U=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf','vingt'];
+const T={30:'trente',40:'quarante',50:'cinquante'};
+function num(n){if(n<=20)return U[n];const d=n%10,t=n-d;if(t===20)return d?'vingt'+(d===1?' et un':'-'+U[d]):'vingt';return T[t]+(d?(d===1?' et un':'-'+U[d]):'')}
+const CJ={être:[['je','suis'],['tu','es'],['il/elle','est'],['nous','sommes'],['vous','êtes'],['ils/elles','sont']],
+avoir:[['j’','ai'],['tu','as'],['il/elle','a'],['nous','avons'],['vous','avez'],['ils/elles','ont']],
+aller:[['je','vais'],['tu','vas'],['il/elle','va'],['nous','allons'],['vous','allez'],['ils/elles','vont']]};
+const NAT=[['américain','américaine'],['français','française'],['allemand','allemande'],['chinois','chinoise'],['australien','australienne'],['coréen','coréenne'],['argentin','argentine'],['espagnol','espagnole'],['grec','grecque'],['suisse','suisse'],['indien','indienne'],['marocain','marocaine'],['sénégalais','sénégalaise'],['colombien','colombienne'],['polonais','polonaise'],['danois','danoise'],['belge','belge'],['brésilien','brésilienne'],['italien','italienne'],['portugais','portugaise'],['anglais','anglaise']];
+const PRO=[['assistant','assistante'],['directeur','directrice'],['vendeur','vendeuse'],['infirmier','infirmière'],['informaticien','informaticienne'],['boulanger','boulangère'],['coiffeur','coiffeuse'],['serveur','serveuse'],['plombier','plombière'],['boucher','bouchère'],['mécanicien','mécanicienne'],['architecte','architecte'],['secrétaire','secrétaire']];
+const POS=[['nom','mon'],['prénom','mon'],['pays','mon'],['numéro de téléphone','mon'],['formulaire','mon'],['adresse','mon','femenino con vocal → mon'],['entreprise','mon','femenino con vocal → mon'],['date de naissance','ma'],['profession','ma'],['nationalité','ma'],['carte d’identité','ma'],['photo','ma'],['passeport','mon'],['visa','mon'],['portefeuille','mon'],['carte de crédit','ma'],['argent','mon'],['ordinateur','mon'],['caméra','ma'],['téléphone','mon'],['valise','ma'],['coordonnées','mes','plural → mes'],['enfants','mes','plural → mes']];
+const TV=[['Vous rencontrez le directeur général','vous'],['Vous parlez avec une personne de votre service','tu'],['Votre supérieur dit « On peut se tutoyer ? »','tu'],['Votre collègue est beaucoup plus âgé que vous','vous'],['Vous parlez à un client','vous'],['Vous parlez à un collègue proche','tu'],['Vous parlez à une personne inconnue','vous'],['Vous parlez à un ami','tu']];
+const VOC=[['abuelo','mon grand-père'],['abuela','ma grand-mère'],['padre','mon père'],['madre','ma mère'],['hermano','mon frère'],['hermana','ma sœur'],['marido','mon mari'],['esposa','ma femme'],['hijo','mon fils'],['hija','ma fille'],['nieto','mon petit-fils'],['nieta','ma petite-fille'],['almohada','un oreiller'],['periódico','un journal'],['auriculares','des écouteurs'],['antifaz','un masque'],['manta','une couverture'],['vaso de agua','un verre d’eau'],['pasaporte','un passeport'],['cartera','un portefeuille'],['maleta','une valise'],['tarjeta de crédito','une carte de crédit'],['dinero','l’argent'],['ordenador','un ordinateur'],['soltero/a','célibataire'],['casado/a','marié'],['divorciado/a','divorcé'],['viudo/a','veuf'],['nombre de familia (apellido)','nom de famille'],['dirección de correo electrónico','adresse électronique'],['¿Cómo se escribe?','comment ça s’écrit']];
+const C={
+verbes:{l:'Être · Avoir · Aller',g:()=>Object.entries(CJ).flatMap(([v,t])=>t.map(([p,f])=>({c:'verbes',p:`${v.toUpperCase()}: <b>${p}</b> …`,a:[f]})))},
+nat:{l:'Nacionalidades (fem.)',g:()=>NAT.map(([m,f])=>({c:'nat',p:`Femenino de <b>${m}</b>`,a:[f]}))},
+pro:{l:'Profesiones (fem.)',g:()=>PRO.map(([m,f])=>({c:'pro',p:`Femenino de <b>${m}</b>`,a:[f]}))},
+pos:{l:'Mon / Ma / Mes',g:()=>POS.map(([n,a,h])=>({c:'pos',p:im(n)+`<b>…</b> ${n}`,a:[a],h}))},
+tv:{l:'Tu o Vous',g:()=>TV.map(([s,a])=>({c:'tv',p:`${s}. ¿<b>tu</b> o <b>vous</b>?`,a:[a]}))},
+nb:{l:'Números 1–50',g:()=>Array.from({length:50},(_,i)=>({c:'nb',p:`Escribe en letras: <b>${i+1}</b>`,a:[num(i+1)],h:'21, 31, 41… llevan « et un »'}))},
+voc:{l:'Vocabulario',g:()=>VOC.map(([es,fr])=>({c:'voc',p:im(fr)+`¿Cómo se dice <b>${es}</b>?`,a:[fr]}))}};
+const PH=[['Bonjour, comment allez-vous ?','Hola, ¿cómo está usted?'],['Je vais bien, merci. Et vous ?','Estoy bien, gracias. ¿Y usted?'],['Salut ! Tu vas bien ?','¡Hola! ¿Qué tal?'],['Je m’appelle Claire.','Me llamo Claire.'],['Mon nom de famille est Boitard.','Mi apellido es Boitard.'],['Je suis de Barcelone.','Soy de Barcelona.'],['J’ai dix-neuf ans.','Tengo diecinueve años.'],['Je suis étudiant.','Soy estudiante.'],['Quelle est votre nationalité ?','¿Cuál es su nacionalidad?'],['Quelle est votre profession ?','¿Cuál es su profesión?'],['Comment ça s’écrit ?','¿Cómo se escribe?'],['Vous avez une adresse électronique ?','¿Tiene una dirección de correo electrónico?'],['Je vous présente mon collègue.','Le presento a mi compañero.'],['Enchanté.','Encantado.'],['Il est responsable marketing chez Nofisa.','Es responsable de marketing en Nofisa.'],['Elle est directrice de la communication.','Es directora de comunicación.'],['J’ai un frère et une sœur.','Tengo un hermano y una hermana.'],['Je suis enfant unique.','Soy hijo único.'],['Mon père s’appelle Pablo, il est ingénieur.','Mi padre se llama Pablo, es ingeniero.'],['Un café, s’il vous plaît.','Un café, por favor.'],['Merci beaucoup, au revoir.','Muchas gracias, adiós.']];
+const DL=[['Bonjour, comment allez-vous ?',/(je vais|ca va|bien)/,'Je vais bien, merci. Et vous ?'],['Quel est votre nom ?',/(je m'appelle|mon nom)/,'Je m’appelle Marc.'],['Quelle est votre nationalité ?',/je suis \w+/,'Je suis espagnol.'],['Quelle est votre profession ?',/je suis \w+/,'Je suis étudiant.'],['Quel âge avez-vous ?',/j'ai \w+( \w+)? ans/,'J’ai dix-neuf ans.'],['Vous êtes de quelle ville ?',/je suis (de|d') ?\w+/,'Je suis de Barcelone.'],['Vous avez des frères et sœurs ?',/(j'ai|je n'ai|enfant unique)/,'J’ai un frère. / Je suis enfant unique.'],['Comment ça s’écrit, votre nom ?',/\w/,'M.A.R.C. (dis les lettres une par une)'],['Vous avez une adresse électronique ?',/(oui|c'est)/,'Oui, c’est marc arobase gmail point com.'],['Au revoir !',/(au revoir|a bientot|merci)/,'Au revoir, à bientôt !']];
+const TH=[
+['Les verbes être, avoir, aller',`<table><tr><th>personne</th><th>être</th><th>avoir</th><th>aller</th></tr>${CJ.être.map((r,i)=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${CJ.avoir[i][1]}</td><td>${CJ.aller[i][1]}</td></tr>`).join('')}</table><p class="mut"><b>Avoir</b>: edad (j’ai 19 ans), posesión, sensación (j’ai faim), presencia (il y a). <b>Aller</b>: ça va ? / comment allez-vous ?</p>`],
+['Nacionalidades y profesiones: masculino → femenino',`<p>-ain/-ais/-and/-ois/-in/-ol → <b>+e</b> · -ien/-éen → <b>+ne</b> · -c → <b>+que</b> (grec → grecque) · -e no cambia (suisse, belge).</p><p>-ant → +e · -teur → <b>-trice</b> · -eur → <b>-euse</b> · -er → <b>-ère</b> · -ien → <b>-ienne</b> · -e no cambia (architecte, secrétaire).</p><p class="mut">Frases: Il est de nationalité indienne · Elle est ingénieure.</p>`],
+['Un / une / des  ·  Mon / ma / mes / votre / vos',`<p>Masc. sing.: <b>un</b> / <b>mon</b> / <b>votre</b> · Fem. sing.: <b>une</b> / <b>ma</b> / <b>votre</b> · Plural: <b>des</b> / <b>mes</b> / <b>vos</b>.</p><p>Femenino que empieza por vocal: <b>mon</b> adresse, <b>mon</b> entreprise.</p>`],
+['Tu o vous',`<p><b>Vous</b>: persona desconocida o poco conocida, director, cliente, persona mayor. <b>Tu</b>: colega cercano, compañero de servicio, amigos, o si tu superior te lo propone.</p><p>Bonjour (de día) · Bonsoir (de noche) · Salut (informal).</p>`],
+['Saludar, presentar y preguntar datos',`<p>Comment allez-vous ? / Comment vas-tu ? / Ça va ? → Je vais bien, merci.<br>Je vous présente… / Je te présente… → Enchanté(e).<br>Quel est votre nom ? · Quelle est votre nationalité / profession / adresse ? · Comment ça s’écrit ?<br>Il/Elle est responsable marketing <b>chez</b> Nofisa · ingénieur <b>dans</b> une entreprise <b>à</b> Toulouse.</p>`],
+['Lugares: à, dans, chez',`<p><b>à</b> + ciudad (à Toulouse) · <b>dans</b> + lugar (dans une entreprise) · <b>chez</b> + persona/empresa (chez Nofisa).</p>`],
+['Familia y situación de famille',`<p>mon grand-père, ma grand-mère → mes grands-parents · mon père, ma mère → mes parents · mon frère, ma sœur · mon mari, ma femme · mon fils, ma fille → mes enfants · mon petit-fils, ma petite-fille.</p><p>Je suis célibataire / marié(e) / séparé(e) / divorcé(e) / veuf, veuve. Je suis enfant unique.</p>`],
+['Números',`<p>${Array.from({length:21},(_,i)=>i+1).map(n=>`${n} ${num(n)}`).join(' · ')}<br>30 trente · 40 quarante · 50 cinquante · 21 vingt et un · 22 vingt-deux…</p>`],
+['Deletreo (email)',`<p>@ arobase · . point · - tiret · _ tiret du bas · minuscule / majuscule · é accent aigu · è accent grave · ê circonflexe · ç cédille · ï tréma · l’ apostrophe · sans espace / tout attaché.</p>`]];
+
+/* ===== UI ===== */
+const tabs=[['learn','Aprender'],['quiz','Ejercicios'],['say','Pronunciar'],['talk','Conversar'],['mic','🔧 Micro']];
+let tab='learn',qz=null,di=0;
+function nav(){$('#nav').innerHTML=tabs.map(([k,l])=>`<button class="${k===tab?'on':''}" data-k="${k}">${l}</button>`).join('');
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.k;qz=null;di=0;cv=null;window.WANT=null;render()})}
+function render(){nav();({learn:learn2,quiz,say:sayTab2,talk,mic:micTab})[tab]()}
+function learn(){$('#view').innerHTML=TH.map(([t,h])=>`<div class="card"><h3>${t}</h3>${h}</div>`).join('')}
+function quizOld(){const v=$('#view');
+if(!qz){const acc=k=>P[k]?` <span class="mut">(${Math.round(100*P[k].ok/P[k].n)}% · ${P[k].n})</span>`:'';
+v.innerHTML=`<p>Elige un tema (10 preguntas al azar):</p><div class="row"><button class="pri" data-c="mix">🎲 Mezcla</button>${Object.entries(C).map(([k,o])=>`<button data-c="${k}">${o.l}${acc(k)}</button>`).join('')}</div><p class="mut">Se acepta sin acentos. Puedes responder con el micro (🎤).</p>`;
+v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?Object.values(C).flatMap(o=>o.g()):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}showQ()}
+function showQOld(){const v=$('#view'),q=qz.qs[qz.i];
+if(!q){v.innerHTML=`<div class="card"><h2>Resultado: ${qz.s}/${qz.qs.length}</h2><button class="pri" id="again">Otra ronda</button></div>`;$('#again').onclick=()=>{qz=null;quiz()};return}
+v.innerHTML=`<p class="mut">Pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card"><h2>${q.p}</h2><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="pri" id="chk">Comprobar</button><button class="ghost" id="mic">🎤 Decirlo</button></div><div id="fb"></div></div>`;
+const inp=$('#ans');inp.focus();let done=false;
+const check=()=>{if(done){qz.i++;showQ();return}const val=inp.value;if(!val.trim())return;done=true;const ok=q.a.some(a=>norm(a)===norm(/^\d+$/.test(val.trim())?num(+val):val));rec(q.c,ok);if(ok)qz.s++;
+$('#fb').innerHTML=`<p class="${ok?'ok':'ko'}">${ok?'✓ Correcto':'✗ Respuesta correcta'}: <b>${esc(q.a[0])}</b> <button class="ghost" id="sp">🔊</button></p>${q.h&&!ok?`<p class="mut">Pista: ${q.h}</p>`:''}`;$('#sp').onclick=()=>say(q.a[0]);$('#chk').textContent='Siguiente'};
+$('#chk').onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};
+$('#mic').onclick=()=>{$('#mic').textContent='🎤 Escuchando…';listen(t=>{inp.value=t;$('#mic').textContent='🎤 Decirlo'},m=>{$('#mic').textContent='🎤 Decirlo';$('#fb').innerHTML=`<p class="ko">${m}</p>`})}}
+function sayTab(){$('#view').innerHTML=`<p class="mut">Pulsa 🔊 para escuchar y 🎤 para repetir. Te doy un porcentaje de parecido.</p>`+PH.map(([f,e],i)=>`<div class="card"><b>${f}</b><br><span class="mut">${e}</span><div class="row"><button data-s="${i}">🔊</button><button data-m="${i}">🎤</button></div><div id="r${i}"></div></div>`).join('');
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>say(PH[b.dataset.s][0]));
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const i=b.dataset.m,r=$('#r'+i);r.textContent='Escuchando…';
+listen(t=>{const a=norm(PH[i][0]).split(' '),h=norm(t).split(' ');const hit=a.filter(w=>h.includes(w)).length,p=Math.round(100*hit/a.length);rec('voz',p>=80);r.innerHTML=`<span class="${p>=80?'ok':'ko'}">${p}%</span> · he oído: «${esc(t)}»`},m=>{r.innerHTML=`<span class="ko">${m}</span>`})})}
+function talkOld(){const v=$('#view'),d=DL[di];
+if(!d){v.innerHTML=`<div class="card"><h2>¡Conversación terminada!</h2><button class="pri" id="re">Repetir</button></div>`;$('#re').onclick=()=>{di=0;talk()};return}
+v.innerHTML=`<p class="mut">Rol: eres un candidato en una entrevista. Responde en francés (voz o texto). ${di+1}/${DL.length}</p><div class="bub bot">${d[0]} <button class="ghost" id="sp">🔊</button></div><input id="ans" autocomplete="off" autocapitalize="off" placeholder="Tu respuesta"><div class="row"><button class="pri" id="chk">Responder</button><button class="ghost" id="mic">🎤</button></div><div id="fb"></div>`;
+say(d[0]);$('#sp').onclick=()=>say(d[0]);const inp=$('#ans');let done=false;
+const check=()=>{if(done){di++;talk();return}if(!inp.value.trim())return;done=true;const ok=d[1].test(norm(inp.value));rec('conv',ok);
+$('#fb').innerHTML=`<p class="${ok?'ok':'ko'}">${ok?'✓ Muy bien':'Casi: prueba con una frase completa'}</p><p class="mut">Ejemplo: ${d[2]}</p>`;$('#chk').textContent='Siguiente'};
+$('#chk').onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};
+$('#mic').onclick=()=>listen(t=>{inp.value=t},m=>{$('#fb').innerHTML=`<p class="ko">${m}</p>`})}
+/* ===== TEORÍA con el formato de los PDFs ===== */
+const bl=s=>`<b class="b">${s}</b>`;
+const tb=(h,r)=>`<table class="tbl"><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r.map(x=>`<tr>${x.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const S=(t,i,b)=>`<section class="card"><h3 class="rt">${t}</h3>${i?`<div class="inst">${i}</div>`:''}${b}</section>`;
+const fr=(a)=>`<div class="fr">${a.map(x=>`<div>${x}</div>`).join('')}</div>`;
+const ex=(l)=>l.map(x=>`<div>${x}</div>`).join('');
+const nt=(s,m,f)=>`${s}${bl(m)} – ${s}${bl(f)}`;
+function learnSecs(){const L=[
+S('Le verbe ÊTRE','Pour indiquer l’identité, la nationalité, la profession.',fr(['je suis','nous sommes','tu es','vous êtes','il est','ils sont','elle est','elles sont'])+ex(['Je suis français. · Elle est ingénieure.','Les participants sont dans la salle ?'])),
+S('Le verbe AVOIR','Pour demander ou indiquer l’âge / la possession / une sensation / la présence.',fr(['j’ai','nous avons','tu as','vous avez','il a','ils ont','elle a','elles ont'])+tb(['Exemple','Emploi'],[['Vous '+bl('avez')+' un stylo ? / J’'+bl('ai')+' 2 enfants.','la possession'],['Quel âge '+bl('ont')+' vos enfants ? / Mon fils '+bl('a')+' 12 ans.','l’âge'],['J’'+bl('ai')+' peur en avion. / Les enfants '+bl('ont')+' faim.','une sensation'],['Il y '+bl('a')+' du vent.','la présence']])),
+S('Le verbe ALLER','Pour demander / indiquer l’état physique.',fr(['je vais','nous allons','tu vas','vous allez','il va','ils vont','elle va','elles vont'])+ex(['Ça '+bl('va')+' ?','Comment '+bl('allez')+'-vous ? / Comment '+bl('vas')+'-tu ?','Je '+bl('vais')+' bien.','Ça '+bl('va')+' (bien), merci, et vous / toi ?'])),
+S('Les adjectifs possessifs','Pour indiquer l’appartenance. MON / MA / MES / VOTRE / VOS',tb(['Propriétaires','« Objet » possédé masculin singulier'],[['Moi',bl('Mon')+' nom'],['Vous',bl('Votre')+' nom']])+tb(['Propriétaires','« Objet » possédé féminin singulier'],[['Moi',bl('Ma')+' nationalité'],['Vous',bl('Votre')+' nationalité']])+tb(['Propriétaires','« Objets » possédés pluriel (masculin ou féminin)'],[['Moi',bl('Mes')+' coordonnées'],['Vous',bl('Vos')+' coordonnées']])+'<p>⚠ <s>ma</s> entreprise → '+bl('mon')+' entreprise · <s>ma</s> adresse → '+bl('mon')+' adresse</p>'),
+S('Les articles indéfinis UN / UNE / DES','Pour indiquer une quantité, une catégorie de choses ou de personnes.',tb(['','Singulier','Pluriel'],[['Masculin',bl('un')+' collaborateur',bl('des')+' collaborateurs'],['Féminin',bl('une')+' entreprise',bl('des')+' entreprises']])),
+S('Le masculin et le féminin : nationalités','Les adjectifs de nationalité',tb(['Les adjectifs de nationalité','Masculin','Féminin'],[[nt('améric','ain','aine'),'ain','+ e'],[nt('franç','ais','aise'),'ais','+ e'],[nt('allem','and','ande'),'and','+ e'],[nt('chin','ois','oise'),'ois','+ e'],[nt('austral','ien','ienne'),'ien','+ ne'],[nt('cor','éen','éenne'),'éen','+ ne'],[nt('argent','in','ine'),'in','+ e'],[nt('espagn','ol','ole'),'ol','+ e'],[nt('gre','c','cque'),'c','+ que'],['suiss'+bl('e')+' – suiss'+bl('e'),'e','e']])),
+S('Le masculin et le féminin : professions','Les noms de profession',tb(['Les noms de profession','Masculin','Féminin'],[[nt('assist','ant','ante'),'ant','+ e'],[nt('direc','teur','trice'),'teur','trice'],[nt('vend','eur','euse'),'eur','euse'],[nt('infirmi','er','ère'),'er','ère'],[nt('informatic','ien','ienne'),'ien','ienne'],['architect'+bl('e')+' · comptabl'+bl('e')+' · secrétair'+bl('e')+' · stylist'+bl('e'),'e','e']])+'<p class="mut">Aussi : boulanger/boulangère, coiffeur/coiffeuse, serveur/serveuse, boucher/bouchère, mécanicien/mécanicienne. Sans changement : concierge, peintre, chef (la cheffe).</p>'),
+S('Les prépositions À, DANS, CHEZ','Pour indiquer un lieu.',ex(['Je suis ingénieur '+bl('dans')+' une entreprise '+bl('à')+' Toulouse.','Il est informaticien '+bl('chez')+' Nofisa.'])+tb(['à Toulouse','chez Nofisa'],[[bl('à')+' + ville',bl('chez')+' + nom (personne, entreprise)']])),
+S('Des fonctions dans l’entreprise','',tb(['Fonction','…'],[['Président Directeur Général (PDG)',''],['Directeur (directrice)','général(e) · financier(ère) · commercial(e) · juridique · de la communication · des ressources humaines'],['Responsable','marketing · qualité · clientèle · des achats'],['Chef','de projet · de rayon · de service · des ventes'],['Assistant(e)','de direction · commerciale']])),
+S('TU ou VOUS ?','',tb(['','Tu','Vous'],[['À une personne inconnue ou peu connue','','✔'],['À un(e) collègue proche','✔',''],['Directeur général / client / personne beaucoup plus âgée','','✔'],['Personne de votre service / ami','✔','']])+'<p>☀ '+bl('Bonjour')+' (de jour) · 🌙 '+bl('Bonsoir')+' · Salut (avec « tu »)</p>'),
+S('Pour demander des informations personnelles et des coordonnées','',tb(['','Question'],[['L’identité','Quel est votre nom ?'],['La nationalité','Quelle est votre nationalité ?'],['La profession','Quelle est votre profession ?'],['L’adresse','Quelle est votre adresse (postale) ? / Quelle est votre adresse électronique ?'],['L’écriture','Comment ça s’écrit ?']])),
+S('Pour saluer, présenter, répondre','',tb(['Pour…','Expressions'],[['saluer','Bonjour, comment vas-tu / allez-vous / ça va ?'],['répondre à des salutations','Très bien, merci. · Ça va bien, merci.'],['présenter quelqu’un','Je vous présente… · Je te présente…'],['répondre à des présentations','Enchanté(e). · Bonjour madame / monsieur.'],['préciser la profession et l’entreprise','Il est responsable marketing '+bl('chez')+' … · Elle est directrice de la communication '+bl('chez')+' …']])),
+S('Les formules de politesse','',tb(['',''],[['Bonjour · Merci · S’il vous plaît · Au revoir','Madame · Monsieur · Mademoiselle']])),
+S('Pour indiquer des liens de famille','',tb(['Singulier','Pluriel'],[['mon grand-père / ma grand-mère','mes grands-parents'],['mon père / ma mère','mes parents'],['mon frère / ma sœur','mes frères et sœurs'],['mon mari / ma femme',''],['mon fils / ma fille','mes enfants'],['mon petit-fils / ma petite-fille','mes petits-enfants']])+ex(['J’ai un frère, il s’appelle … · J’ai une sœur, elle s’appelle …','Je n’ai pas de frères et sœurs / Je suis enfant unique.'])),
+S('La situation de famille','Je suis…',ex(['célibataire · marié(e) · séparé(e) · divorcé(e) · veuf / veuve'])),
+S('Les nombres','Toca un número para oírlo 🔊',numsHTML()),
+S('Comment ça s’écrit ?','',tb(['Symbole','En français'],[['@','arobase'],['.','point'],['-','tiret'],['_','tiret du bas'],['a b c','minuscule'],['A B C','majuscule'],['é','e accent aigu'],['è','e accent grave'],['ê','e accent circonflexe'],['ç','c cédille'],['ï','i tréma'],['l’','l apostrophe'],['ll','deux l'],['claireboitard','sans espace / tout attaché']])),
+S('Pour indiquer la date','',tb(['le jour','le mois','l’année'],[['04','octobre','2026']])),
+S('Dans l’avion : le vocabulaire','',ex(['un oreiller · un journal · des écouteurs · un masque · un sandwich · une couverture · des magazines · un café · un verre d’eau · un verre de jus d’orange · une cuillère / une fourchette / un couteau'])),
+S('Dans la valise','',ex(['une carte d’identité · une photo · un passeport · un visa · un portefeuille · une carte de crédit · l’argent (masc.) · un ordinateur · une caméra · un téléphone · une valise']))];
+return L.filter(x=>!/Dans l.avion|Dans la valise/.test(x)).concat([S('Dans l’avion : le vocabulaire','',cards(['un oreiller','un journal','des écouteurs','un masque','un sandwich','une couverture','des magazines','un café','un verre d’eau','un verre de jus d’orange','une cuillère','une fourchette','un couteau'])),S('Dans la valise','',cards(['une carte d’identité','une photo','un passeport','un visa','un portefeuille','une carte de crédit','l’argent (masc.)','un ordinateur','une caméra','un téléphone','une valise']))]).concat(NEWTH())}
+
+/* ===== IMÁGENES (iconos) ===== */
+const IMG={'oreiller':'🛏️','journal':'📰','couteau':'🔪','cuillère':'🥄','fourchette':'🍴','écouteurs':'🎧','masque':'😴','sandwich':'🥪','couverture':'🛌','magazines':'📚','café':'☕','jus d’orange':'🍊','verre d’eau':'🥛','carte d’identité':'🪪','carte de crédit':'💳','photo':'🖼️','passeport':'📕','visa':'🛂','portefeuille':'👛','argent':'💶','ordinateur':'💻','caméra':'🎥','téléphone':'📱','valise':'🧳'};
+const ico=s=>{const n=norm(s),e=Object.entries(IMG).find(([k])=>n.includes(norm(k)));return e?e[1]:''};
+const im=s=>{const e=ico(s);return e?`<div style="font-size:56px;line-height:1.1">${e}</div>`:''};
+const cards=l=>`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">${l.map(w=>`<div class="card" style="text-align:center;margin:0"><div style="font-size:48px;line-height:1.2">${ico(w)}</div><div>${w}</div><button class="ghost" data-t="${w}" onclick="say(this.dataset.t)">🔊</button></div>`).join('')}</div>`;
+/* ===== PRONUNCIACIÓN con corrección palabra a palabra ===== */
+const RULES=[[/eau|au/,'au / eau suena como una «o» cerrada'],[/ou/,'ou suena como la «u» española'],[/u(?!i)/,'u francesa: di «i» con los labios redondeados, como para decir «u»'],[/eu|œu/,'eu: entre «e» y «o», con los labios redondeados'],[/r/,'r francesa: suave, desde la garganta (no vibrante)'],[/(on|om)(?![aeiouyé])/,'on: vocal nasal, «o» sin pronunciar la n'],[/(an|am|en|em)(?![aeiouyé])/,'an / en: vocal nasal, «a» sin pronunciar la n'],[/(in|ain|ein|im)(?![aeiouyé])/,'in / ain: vocal nasal, «e» sin pronunciar la n'],[/gn/,'gn suena como «ñ»'],[/ch/,'ch suena como «sh»'],[/j|g[eiy]/,'j / ge / gi: como una «sh» sonora (zh)'],[/oi/,'oi suena «ua»'],[/qu/,'qu suena «k»'],[/ç/,'ç suena «s»'],[/^h/,'la h inicial es muda'],[/ill/,'ill suena como «y»'],[/[bcdfgklmnprstvxz]$/,'la consonante final normalmente no se pronuncia'],[/é|ez$|er$/,'é / -ez / -er: «e» cerrada']];
+const tip=w=>{const k=w.toLowerCase();return RULES.filter(r=>r[0].test(k)).slice(0,2).map(r=>r[1]).join(' · ')||'Escúchala despacio y repite sílaba a sílaba.'};
+const toks=s=>(s.match(/[^\s’'-]+['’-]?/g)||[]).map(w=>({w:w.replace(/['’-]$/,'').replace(/[.,;:!?«»]+$/,''),d:w,k:norm(w).replace(/['-]/g,'')})).filter(t=>t.k);
+function align(e,h){const n=e.length,m=h.length,d=Array.from({length:n+1},()=>Array(m+1).fill(0));for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)d[i][j]=e[i].k===h[j]?d[i+1][j+1]+1:Math.max(d[i+1][j],d[i][j+1]);const ok=Array(n).fill(false);let i=0,j=0;while(i<n&&j<m){if(e[i].k===h[j]){ok[i]=true;i++;j++}else if(d[i+1][j]>=d[i][j+1])i++;else j++}return ok}
+function sayTab2Old(){const vs=(()=>{try{return speechSynthesis.getVoices().filter(v=>/^fr/i.test(v.lang))}catch(e){return[]}})();
+$('#view').innerHTML=`<div class="card"><p class="mut">Pulsa 🔊 para escuchar y 🎤 para repetir. Verás en verde lo que has dicho bien y en rojo lo que hay que corregir, con consejos para pronunciarlo.</p>${vs.length?`<label class="mut">Voz: <select id="vsel">${vs.map(v=>`<option ${VOICE&&v.name===VOICE.name?'selected':''}>${esc(v.name)}</option>`).join('')}</select></label>`:'<p class="mut">Tu dispositivo no tiene voz francesa instalada.</p>'}</div>`+PH.map(([f,e],i)=>`<div class="card"><b>${f}</b><br><span class="mut">${e}</span><div class="row"><button data-s="${i}">🔊</button><button data-l="${i}">🐢 Lento</button><button class="pri" data-m="${i}">🎤 Repetir</button></div><div id="r${i}"></div></div>`).join('');
+const sel=$('#vsel');if(sel)sel.onchange=()=>{try{localStorage.setItem('fr-voice',sel.value)}catch(e){}pickVoice();say('Bonjour, je suis votre voix.')};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>say(PH[b.dataset.s][0]));
+document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>say(PH[b.dataset.l][0],.55));
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const i=b.dataset.m,r=$('#r'+i);r.textContent='Escuchando…';
+listen(t=>{const e=toks(PH[i][0]),h=norm(t).replace(/['-]/g,' ').split(' ').filter(Boolean),ok=align(e,h),p=Math.round(100*ok.filter(Boolean).length/e.length);rec('voz',p>=80);
+const bad=e.filter((x,j)=>!ok[j]);
+r.innerHTML=`<p><b class="${p>=80?'ok':'ko'}">${p}%</b> · he oído: «${esc(t)}»</p><div>${e.map((x,j)=>`<button class="w ${ok[j]?'g':'r'}" data-w="${esc(x.w)}">${esc(x.d)}</button>`).join('')}</div>`+(bad.length?`<p class="mut">Palabras a corregir:</p>`+bad.map(x=>`<div class="tip"><b>${esc(x.w)}</b> — ${tip(x.w)}<div class="row"><button data-ws="${esc(x.w)}">🔊</button><button data-wl="${esc(x.w)}">🐢</button><button data-wm="${esc(x.k)}">🎤 Solo esta</button><span class="wr"></span></div></div>`).join(''):'<p class="ok">¡Pronunciación muy buena! 🎉</p>')+`<div class="row"><button data-sl>🐢 Frase lenta</button></div>`;
+r.querySelectorAll('.w').forEach(x=>x.onclick=()=>say(x.dataset.w));r.querySelectorAll('[data-ws]').forEach(x=>x.onclick=()=>say(x.dataset.ws));r.querySelectorAll('[data-wl]').forEach(x=>x.onclick=()=>say(x.dataset.wl,.5));
+r.querySelectorAll('[data-wm]').forEach(x=>x.onclick=()=>{const o=x.parentNode.querySelector('.wr');o.textContent=' escuchando…';listen(tt=>{const hh=norm(tt).replace(/['-]/g,' ').split(' ');const good=hh.includes(x.dataset.wm);rec('voz',good);o.innerHTML=good?' <span class="ok">✓ ¡Bien!</span>':` <span class="ko">he oído «${esc(tt)}», prueba otra vez</span>`},m=>{o.innerHTML=` <span class="ko">${m}</span>`})});
+r.querySelector('[data-sl]').onclick=()=>say(PH[i][0],.55)},m=>{r.innerHTML=`<span class="ko">${m}</span>`})})}
+
+/* ===== MICRÓFONO: un solo permiso y una sola instancia ===== */
+let REC=null,MIC=null;
+let MICOK=false;
+async function ensureMic(){if(MICOK||!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))return true;try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());MICOK=true;return true}catch(e){return !(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))}}
+async function listenOld2(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(!(await ensureMic())){err('Permiso de micrófono denegado: actívalo una vez en los ajustes del sitio (icono 🔒 junto a la dirección) y vuelve a intentarlo.');return}
+try{if(REC){REC.onresult=REC.onerror=REC.onend=null;REC.abort()}}catch(e){}
+const r=REC=new R();r.lang='fr-FR';r.interimResults=true;r.maxAlternatives=1;let last='',fin=false;
+r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;last=t;if(e.results[e.results.length-1].isFinal){if(!fin){fin=true;cb(t)}}else (live||(x=>{const i=$('#ans');if(i)i.value=x}))(t)};
+r.onerror=e=>{if(fin)return;fin=true;err(e.error==='no-speech'?'No te he oído. Pulsa el micro y habla enseguida.':e.error==='not-allowed'?'Permiso de micrófono denegado: actívalo en los ajustes del sitio (🔒).':'No se pudo reconocer ('+e.error+'). Inténtalo otra vez o escríbelo.')};
+r.onend=()=>{if(fin)return;fin=true;if(last)cb(last);else err('No te he oído. Inténtalo otra vez.')};
+try{r.start()}catch(e){fin=true;err('No se pudo activar el micrófono.')}}
+/* ===== MICRÓFONO CONTINUO: un solo permiso por sesión ===== */
+const ENG={rec:null,on:false,tg:null};
+function micUIOld(){let e=$('#micst');if(!e){e=document.createElement('div');e.id='micst';e.className='mut';e.style.cssText='margin:-6px 0 10px';const n=$('#nav');n.parentNode.insertBefore(e,n.nextSibling)}
+e.innerHTML=ENG.on?'🎙 Micrófono activo (no vuelve a pedir permiso) <button class="ghost" id="moff">Apagar</button>':'';const b=$('#moff');if(b)b.onclick=engStop}
+function engStopV4(){ENG.on=false;try{ENG.rec&&ENG.rec.abort()}catch(e){}ENG.rec=null;micUI()}
+function fin(tg,t){if(ENG.tg!==tg)return;clearTimeout(tg.to);ENG.tg=null;tg.cb(t)}
+function fail(m){const tg=ENG.tg;if(!tg)return;clearTimeout(tg.to);ENG.tg=null;tg.err(m)}
+function arm(tg,ms){clearTimeout(tg.to);tg.to=setTimeout(()=>fail('No te he oído. Pulsa el micro y habla enseguida.'),ms)}
+function engStartOld(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;const r=new R();r.lang='fr-FR';r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
+r.onresult=e=>{const tg=ENG.tg;if(!tg)return;for(let i=e.resultIndex;i<e.results.length;i++){const R0=e.results[i];if(R0.isFinal){clearTimeout(tg.st);fin(tg,pick(R0))}else{arm(tg,10000);tg.live(R0[0].transcript);clearTimeout(tg.st);tg.st=setTimeout(()=>{if(ENG.tg===tg){fin(tg,pick(R0));try{r.abort()}catch(x){}}},1600)}}};
+r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){ENG.on=false;ENG.rec=null;micUI();fail('Permiso de micrófono denegado: actívalo en los ajustes del sitio (🔒) y vuelve a intentarlo.')}else if(e.error==='audio-capture')fail('No se detecta ningún micrófono.')};
+r.onend=()=>{if(ENG.on&&ENG.rec===r)setTimeout(()=>{try{r.start()}catch(x){}},150)};
+ENG.rec=r;ENG.on=true;try{r.start()}catch(x){}micUI()}
+function listenOld3(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg)fail('Cancelado.');
+const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x})};ENG.tg=tg;arm(tg,ENG.on?10000:20000);if(!ENG.on)engStart()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)engStop()});
+/* ===== EJERCICIOS: avance automático y repetición de falladas ===== */
+function pick(res){let first=null;for(let k=0;k<res.length;k++){let t=res[k].transcript.trim();if(/^\d+$/.test(t)&&+t<=50)t=num(+t);if(first===null)first=t;if(window.WANT&&window.WANT.some(a=>hk(a)===hk(t)))return t}return first}
+const strip=p=>p.replace(/<div[^>]*>.*?<\/div>/g,'');
+function showQOld2(){const v=$('#view');
+if(!qz.wrong){qz.wrong=[];qz.ok=[];qz.first=[];qz.round=1;qz.total=qz.qs.length}
+const q=qz.qs[qz.i];if(!q){endPass();return}
+const qs0=qz.qs,i0=qz.i,alive=()=>tab==='quiz'&&qz&&qz.qs===qs0&&qz.i===i0;
+v.innerHTML=`<p class="mut">Ronda ${qz.round} · pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card"><h2>${q.p}</h2><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="pri" id="chk">Responder</button><button class="ghost" id="mic">🎤 Decirlo</button></div><div id="fb"></div></div>`;
+const inp=$('#ans');let done=false;window.WANT=q.a;
+const check=by=>{if(done)return;const val=inp.value;if(!val.trim())return;done=true;qz.voice=!!by;if(ENG.tg){clearTimeout(ENG.tg.to);clearTimeout(ENG.tg.st);ENG.tg=null}
+const w=/^\d+$/.test(val.trim())&&+val<=50?num(+val):val;const ok=q.a.some(a=>norm(a)===norm(w));rec(q.c,ok);
+if(ok)qz.ok.push(q);else{qz.wrong.push(q);if(!qz.first.includes(q))qz.first.push(q)}
+$('#fb').innerHTML=ok?'<p class="ok"><b>✓ Bien</b></p>':'<p class="ko"><b>✗ Esta la repetirás</b></p>';
+setTimeout(()=>{if(alive()){qz.i++;showQ()}},ok?700:1100)};
+$('#chk').onclick=()=>check(false);inp.onkeydown=e=>{if(e.key==='Enter')check(false)};
+const mic=()=>{if(done||!alive())return;$('#mic').textContent='🎤 Habla ahora…';listen(t=>{inp.value=t;$('#mic').textContent='🎤 Decirlo';check(true)},m=>{if(done||!alive())return;$('#mic').textContent='🎤 Decirlo';$('#fb').innerHTML=`<p class="ko">${m}</p>`})};
+$('#mic').onclick=mic;if(qz.voice)setTimeout(mic,500);else inp.focus()}
+function endPass(){const v=$('#view'),bien=qz.ok,mal=qz.wrong;window.WANT=null;const li=a=>a.map(q=>`<li>${strip(q.p)}</li>`).join('');
+if(!mal.length){const f=qz.first;v.innerHTML=`<div class="card"><h2>🎉 ¡Todo correcto!</h2><p>${qz.total} preguntas · ${qz.total-f.length} a la primera${qz.round>1?` · completadas en ${qz.round} rondas`:''}.</p>${f.length?`<p class="mut">Para repasar, las que fallaste y su respuesta:</p><ul>${f.map(q=>`<li>${strip(q.p)} → <b>${esc(q.a[0])}</b></li>`).join('')}</ul>`:''}<button class="pri" id="again">Otra ronda</button></div>`;$('#again').onclick=()=>{qz=null;quiz()};return}
+v.innerHTML=`<div class="card"><h2>Ronda ${qz.round}: ${bien.length} bien · ${mal.length} por repetir</h2>${bien.length?`<p class="ok"><b>✓ Bien</b></p><ul>${li(bien)}</ul>`:''}<p class="ko"><b>✗ A repetir</b></p><ul>${li(mal)}</ul><button class="pri" id="rep">Repetir las falladas</button></div>`;
+$('#rep').onclick=()=>{qz.qs=shuf(mal);qz.i=0;qz.wrong=[];qz.ok=[];qz.round++;showQ()}}
+/* ===== MICRÓFONO v5: texto en directo, editable, sin envío automático ===== */
+ENG.n=0;
+function joinSegs(s){const o=[];s.forEach(x=>{if(!x)return;const n=norm(x),p=o[o.length-1];if(p){const pn=norm(p);if(n===pn)return;if(n.startsWith(pn)){o[o.length-1]=x;return}if(pn.startsWith(n))return}o.push(x)});return o.join(' ')}
+function fixTxtOld(t){t=t.replace(/\b\d+\b/g,n=>+n<=50?num(+n):n);const w=window.WANT&&window.WANT.find(a=>norm(a)===norm(t));return w||t}
+function engStartV5(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;const r=new R();r.lang='fr-FR';r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
+r.onresult=e=>{ENG.n=e.results.length;const tg=ENG.tg;if(!tg)return;const s=[];for(let i=tg.base;i<e.results.length;i++){const x=e.results[i];s.push(x.isFinal?pick(x):x[0].transcript.trim())}
+const txt=fixTxt(joinSegs(s));if(!txt)return;tg.last=txt;ENG.vt=txt;ENG.alts=altsOf(e.results[e.results.length-1]);tg.live(txt);arm(tg,10000);clearTimeout(tg.st);const f=e.results[e.results.length-1].isFinal;tg.st=setTimeout(()=>{if(ENG.tg===tg)fin(tg,tg.last)},f?500:1800)};
+r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){ENG.on=false;ENG.rec=null;micUI();fail('Permiso de micrófono denegado: actívalo en los ajustes del sitio (🔒) y vuelve a intentarlo.')}else if(e.error==='audio-capture')fail('No se detecta ningún micrófono.')};
+r.onend=()=>{ENG.n=0;if(ENG.tg)ENG.tg.base=0;if(ENG.on&&ENG.rec===r)setTimeout(()=>{try{r.start()}catch(x){}},150)};
+ENG.rec=r;ENG.on=true;try{r.start()}catch(x){}micUI()}
+function stopListenV5(){const tg=ENG.tg;if(tg)fin(tg,tg.last||'')}
+function listenV5(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg)fail('Cancelado.');
+const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),base:ENG.n||0,last:''};ENG.tg=tg;arm(tg,ENG.on?10000:20000);if(!ENG.on)engStart()}
+function showQ(){const v=$('#view');
+if(!qz.wrong){qz.wrong=[];qz.ok=[];qz.first=[];qz.round=1;qz.total=qz.qs.length}
+const q=qz.qs[qz.i];if(!q){endPass();return}
+const qs0=qz.qs,i0=qz.i,alive=()=>tab==='quiz'&&qz&&qz.qs===qs0&&qz.i===i0;
+v.innerHTML=`<p class="mut">Ronda ${qz.round} · pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card"><h2>${q.p}</h2>${q.es?`<p class="mut" style="margin:-4px 0 8px">En castellano: <b>${esc(q.es)}</b></p>`:''}${q.px?'<div id="px" style="margin-bottom:8px"><button class="ghost" id="pxb">💡 Pista en castellano</button></div>':''}<input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="ghost" id="mic">🎤 Decirlo</button><button class="pri" id="chk">Responder</button></div>${DICT_HINT}<div id="fb"></div></div>`;
+const inp=$('#ans');let done=false,on=false;window.WANT=q.a;ENG.alts=[];ENG.vt='';
+const lab=s=>{$('#mic').textContent=s};
+const check=()=>{if(done)return;const val=inp.value;if(!val.trim())return;done=true;if(ENG.tg){clearTimeout(ENG.tg.to);clearTimeout(ENG.tg.st);ENG.tg=null}
+const w=/^\d+$/.test(val.trim())&&+val<=50?num(+val):val;const ok=q.a.some(a=>norm(a)===norm(w));rec(q.c,ok);
+if(ok)qz.ok.push(q);else{qz.wrong.push(q);if(!qz.first.includes(q))qz.first.push(q)}
+$('#fb').innerHTML=ok?'<p class="ok"><b>✓ Bien</b></p>':'<p class="ko"><b>✗ Esta la repetirás</b></p>';
+setTimeout(()=>{if(alive()){qz.i++;showQ()}},ok?700:1100)};
+$('#chk').onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};
+$('#mic').onclick=()=>{if(done)return;if(on){stopListen();return}on=true;lab('⏹ Parar');$('#fb').innerHTML='<p class="mut">Habla ahora (mejor la frase completa, p. ej. «nous allons»). Revisa el texto y pulsa Responder.</p>';
+listen(t=>{on=false;lab('🎤 Decirlo');if(!done)$('#fb').innerHTML=t?'<p class="mut">Revisa el texto (puedes corregirlo) y pulsa Responder.</p>'+chips():'<p class="ko">No he oído nada. Inténtalo otra vez.</p>'},m=>{on=false;lab('🎤 Decirlo');if(!done&&alive())$('#fb').innerHTML=`<p class="ko">${m}</p>`})};
+const pb=$('#pxb');if(pb)pb.onclick=()=>{$('#px').innerHTML='<p class="mut">En castellano: <b>'+esc(q.px)+'</b></p>'};
+inp.focus()}
+/* ===== respuestas válidas ampliadas + voz v6 ===== */
+const HOM={est:'es',as:'a',on:'ont',son:'sont',va:'vas',mont:'mon',mas:'ma',suit:'suis'};
+const hk=s=>norm(s).split(' ').map(w=>HOM[w]||w).join(' ');
+function fixTxt(t){t=t.replace(/\b\d+\b/g,n=>+n<=50?num(+n):n);const W=window.WANT;if(!W)return t;return W.find(a=>norm(a)===norm(t))||W.find(a=>hk(a)===hk(t))||W.find(a=>near(a,t))||t}
+function altsOf(x){const o=[];for(let k=0;k<x.length;k++){const t=fixTxt(x[k].transcript.trim());if(t&&!o.includes(t))o.push(t)}return o.slice(0,4)}
+function pickAlt(t){const i=$('#ans');if(i){i.value=t;ENG.vt=t}}
+function chips(){const cur=($('#ans')||{}).value||'';const a=(ENG.alts||[]).filter(x=>norm(x)!==norm(cur));return a.length?`<p class="mut">¿Querías decir…? ${a.map(x=>`<button class="w" data-t="${esc(x).replace(/"/g,'&quot;')}" onclick="pickAlt(this.dataset.t)">${esc(x)}</button>`).join('')}</p>`:''}
+C.verbes.g=()=>Object.entries(CJ).flatMap(([v,t])=>t.map(([p,f])=>({c:'verbes',p:`${v.toUpperCase()}: <b>${p}</b> …`,a:[f,...p.split('/').map(x=>x.endsWith('’')?x+f:x+' '+f)]})));
+C.pos.g=()=>POS.map(([n,a,h])=>({c:'pos',p:im(n)+`<b>…</b> ${n}`,a:[a,a+' '+n],h}));
+C.nat.g=()=>NAT.map(([m,f])=>({c:'nat',p:`Femenino de <b>${m}</b>`,a:[f,'elle est '+f]}));
+C.pro.g=()=>PRO.map(([m,f])=>({c:'pro',p:`Femenino de <b>${m}</b>`,a:[f,'elle est '+f,'une '+f]}));
+C.voc.g=()=>VOC.map(([es,fr])=>({c:'voc',p:im(fr)+`¿Cómo se dice <b>${es}</b>?`,a:[fr,fr.replace(/^(un|une|des|l’|mon|ma|mes)\s?/,'')]}));
+/* ===== MICRÓFONO v6: errores visibles, vigilante y diagnóstico ===== */
+const LOG=[];
+function lg(s){LOG.push(new Date().toLocaleTimeString()+' '+s);if(LOG.length>25)LOG.shift();const l=$('#miclog');if(l)l.textContent=LOG.join('\n')}
+const ERR={'network':'El servicio de voz del navegador no responde (error de red). Comprueba tu conexión.','not-allowed':'Permiso de micrófono denegado: actívalo en los ajustes del sitio (🔒).','service-not-allowed':'El navegador no permite el reconocimiento de voz en esta página.','audio-capture':'No se detecta ningún micrófono.','language-not-supported':'Tu navegador no tiene el francés para reconocimiento de voz.'};
+function micUI(){let e=$('#micst');if(!e){e=document.createElement('div');e.id='micst';e.className='mut';e.style.cssText='margin:-6px 0 10px';const n=$('#nav');n.parentNode.insertBefore(e,n.nextSibling)}
+e.innerHTML=(ENG.perm==='denied'?'🔴 Micrófono bloqueado en el navegador (🔒)':ENG.on?'🟢 Micrófono activo':'⚪ Micrófono en reposo (se activa al pulsar 🎤)')+(ENG.err&&!ENG.on?' · último aviso: '+ENG.err:'')+(ENG.on?' <button class="ghost" id="moff">Apagar</button>':'');const b=$('#moff');if(b)b.onclick=engStop}
+function engStartV6(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return;const r=new R();r.lang='fr-FR';r.continuous=true;r.interimResults=true;r.maxAlternatives=5;ENG.audio=0;
+r.onstart=()=>lg('motor iniciado');r.onaudiostart=()=>{ENG.audio=Date.now();lg('micrófono recibiendo audio')};r.onspeechstart=()=>lg('voz detectada');
+r.onresult=e=>{ENG.n=e.results.length;const tg=ENG.tg;if(!tg)return;const s=[];for(let i=tg.base;i<e.results.length;i++){const x=e.results[i];s.push(x.isFinal?pick(x):x[0].transcript.trim())}
+const txt=fixTxt(joinSegs(s));if(!txt)return;tg.last=txt;ENG.vt=txt;ENG.alts=altsOf(e.results[e.results.length-1]);tg.live(txt);arm(tg,10000);clearTimeout(tg.st);const f=e.results[e.results.length-1].isFinal;if(f)lg('oído: '+txt);tg.st=setTimeout(()=>{if(ENG.tg===tg)fin(tg,tg.last)},f?500:1800)};
+r.onerror=e=>{ENG.err=e.error;lg('error: '+e.error);if(e.error==='no-speech'||e.error==='aborted')return;if(e.error==='not-allowed'||e.error==='service-not-allowed'){ENG.on=false;ENG.rec=null;ENG.perm='denied'}micUI();fail(ERR[e.error]||('Error de voz ('+e.error+')'))};
+r.onend=()=>{ENG.n=0;if(ENG.tg)ENG.tg.base=0;lg('motor terminado');if(ENG.rec!==r||!ENG.on)return;if(ENG.tg||Date.now()-ENG.use<60000)setTimeout(()=>{try{r.start()}catch(x){lg('no se pudo reiniciar: '+x.message);ENG.on=false;ENG.rec=null;micUI()}},200);else{ENG.on=false;ENG.rec=null;micUI();lg('motor en reposo (sin uso)')}};
+ENG.rec=r;ENG.on=true;ENG.use=Date.now();try{r.start()}catch(x){lg('start falló: '+x.message);ENG.on=false;ENG.rec=null;fail('No se pudo activar el micrófono.')}micUI()}
+function listenV6(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg){clearTimeout(ENG.tg.wd);fail('Cancelado.')}
+ENG.use=Date.now();ENG.err='';
+const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),base:ENG.n||0,last:''};ENG.tg=tg;arm(tg,ENG.on?10000:20000);
+if(!ENG.on)engStart();
+tg.wd=setTimeout(()=>{if(ENG.tg===tg&&ENG.on&&!ENG.audio){lg('sin audio tras 6 s: reinicio el motor');const t=ENG.tg;engStop();ENG.tg=t;engStart()}},6000)}
+async function permState(){try{return (await navigator.permissions.query({name:'microphone'})).state}catch(e){return 'desconocido'}}
+function micTabV6(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+$('#view').innerHTML=`<div class="card"><h3>Diagnóstico del micrófono</h3><table class="tbl"><tr><td>Reconocimiento de voz</td><td>${R?'✓ disponible':'✗ no disponible en este navegador'}</td></tr><tr><td>Conexión segura</td><td>${window.isSecureContext?'✓':'✗'}</td></tr><tr><td>Permiso</td><td id="mp">…</td></tr><tr><td>Motor</td><td id="me"></td></tr><tr><td>Último error</td><td id="mer"></td></tr></table><div class="row"><button class="pri" id="mt">🎤 Probar micrófono</button><button id="mr">Reiniciar motor</button></div><p id="mres" class="mut">Pulsa «Probar» y di «bonjour».</p><pre id="miclog" class="mut" style="white-space:pre-wrap"></pre></div>`;
+permState().then(s=>{ENG.perm=s;const e=$('#mp');if(e)e.textContent=s==='granted'?'✓ concedido':s==='denied'?'✗ denegado (actívalo en 🔒)':s==='prompt'?'pendiente (te lo pedirá)':s;micUI()});
+const upd=()=>{const e=$('#me');if(e)e.textContent=ENG.on?'🟢 activo':'⚪ en reposo';const x=$('#mer');if(x)x.textContent=ENG.err||'ninguno'};upd();
+$('#mt').onclick=()=>{$('#mres').textContent='Escuchando… di «bonjour»';listen(t=>{$('#mres').textContent='✓ He oído: «'+t+'»';upd()},m=>{$('#mres').textContent='✗ '+m;upd()},t=>{$('#mres').textContent='… '+t})};
+$('#mr').onclick=()=>{engStop();lg('reinicio manual');$('#mres').textContent='Motor reiniciado. Pulsa Probar.';upd()};
+const l=$('#miclog');if(l)l.textContent=LOG.join('\n')}
+setInterval(()=>{if(ENG.tg&&!ENG.on&&!ENG.rec&&ENG.perm!=='denied'){lg('vigilante: reactivo el motor');engStart()}micUI()},3000);
+permState().then(s=>{ENG.perm=s;micUI()});
+/* ===== MICRÓFONO v7: patrón estándar de Google/MDN (una instancia, start() en el clic, sin modo continuo) ===== */
+function engStart(){}
+function engStopStd(){const t=ENG.tg;ENG.tg=null;try{ENG.rec&&ENG.on&&ENG.rec.abort()}catch(e){}ENG.on=false;micUI();if(t)t.err('Micrófono detenido.')}
+function stopListenStd(){try{ENG.rec&&ENG.on&&ENG.rec.stop()}catch(e){}}
+function getRec(){if(ENG.rec)return ENG.rec;const R=window.SpeechRecognition||window.webkitSpeechRecognition;const r=new R();r.lang='fr-FR';r.continuous=false;r.interimResults=true;r.maxAlternatives=5;
+r.onstart=()=>{if(ENG.rec!==r)return;ENG.on=true;ENG.audio=0;lg('escuchando');micUI()};
+r.onaudiostart=()=>{ENG.audio=Date.now();lg('micrófono recibiendo audio')};r.onspeechstart=()=>lg('voz detectada');
+r.onresult=e=>{if(ENG.rec!==r)return;const tg=ENG.tg;if(!tg)return;const f=[],it=[];for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)f.push(pick(x));else it.push(x[0].transcript.trim())}
+const txt=fixTxt(joinSegs(f.concat(it)));if(!txt)return;tg.last=txt;ENG.vt=txt;ENG.alts=altsOf(e.results[e.results.length-1]);tg.live(txt);if(!it.length)lg('oído: '+txt)};
+r.onerror=e=>{if(ENG.rec!==r)return;ENG.err=e.error;ENG.lerr=e.error;lg('error: '+e.error);if(e.error==='not-allowed'||e.error==='service-not-allowed')ENG.perm='denied'};
+r.onend=()=>{if(ENG.rec!==r)return;ENG.on=false;lg('terminado');const tg=ENG.tg,le=ENG.lerr;ENG.tg=null;ENG.lerr='';micUI();if(!tg)return;
+if(le&&le!=='no-speech'&&le!=='aborted')tg.err(ERR[le]||('Error de voz ('+le+')'));else if(tg.last)tg.cb(tg.last);else tg.err('No te he oído. Pulsa el micro y habla enseguida.')};
+ENG.rec=r;return r}
+function listenStd(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg){const p=ENG.tg;ENG.tg=null;try{p.err('Cancelado.')}catch(e){}}
+const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),last:''};ENG.tg=tg;ENG.lerr='';ENG.err='';
+let r=getRec();try{r.start()}catch(x){lg('start: '+x.message);const old=r;ENG.rec=null;ENG.on=false;try{old.abort()}catch(_){}r=getRec();try{r.start()}catch(y){ENG.tg=null;err('No se pudo activar el micrófono ('+y.message+').')}}}
+/* ===== MICRÓFONO v8: modo continuo (un solo permiso) o normal, con límites anti-bucle ===== */
+let MODE='cont';try{MODE=localStorage.getItem('fr-mode')||'cont'}catch(e){}
+const CT={rec:null,on:false,n:0,fails:0};
+const lev=(a,b)=>{const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]};
+const phon=s=>norm(s).replace(/\s/g,'').replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/ai|ei/g,'e').replace(/ph/g,'f').replace(/qu/g,'k').replace(/h/g,'').replace(/(.)\1/g,'$1').replace(/[sxtz]+$/,'');
+const near=(a,t)=>{const p=phon(a),q=phon(t);return p.length>=4&&lev(p,q)<=1};
+function finish(tg){if(ENG.tg!==tg)return;clearTimeout(tg.st);clearTimeout(tg.to);ENG.tg=null;tg.cb(tg.last||'')}
+function contRec(){if(CT.rec)return CT.rec;const R=window.SpeechRecognition||window.webkitSpeechRecognition;const r=new R();r.lang='fr-FR';r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
+r.onstart=()=>{if(CT.rec!==r)return;CT.on=true;ENG.on=true;lg('motor continuo iniciado · idioma '+r.lang);micUI()};
+r.onaudiostart=()=>lg('micrófono recibiendo audio');r.onspeechstart=()=>lg('voz detectada');
+r.onresult=e=>{if(CT.rec!==r)return;CT.n=e.results.length;CT.fails=0;const tg=ENG.tg;if(!tg)return;clearTimeout(tg.to);const s=[];for(let i=tg.base;i<e.results.length;i++){const x=e.results[i];s.push(x.isFinal?pick(x):x[0].transcript.trim())}
+const txt=fixTxt(joinSegs(s));if(!txt)return;tg.last=txt;ENG.vt=txt;ENG.alts=altsOf(e.results[e.results.length-1]);tg.live(txt);clearTimeout(tg.st);const f=e.results[e.results.length-1].isFinal;if(f)lg('oído: '+txt);tg.st=setTimeout(()=>finish(tg),f?500:1800)};
+r.onerror=e=>{if(CT.rec!==r)return;ENG.err=e.error;lg('error: '+e.error);if(e.error==='no-speech'||e.error==='aborted')return;CT.fails=9;if(e.error==='not-allowed'||e.error==='service-not-allowed')ENG.perm='denied';const tg=ENG.tg;ENG.tg=null;if(tg){clearTimeout(tg.st);clearTimeout(tg.to);tg.err((ERR[e.error]||('Error de voz ('+e.error+')'))+' Si persiste, prueba el modo normal en la pestaña 🔧 Micro.')}};
+r.onend=()=>{if(CT.rec!==r)return;CT.on=false;ENG.on=false;CT.n=0;if(ENG.tg)ENG.tg.base=0;lg('motor continuo terminado');micUI();
+if((ENG.tg||Date.now()-ENG.use<45000)&&CT.fails<2&&MODE==='cont'){CT.fails++;setTimeout(()=>{if(CT.rec!==r||CT.on)return;try{r.start()}catch(x){lg('reinicio falló: '+x.message)}},250)}else{CT.rec=null;lg('motor en reposo')}};
+CT.rec=r;return r}
+function listenCont(cb,err,live){try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg){const p=ENG.tg;clearTimeout(p.st);clearTimeout(p.to);ENG.tg=null;try{p.err('Cancelado.')}catch(e){}}
+ENG.use=Date.now();ENG.err='';CT.fails=0;
+const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),base:CT.n||0,last:''};ENG.tg=tg;
+tg.to=setTimeout(()=>{if(ENG.tg===tg){ENG.tg=null;err('No te he oído. Pulsa el micro y habla enseguida.')}},CT.on?10000:20000);
+const r=contRec();if(!CT.on){try{r.start()}catch(x){lg('start: '+x.message);if(!/already/i.test(x.message)){CT.rec=null;ENG.tg=null;clearTimeout(tg.to);err('No se pudo activar el micrófono ('+x.message+').')}}}}
+function listen(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}if(MODE==='cont')listenCont(cb,err,live);else listenStd(cb,err,live)}
+function stopListen(){if(MODE==='cont'){const t=ENG.tg;if(t)finish(t)}else stopListenStd()}
+function engStop(){const t=ENG.tg;ENG.tg=null;if(t){clearTimeout(t.st);clearTimeout(t.to)}const c=CT.rec;CT.rec=null;CT.on=false;try{c&&c.abort()}catch(e){}try{ENG.rec&&ENG.on&&ENG.rec.abort()}catch(e){}ENG.on=false;micUI();if(t)t.err('Micrófono detenido.')}
+function setMode(m){MODE=m;try{localStorage.setItem('fr-mode',m)}catch(e){}engStop();lg('modo: '+m);micTab()}
+function micTabV8(){micTabV6();const v=$('#view');if(v.insertAdjacentHTML)v.insertAdjacentHTML('afterbegin',`<div class="card"><h3>Modo de micrófono</h3><p class="mut"><b>Continuo</b>: pide permiso una sola vez y no lo repite. <b>Normal</b>: más simple, pero el navegador puede pedir permiso en cada pulsación.</p><div class="row"><button id="m1" class="${MODE==='cont'?'pri':''}">Continuo</button><button id="m2" class="${MODE==='cont'?'':'pri'}">Normal</button></div><p class="mut">Si te transcribe palabras de otro idioma: en iPhone añade Francés en Ajustes → General → Teclado → Teclados, y activa el dictado; en Android instala el idioma francés en el teclado de Google.</p></div>`);const a=$('#m1'),b=$('#m2');if(a)a.onclick=()=>setMode('cont');if(b)b.onclick=()=>setMode('std')}
+/* ===== L14: pronombres tónicos, verbos en -ER, países y preposiciones, gustos y hábitos, negación ===== */
+PH.push(['Moi, je suis français.','Yo soy francés.'],['Nous, nous sommes suisses.','Nosotros somos suizos.'],['Vous travaillez dans quel secteur ?','¿En qué sector trabaja usted?'],['Je suis dans la communication.','Trabajo en comunicación.'],['J’habite en France.','Vivo en Francia.'],['Je travaille au Portugal.','Trabajo en Portugal.'],['Je vais aux États-Unis.','Voy a Estados Unidos.'],['J’adore les voyages.','Me encantan los viajes.'],['Je n’aime pas les plateaux-repas.','No me gustan las bandejas de comida.'],['Je voyage souvent en avion.','Viajo a menudo en avión.'],['Nous allons rarement à l’étranger.','Rara vez vamos al extranjero.'],['Je suis divorcé et j’ai deux garçons.','Estoy divorciado y tengo dos hijos.']);
+DL.splice(DL.length-1,0,['Vous travaillez dans quel secteur ?',/(je travaille|je suis) /,'Je travaille dans la communication.'],['Vous habitez où ?',/j'habite (en|au|aux|a) /,'J’habite en Espagne, à Barcelone.'],['Vous aimez voyager en avion ?',/(j'aime|j'adore|je deteste|je n'aime|je prefere)/,'J’adore voyager en avion.'],['Vous voyagez souvent ?',/(toujours|souvent|parfois|quelquefois|rarement|jamais)/,'Je voyage rarement.']);
+VOC.push(['comunicación (sector)','la communication'],['comercio','le commerce'],['enseñanza','l’enseignement'],['finanzas','la finance'],['hostelería','l’hôtellerie'],['informática','l’informatique'],['turismo','le tourisme'],['transportes','les transports'],['industria','l’industrie'],['seguros','les assurances'],['consultoría','le conseil'],['restauración','la restauration'],['sector de actividad','secteur d’activité'],['¿en qué trabaja usted?','vous travaillez dans quoi']);
+const TON=[['Lui',', il adore le jazz.'],['Vous',', vous aimez la musique classique.'],['Toi',', tu détestes la salsa.'],['Elles',', elles apprécient le rock.'],['Elle',', elle n’aime pas le disco.'],['Moi',', je préfère le reggae.'],['Eux',', ils aiment beaucoup le zouk.'],['Nous',', nous aimons toutes les musiques.']];
+C.ton={l:'Pronoms toniques',g:()=>TON.map(([a,s])=>({c:'ton',p:`<b>…</b>${s}`,a:[a.toLowerCase(),a+s.replace(/\.$/,'')]}))};
+const VER=['travailler','écouter','parler','téléphoner','voyager','étudier','rencontrer','proposer','consulter','taper','poser','expliquer'];
+function conjER(v,i){const s=v.slice(0,-2),vow=/^[aeiouyéèh]/i.test(v);let f=s+['e','es','e','ons','ez','ent'][i];if(i===3&&/g$/.test(s))f=s+'e'+'ons';return [f,[vow?'j’':'je','tu','il/elle','nous','vous','ils/elles'][i]]}
+C.er={l:'Verbos en -ER',g:()=>shuf(VER).slice(0,5).flatMap(v=>[0,1,2,3,4,5].map(i=>{const [f,pr]=conjER(v,i);return {c:'er',p:`${v.toUpperCase()}: <b>${pr}</b> …`,a:[f,...pr.split('/').map(x=>x.endsWith('’')?x+f:x+' '+f)]}}))};
+const PAYS=[['Allemagne','l’'],['Autriche','l’'],['Belgique','la'],['Danemark','le'],['Espagne','l’'],['Estonie','l’'],['Finlande','la'],['France','la'],['Grèce','la'],['Hongrie','la'],['Italie','l’'],['Luxembourg','le'],['Norvège','la'],['Pologne','la'],['Portugal','le'],['Royaume-Uni','le'],['Suède','la'],['Suisse','la'],['République tchèque','la'],['Pays-Bas','les'],['Canada','le'],['Japon','le'],['Chine','la'],['États-Unis','les'],['Brésil','le'],['Argentine','l’']];
+C.pays={l:'Países (le / la / l’ / les)',g:()=>PAYS.map(([n,a])=>({c:'pays',p:`<b>…</b> ${n}`,a:[a,a.endsWith('’')?a+n:a+' '+n]}))};
+const PREP=[['Je travaille … Paris','à'],['J’habite … France','en'],['Je suis … Japon','au'],['Je vais … États-Unis','aux'],['Je suis … Brésil','au'],['J’habite … Italie','en'],['Je voyage … Argentine','en'],['Il habite … Danemark','au'],['Elle habite … Allemagne','en'],['Je travaille … Portugal','au'],['Nous habitons … Pays-Bas','aux'],['Elle est … New York','à'],['Il travaille … Québec','à'],['Vous habitez … Suisse','en'],['Je vais … Espagne','en'],['Je suis … Canada','au']];
+C.prep={l:'En · À · Au · Aux',g:()=>PREP.map(([s,a])=>({c:'prep',p:s.replace('…','<b>…</b>'),a:[a,s.replace('…',a)]}))};
+const NEG=[['J’aime l’avion.','Je n’aime pas l’avion.'],['Nous mangeons.','Nous ne mangeons pas.'],['Je regarde les films.','Je ne regarde pas les films.'],['Il travaille à Lisbonne.','Il ne travaille pas à Lisbonne.'],['Vous habitez à Paris.','Vous n’habitez pas à Paris.'],['Tu aimes le jazz.','Tu n’aimes pas le jazz.'],['Elles parlent anglais.','Elles ne parlent pas anglais.'],['Nous voyageons en avion.','Nous ne voyageons pas en avion.'],['J’écoute la radio.','Je n’écoute pas la radio.'],['Elle étudie le français.','Elle n’étudie pas le français.']];
+C.neg={l:'Forma negativa',g:()=>NEG.map(([s,a])=>({c:'neg',p:`Forma negativa de: <b>${s}</b>`,a:[a]}))};
+const HAB=[['siempre','toujours'],['a menudo','souvent'],['a veces','parfois'],['a veces (otra forma)','quelquefois'],['raramente','rarement'],['nunca','jamais','ne jamais'],['adorar','adorer'],['preferir','préférer'],['detestar','détester'],['apreciar','apprécier'],['no me gusta','je n’aime pas'],['me gusta (bastante)','j’aime bien'],['me encanta','j’adore']];
+C.hab={l:'Gustos y frecuencia',g:()=>HAB.map(([es,...fr])=>({c:'hab',p:`¿Cómo se dice <b>${es}</b>?`,a:fr}))};
+function NEWTH(){const d=['M. Laperre : Excusez-moi, vous êtes portugaise ?','Mme Ferreira : Oui, mais j’habite en France. Et vous ?','M. Laperre : Moi, je suis français mais je travaille au Portugal.','Mme Ferreira : Vous travaillez dans quoi ?','M. Laperre : Je suis dans la communication. Je travaille à Lisbonne pour une entreprise française. Et vous, vous travaillez dans quel secteur ?','Mme Ferreira : Dans la vente sur Internet.','M. Laperre : Et vous habitez à Paris ?','Mme Ferreira : Oui. Avec mon mari et mes deux enfants.','M. Laperre : Quel âge ont vos enfants ?','Mme Ferreira : Mon fils a 12 ans et ma fille 8 ans.','M. Laperre : Eh bien moi, je suis divorcé et j’ai deux garçons de 6 ans et 4 ans.'];
+return [
+S('Les pronoms toniques','Pour renforcer le sujet et pour interroger.',ex(['J’habite en France. Et '+bl('vous')+' ?',bl('Moi')+', je suis français, mais je travaille au Portugal.'])+tb(['',''],[[bl('Moi')+', je suis français.',bl('Nous')+', nous sommes suisses.'],[bl('Toi')+', tu es chinois.',bl('Vous')+', vous êtes brésiliens.'],[bl('Lui')+', il est américain.',bl('Eux')+', ils sont japonais.'],[bl('Elle')+', elle est portugaise.',bl('Elles')+', elles sont russes.']])),
+S('La conjugaison des verbes en -ER','',tb(['','travailler','écouter','voyager'],[['je','travaill'+bl('e'),'j’écout'+bl('e'),'voyag'+bl('e')],['tu','travaill'+bl('es'),'écout'+bl('es'),'voyag'+bl('es')],['il / elle','travaill'+bl('e'),'écout'+bl('e'),'voyag'+bl('e')],['nous','travaill'+bl('ons'),'écout'+bl('ons'),'voyage'+bl('ons')],['vous','travaill'+bl('ez'),'écout'+bl('ez'),'voyag'+bl('ez')],['ils / elles','travaill'+bl('ent'),'écout'+bl('ent'),'voyag'+bl('ent')]])+'<p class="mut">Terminaisons : -e, -es, -e, -ons, -ez, -ent. Con je + vocal : j’écoute, j’étudie. Voyager → nous voyageons.</p>'),
+S('Pour demander / préciser la profession','',ex(['Quelle est votre profession ?','Vous travaillez '+bl('dans quoi')+' ?','Vous travaillez '+bl('dans quel secteur')+' ?','Je suis informaticien. · Je suis / Je travaille dans la communication.'])),
+S('Des secteurs d’activité','',ex(['l’aéronautique · l’agroalimentaire · les assurances · le commerce · la communication · le conseil · l’enseignement · l’environnement · la finance · l’hôtellerie · l’industrie · l’informatique · la restauration · le tourisme · les transports'])),
+S('Pour nommer un pays','',tb(['',' ',''],[['<b>La</b> France · <b>La</b> Chine · <b>La</b> Bolivie','<b>Le</b> Canada · <b>Le</b> Japon · <b>Le</b> Luxembourg','<b>L’</b>Allemagne · <b>L’</b>Italie · <b>L’</b>Indonésie'],['Femenino si el nombre termina en -e','Masculino si no termina en -e','Si empieza por vocal : l’']])+'<p>⚠ Excepciones : le Mexique, le Cambodge, le Mozambique. Plural : les États-Unis, les Pays-Bas.</p>'),
+S('Les prépositions EN, À (AU / AUX)','Pour indiquer un lieu de travail / de résidence (ville / pays).',tb(['Regla','Ejemplo'],[[bl('à')+' + ville','Je travaille '+bl('à')+' Paris.'],[bl('au')+' + pays masculin','Je suis '+bl('au')+' Brésil.'],[bl('en')+' + pays femenino (o que empieza por vocal)','J’habite '+bl('en')+' Italie. · Je voyage '+bl('en')+' Argentine.'],[bl('aux')+' + pays plural','Je vais '+bl('aux')+' États-Unis.']])+ex(['La Tour Eiffel est '+bl('à')+' Paris. Paris est '+bl('en')+' France.','New York est '+bl('aux')+' États-Unis. · Lisbonne est '+bl('au')+' Portugal. · Genève est '+bl('en')+' Suisse. · Amsterdam est '+bl('aux')+' Pays-Bas.'])),
+S('Expression des goûts et des habitudes','',tb(['Goûts','Habitudes'],[['😍😍 adorer','+++ toujours'],['😍 aimer (bien) / apprécier','++ souvent'],['⚖ préférer','+ parfois / quelquefois'],['🙁 ne pas aimer','− rarement'],['🙁🙁 détester','−− ne… jamais']])+ex(['J’'+bl('adore')+' les voyages. · J’'+bl('aime bien')+' l’avion.','Je '+bl('n’aime pas')+' les plateaux-repas. · Je '+bl('déteste')+' l’avion. · Je '+bl('préfère')+' le train.','Nous voyageons '+bl('toujours')+' en classe affaires. · Je voyage '+bl('souvent')+'. · J’écoute '+bl('quelquefois')+' de la musique. · Nous allons '+bl('rarement')+' à l’étranger.'])),
+S('La forme négative','',tb(['Affirmatif','Négatif'],[['J’aime l’avion.','Je '+bl('n’')+'aime '+bl('pas')+' l’avion.'],['Nous mangeons.','Nous '+bl('ne')+' mangeons '+bl('pas')+'.'],['Je regarde les films.','Je '+bl('ne')+' regarde '+bl('pas')+' les films.']])+'<p>⚠ Devant une voyelle ou un h : <b>ne → n’</b> (je n’aime pas). « Ne … jamais » = nunca.</p>')]}
+/* ===== TEMAS AGRUPADOS (teoría y ejercicios) ===== */
+const GR=[['🗣 Saludar, presentarse y comunicarse',[/TU ou VOUS/,/saluer/,/formules de politesse/,/informations personnelles/]],
+['⚙ Verbos',[/Le verbe/,/verbes en -ER/,/forme négative/]],
+['📐 Gramática',[/articles indéfinis/,/adjectifs possessifs/,/pronoms toniques/]],
+['👪 Familia y datos personales',[/liens de famille/,/situation de famille/]],
+['💼 Trabajo y profesiones',[/professions/,/préciser la profession/,/secteurs/,/fonctions/]],
+['🌍 Países, nacionalidades y lugares',[/nationalités/,/nommer un pays/,/EN, À/,/À, DANS, CHEZ/]],
+['🔢 Números, fechas y alfabeto',[/nombres/,/date/,/écrit/]],
+['❤ Gustos y hábitos',[/goûts/]],
+['🧳 Vocabulario: objetos',[/vocabulaire/,/valise/]]];
+let lsn=null;
+function learn2(){const secs=learnSecs();const bk=GR.map(()=>[]),rest=[];
+secs.forEach(s=>{const t=(s.match(/<h3 class="rt">(.*?)<\/h3>/)||[])[1]||'';for(let g=0;g<GR.length;g++){const r=GR[g][1].findIndex(x=>x.test(t));if(r>=0){bk[g].push([r,s]);return}}rest.push(s)});
+const L=[];GR.forEach((g,i)=>{if(bk[i].length)L.push([g[0],bk[i].sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join('')])});
+if(rest.length)L.push(['Otros',rest.join('')]);
+const v=$('#view');
+if(lsn===null||lsn>=L.length){lsn=null;
+v.innerHTML='<p class="mut">Elige un tema para abrir la lección.</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">'+L.map((x,i)=>`<button data-l="${i}" style="text-align:left;padding:16px 14px;font-size:16px;font-weight:700;border-radius:12px;min-height:84px">${x[0]}</button>`).join('')+'</div>';
+v.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{lsn=+b.dataset.l;learn2();scrollTo(0,0)});return}
+v.innerHTML=`<div class="row" style="justify-content:space-between;margin:6px 0"><button class="ghost" id="lb">← Volver</button>${lsn<L.length-1?`<button class="pri" id="ln">Siguiente lección →</button>`:''}</div><h2 style="margin:8px 0">${L[lsn][0]}</h2>${L[lsn][1]}<div class="row" style="justify-content:space-between;margin:12px 0"><button class="ghost" id="lb2">← Volver</button>${lsn<L.length-1?`<button class="pri" id="ln2">Siguiente lección →</button>`:''}</div>`;
+const back=()=>{lsn=null;learn2();scrollTo(0,0)},nx=()=>{lsn++;learn2();scrollTo(0,0)};
+$('#lb').onclick=back;$('#lb2').onclick=back;if($('#ln')){$('#ln').onclick=nx;$('#ln2').onclick=nx}}
+const vf=re=>VOC.filter(([es,fr])=>re.test(fr));
+const RF=/^(mon|ma) /,RO=/^(un|une|des|l’argent)/,RS=/communication|commerce|enseignement|finance|hôtellerie|informatique|tourisme|transports|industrie|assurances|conseil|restauration|secteur|vous travaillez/;
+const mkV=(c,l)=>l.map(([es,fr])=>({c,p:im(fr)+`¿Cómo se dice <b>${es}</b>?`,a:[fr,fr.replace(/^(un|une|des|l’|mon|ma|mes)\s?/,'')]}));
+C.vfam={l:'Familia',g:()=>mkV('vfam',vf(RF))};
+C.vobj={l:'Objetos (avión y maleta)',g:()=>mkV('vobj',vf(RO).filter(([es,fr])=>!RS.test(fr)))};
+C.vsec={l:'Sectores de actividad',g:()=>mkV('vsec',vf(RS))};
+C.vper={l:'Estado civil y datos',g:()=>mkV('vper',VOC.filter(([es,fr])=>!RF.test(fr)&&!RO.test(fr)&&!RS.test(fr)))};
+delete C.voc;
+const QG=[['⚙ Verbos',['verbes','er','neg']],['📐 Gramática',['pos','ton','tv']],['👪 Familia y datos',['vfam','vper']],['💼 Trabajo y profesiones',['pro','vsec']],['🌍 Países y lugares',['nat','pays','prep']],['🔢 Números',['nb']],['❤ Gustos y frecuencia',['hab']],['🧳 Objetos',['vobj']]];
+function quiz(){const v=$('#view');
+if(!qz){const acc=k=>P[k]?` <span class="mut">(${Math.round(100*P[k].ok/P[k].n)}% · ${P[k].n})</span>`:'';
+v.innerHTML='<p>Elige un tema (10 preguntas al azar):</p><div class="row"><button class="pri" data-c="mix">🎲 Mezcla de todo</button></div>'+QG.map(([t,ks])=>`<h3 style="margin:14px 0 4px">${t}</h3><div class="row">${ks.filter(k=>C[k]).map(k=>`<button data-c="${k}">${C[k].l}${acc(k)}</button>`).join('')}</div>`).join('')+'<p class="mut">Se acepta sin acentos. Puedes responder con el micro (🎤).</p>';
+v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?Object.values(C).flatMap(o=>o.g()):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}
+showQ()}
+/* ===== NÚMEROS: cuadrícula ordenada ===== */
+function numsHTML(){const cell=n=>{const w=num(n);return `<div class="nc" data-w="${w}" onclick="say(this.dataset.w)"><span class="n">${n}</span><span class="w">${w.replace(' et ',' <b class="b">et</b> ')}</span></div>`};
+const blk=(t,a,b)=>`<div class="ngt">${t}</div><div class="ng">${Array.from({length:b-a+1},(_,i)=>cell(a+i)).join('')}</div>`;
+return blk('1 – 10',1,10)+blk('11 – 20',11,20)+blk('21 – 29 · vingt…',21,29)+blk('30 – 39 · trente…',30,39)+blk('40 – 49 · quarante…',40,49)+blk('50 · cinquante',50,50)+'<p class="mut" style="margin-top:12px">⚠ 21, 31, 41 : <b>vingt <span class="b">et</span> un</b>, trente <span class="b">et</span> un… (con « et », sin guión). Del 22 al 29 se une con guión : vingt-deux, trente-trois…</p>'}
+
+/* ===== CONVERSAR v2: muchas conversaciones, con explicación de cada turno ===== */
+const T9=(q,es,how,re,ex,exes,v)=>({q,es,how,re:new RegExp(re),ex,exes,v:v?v.split(';').map(x=>x.split('=')):[]});
+const CONV=[
+{t:"Entrevista de presentación",tag:"t",d:"Saludar, nombre, nacionalidad, profesión, edad, familia y email.",turns:[
+T9("Bonjour, comment allez-vous ?","Hola, ¿cómo está usted?","Saluda y di que estás bien («Je vais bien, merci»). Para devolver la pregunta di «Et vous ?». Usamos «vous» porque es una persona que no conoces.","(je vais|ca va|bien|merci)","Je vais bien, merci. Et vous ?","Estoy bien, gracias. ¿Y usted?"),
+T9("Quel est votre nom ?","¿Cuál es su nombre?","Responde con «Je m'appelle + nombre» (me llamo). También vale «Mon nom est…».","(je m'appelle|mon nom|mon prenom|moi c'est)","Je m'appelle Marc Dupont.","Me llamo Marc Dupont."),
+T9("Quelle est votre nationalité ?","¿Cuál es su nacionalidad?","Usa «Je suis + nacionalidad». Recuerda el género: hombre «espagnol», mujer «espagnole».","(je suis [a-z]+|nationalite)","Je suis espagnol.","Soy español."),
+T9("Quelle est votre profession ?","¿Cuál es su profesión?","«Je suis + profesión», sin artículo (como en español): «Je suis étudiant(e)». Si trabajas en una empresa: «Je travaille chez…».","(je suis|je travaille) [a-z]+","Je suis étudiant.","Soy estudiante."),
+T9("Quel âge avez-vous ?","¿Qué edad tiene?","En francés la edad se dice con AVOIR (no con ser): «J'ai + número + ans». ¡Ojo, no se dice «je suis 19 ans»!","j'ai [a-z -]+ ans","J'ai dix-neuf ans.","Tengo diecinueve años."),
+T9("Vous êtes de quelle ville ?","¿De qué ciudad es usted?","«Je suis de + ciudad» para tu origen, o «J'habite à + ciudad» para dónde vives.","(je suis d|j'habite|je viens)","Je suis de Barcelone.","Soy de Barcelona."),
+T9("Vous avez des frères et sœurs ?","¿Tiene hermanos y hermanas?","«J'ai un frère / une sœur». Si no tienes: «Je suis enfant unique» o «Je n'ai pas de frères et sœurs».","(j'ai|je n'ai|enfant unique|oui|non)","J'ai un frère et une sœur.","Tengo un hermano y una hermana."),
+T9("Comment ça s'écrit, votre nom ?","¿Cómo se escribe su nombre?","Deletrea tu nombre letra a letra en francés (a, bé, cé, dé, e, effe, gé…). Con la voz puede costar: puedes escribirlo.","[a-z]","M, A, R, C.","M, A, R, C."),
+T9("Vous avez une adresse électronique ?","¿Tiene una dirección de correo electrónico?","«Oui, c'est…» y dices el correo: @ es «arobase» y el punto es «point». Ejemplo: marc arobase gmail point com.","(oui|non|c'est|arobase)","Oui, c'est marc arobase gmail point com.","Sí, es marc arroba gmail punto com."),
+T9("Merci, au revoir !","¡Gracias, adiós!","Despídete: «Au revoir» o «À bientôt» (hasta pronto). Puedes añadir «Merci».","(au revoir|a bientot|merci|bonne)","Au revoir, à bientôt !","Adiós, ¡hasta pronto!")
+]},
+{t:"En el avión: gustos y hábitos",tag:"t",d:"Decir qué te gusta y con qué frecuencia lo haces.",turns:[
+T9("Vous aimez voyager en avion ?","¿Le gusta viajar en avión?","Expresa tu gusto con: j'adore (me encanta), j'aime (me gusta), je n'aime pas, je déteste. Después va el infinitivo: «voyager en avion».","(j'adore|j'aime|je n'aime|je deteste|je prefere|oui|non)","J'adore voyager en avion.","Me encanta viajar en avión."),
+T9("Vous voyagez souvent ?","¿Viaja a menudo?","Contesta con un adverbio de frecuencia: toujours (siempre), souvent (a menudo), parfois (a veces), rarement (rara vez), jamais (nunca).","(toujours|souvent|parfois|quelquefois|rarement|jamais)","Je voyage rarement.","Viajo rara vez.","toujours=siempre;souvent=a menudo;parfois=a veces;rarement=rara vez;ne… jamais=nunca"),
+T9("Qu'est-ce que vous aimez faire dans l'avion ?","¿Qué le gusta hacer en el avión?","«J'aime + infinitivo»: regarder des films, écouter de la musique, dormir, lire…","(j'aime|j'adore|je prefere|je regarde|j'ecoute|je dors|je lis|je mange)","J'aime regarder des films.","Me gusta ver películas.","regarder des films=ver películas;écouter de la musique=escuchar música;dormir=dormir;lire=leer"),
+T9("Vous mangez dans l'avion ?","¿Come usted en el avión?","Para decir que NO se usa «ne… pas» alrededor del verbo: «Je ne mange pas». Delante de vocal: «n'»: «Je n'aime pas».","(oui|non|je mange|je ne mange|je n'ai)","Non, je ne mange pas dans l'avion.","No, no como en el avión."),
+T9("Vous préférez l'avion ou le train ?","¿Prefiere el avión o el tren?","«Je préfère + lo que eliges»: «Je préfère le train».","(je prefere|j'aime mieux|le train|l'avion)","Je préfère le train.","Prefiero el tren."),
+T9("Vous écoutez de la musique ?","¿Escucha música?","«Oui, j'écoute…» o «Non, je n'écoute pas…». Puedes añadir la frecuencia: souvent, parfois…","(oui|non|j'ecoute|je n'ecoute)","Oui, j'écoute souvent de la musique.","Sí, escucho música a menudo."),
+T9("Vous avez peur en avion ?","¿Tiene miedo en el avión?","«Avoir peur» = tener miedo (se usa AVOIR). «J'ai peur» / «Je n'ai pas peur».","(j'ai peur|je n'ai pas peur|oui|non)","Non, je n'ai pas peur en avion.","No, no tengo miedo en el avión.","avoir peur=tener miedo")
+]},
+{t:"Presentar a un colega",tag:"t",d:"Que te presenten, hablar del trabajo y despedirte.",turns:[
+T9("Je vous présente Claire, ma collègue.","Le presento a Claire, mi compañera.","Cuando te presentan a alguien se responde «Enchanté» (si eres hombre) o «Enchantée» (si eres mujer).","(enchante|bonjour|ravi)","Enchanté, Claire.","Encantado, Claire."),
+T9("Bonjour ! Vous travaillez dans quelle entreprise ?","¡Hola! ¿En qué empresa trabaja?","«Je travaille chez + empresa». Si eres estudiante: «Je suis étudiant(e)».","(je travaille|je suis|chez|j'etudie)","Je suis étudiant à Barcelone.","Soy estudiante en Barcelona."),
+T9("Et vous êtes dans quel secteur ?","¿Y en qué sector está usted?","«Je suis dans + sector»: la communication, le commerce, l'informatique… (Si estudias: «Je suis étudiant»).","(je suis|je travaille|dans|j'etudie)","Je suis dans la communication.","Estoy en el sector de la comunicación.","la communication=la comunicación;le commerce=el comercio;l'informatique=la informática"),
+T9("Vous parlez anglais ?","¿Habla inglés?","«Oui, je parle…» y los idiomas: espagnol, anglais, catalan, français. Si no: «Non, je ne parle pas…».","(oui|non|je parle|je ne parle)","Oui, je parle espagnol et anglais.","Sí, hablo español e inglés.","parler=hablar;l'espagnol=el español;l'anglais=el inglés"),
+T9("Vous habitez à Paris ?","¿Vive usted en París?","Ciudad → «à»; país femenino → «en»; masculino → «au». Ejemplo: «J'habite à Barcelone, en Espagne».","(non|oui|j'habite)","Non, j'habite à Barcelone, en Espagne.","No, vivo en Barcelona, en España."),
+T9("Enchantée. À bientôt !","Encantada. ¡Hasta pronto!","Despídete: «Au revoir» o «À bientôt».","(au revoir|a bientot|merci|enchante|bonne)","Au revoir, à bientôt !","Adiós, ¡hasta pronto!")
+]},
+{t:"Mi familia",tag:"t",d:"Estado civil, hijos, padres y abuelos.",turns:[
+T9("Vous êtes marié(e) ?","¿Está casado/a?","«Je suis célibataire / marié(e) / divorcé(e) / veuf (veuve)». Es la «situation de famille».","(je suis|oui|non|celibataire|marie)","Non, je suis célibataire.","No, soy soltero.","célibataire=soltero/a;marié(e)=casado/a;divorcé(e)=divorciado/a"),
+T9("Vous avez des enfants ?","¿Tiene hijos?","«J'ai un fils / une fille / deux enfants». Si no: «Je n'ai pas d'enfants».","(j'ai|je n'ai|oui|non)","Non, je n'ai pas d'enfants.","No, no tengo hijos."),
+T9("Comment s'appelle votre père ?","¿Cómo se llama su padre?","«Mon père s'appelle + nombre». Usa «mon» con masculino (père) y «ma» con femenino (mère).","(mon pere|s'appelle|il s'appelle)","Mon père s'appelle Pablo.","Mi padre se llama Pablo."),
+T9("Quelle est sa profession ?","¿Cuál es su profesión?","«Il est + profesión» (él) o «Elle est…» (ella), sin artículo: «Il est ingénieur».","(il est|elle est|il travaille|mon pere est)","Il est ingénieur.","Es ingeniero."),
+T9("Et votre mère, quel âge a-t-elle ?","¿Y su madre, qué edad tiene?","La edad con AVOIR: «Elle a + número + ans» (ella).","(elle a|ma mere a|ans)","Elle a cinquante ans.","Tiene cincuenta años."),
+T9("Vous avez des grands-parents ?","¿Tiene abuelos?","«Oui, j'ai mes grands-parents / un grand-père / une grand-mère». Si no: «Non, je n'ai pas…».","(oui|non|j'ai|mes grands|je n'ai)","Oui, j'ai ma grand-mère.","Sí, tengo a mi abuela.","le grand-père=el abuelo;la grand-mère=la abuela;les grands-parents=los abuelos")
+]},
+{t:"Países y ciudades",tag:"t",d:"En, à, au, aux: dónde vives y dónde están las cosas.",turns:[
+T9("Vous habitez où ?","¿Dónde vive usted?","«J'habite à + ciudad» (à Barcelone) o «J'habite en + país femenino» (en Espagne).","j'habite (a|en|au|aux)","J'habite à Barcelone.","Vivo en Barcelona."),
+T9("Barcelone est en France, non ?","Barcelona está en Francia, ¿no?","Corrígele: «Non, Barcelone est en Espagne». España es femenino (la Espagne), por eso «en».","(non|oui|est en|espagne)","Non, Barcelone est en Espagne.","No, Barcelona está en España."),
+T9("Où est la tour Eiffel ?","¿Dónde está la torre Eiffel?","Ciudad → «à»: «Elle est à Paris». Y puedes añadir «en France».","(a paris|paris|elle est|est a)","Elle est à Paris, en France.","Está en París, en Francia."),
+T9("Où est Amsterdam ?","¿Dónde está Ámsterdam?","Los Países Bajos son plural (les Pays-Bas), así que se usa «aux»: «Amsterdam est aux Pays-Bas».","(pays-bas|pays bas|aux)","Amsterdam est aux Pays-Bas.","Ámsterdam está en los Países Bajos."),
+T9("Vous voyagez au Japon ou en Italie ?","¿Viaja a Japón o a Italia?","Japón es masculino → «au Japon»; Italia es femenino → «en Italie».","(au japon|en italie|japon|italie|je voyage)","Je voyage en Italie.","Viajo a Italia."),
+T9("Vous allez aux États-Unis cet été ?","¿Va a Estados Unidos este verano?","«Oui, je vais aux États-Unis» (plural → «aux») o «Non, je ne vais pas…». Aquí «aller» = ir.","(oui|non|je vais|aux etats|etats-unis)","Oui, je vais aux États-Unis.","Sí, voy a Estados Unidos.","cet été=este verano")
+]},
+{t:"En el café",tag:"x",d:"Pedir una bebida y algo de comer, y pagar.",turns:[
+T9("Bonjour ! Vous désirez ?","¡Buenos días! ¿Qué desea?","El camarero te pregunta qué quieres. Pide con «Je voudrais + lo que quieras» (quisiera) o «Un café, s'il vous plaît». Termina siempre con «s'il vous plaît».","(je voudrais|je prends|un |une |s'il vous plait|de l'eau)","Je voudrais un café, s'il vous plaît.","Quisiera un café, por favor.","je voudrais=quisiera;s'il vous plaît=por favor;un café=un café;un thé=un té;un jus d'orange=un zumo de naranja;une eau=un agua"),
+T9("Avec du sucre ou avec du lait ?","¿Con azúcar o con leche?","Elige con «avec» (con) o «sans» (sin): «Avec du lait», «Sans sucre». Si no quieres nada: «Non, merci».","(sucre|lait|sans|avec|merci)","Avec du lait, s'il vous plaît.","Con leche, por favor.","avec=con;sans=sin;du sucre=azúcar;du lait=leche"),
+T9("Vous mangez quelque chose ?","¿Va a comer algo?","Di sí con lo que quieres («Oui, un croissant») o no con «Non, merci».","(oui|non|croissant|sandwich|gateau|merci|je voudrais|je prends)","Oui, un croissant, s'il vous plaît.","Sí, un cruasán, por favor.","un croissant=un cruasán;un gâteau=un pastel;un sandwich=un sándwich;quelque chose=algo"),
+T9("Vous payez par carte ou en espèces ?","¿Paga con tarjeta o en efectivo?","Elige una: «Par carte» (con tarjeta) o «En espèces» (en efectivo).","(carte|especes|cash)","Par carte, s'il vous plaît.","Con tarjeta, por favor.","par carte=con tarjeta;en espèces=en efectivo;payer=pagar"),
+T9("Voilà ! Bonne journée !","¡Aquí tiene! ¡Que tenga un buen día!","Da las gracias y devuelve el deseo con «Vous aussi» (igualmente).","(merci|vous aussi|au revoir|bonne journee)","Merci, vous aussi ! Au revoir.","Gracias, ¡igualmente! Adiós.","bonne journée=que tenga un buen día;vous aussi=igualmente")
+]},
+{t:"En la panadería",tag:"x",d:"Comprar pan y bollería en una tienda.",turns:[
+T9("Bonjour, je peux vous aider ?","Hola, ¿puedo ayudarle?","Saluda y pide con «Je voudrais + lo que quieras»: «Bonjour, je voudrais une baguette».","(bonjour|je voudrais|je prends|une |un |des )","Bonjour, je voudrais une baguette, s'il vous plaît.","Hola, quisiera una barra de pan, por favor.","une baguette=una barra de pan;je peux vous aider ?=¿puedo ayudarle?"),
+T9("Et avec ceci ?","¿Algo más? (literalmente: ¿y con esto?)","Añade algo («Et deux croissants») o termina con «C'est tout, merci».","(c'est tout|et |un |une |deux |trois |merci|non)","C'est tout, merci.","Eso es todo, gracias.","c'est tout=eso es todo;deux croissants=dos cruasanes"),
+T9("Ça fait trois euros vingt.","Son tres euros veinte.","Da el dinero diciendo «Voilà» (aquí tiene) o «Tenez» (tome), y da las gracias.","(voila|tenez|merci|voici)","Voilà, tenez. Merci !","Aquí tiene. ¡Gracias!","voilà=aquí tiene;tenez=tome;ça fait…=son…"),
+T9("Merci ! Bonne journée !","¡Gracias! ¡Que tenga un buen día!","Responde con «Merci, vous aussi» y despídete.","(merci|vous aussi|bonne journee|au revoir)","Merci, vous aussi ! Au revoir.","Gracias, ¡igualmente! Adiós.")
+]},
+{t:"Pedir direcciones",tag:"x",d:"Preguntar cómo llegar a un sitio y entender la respuesta.",turns:[
+T9("Bonjour ! Vous cherchez quelque chose ?","¡Hola! ¿Busca algo?","Di qué lugar buscas: «Je cherche + lugar»: la gare (la estación), le métro, la pharmacie…","(je cherche|ou est|gare|metro|pharmacie)","Je cherche la gare.","Busco la estación.","je cherche=busco;la gare=la estación;le métro=el metro;la pharmacie=la farmacia"),
+T9("La gare ? Allez tout droit, puis tournez à gauche.","¿La estación? Vaya todo recto y luego gire a la izquierda.","Repite lo que has entendido para confirmar y da las gracias: «Tout droit, puis à gauche. Merci !».","(merci|tout droit|gauche|d'accord|ok)","D'accord, tout droit puis à gauche. Merci !","Vale, todo recto y luego a la izquierda. ¡Gracias!","tout droit=todo recto;à gauche=a la izquierda;à droite=a la derecha;tournez=gire;puis=luego"),
+T9("C'est à dix minutes à pied. Vous avez compris ?","Está a diez minutos andando. ¿Ha entendido?","Contesta «Oui, j'ai compris» o, si no, pide que lo repita: «Pouvez-vous répéter, s'il vous plaît ?».","(oui|non|compris|repeter|d'accord|merci)","Oui, j'ai compris. Merci beaucoup !","Sí, lo he entendido. ¡Muchas gracias!","j'ai compris=he entendido;pouvez-vous répéter ?=¿puede repetir?;à pied=a pie"),
+T9("Bonne journée !","¡Que tenga un buen día!","Despídete: «Merci, vous aussi ! Au revoir».","(merci|au revoir|bonne journee|vous aussi)","Merci, vous aussi ! Au revoir.","Gracias, ¡igualmente! Adiós.")
+]},
+{t:"En el hotel",tag:"x",d:"Hacer el check-in: reserva, nombre y noches.",turns:[
+T9("Bonsoir, vous avez une réservation ?","Buenas noches, ¿tiene una reserva?","«Oui, j'ai une réservation au nom de + apellido». Si no la tienes: «Non, je voudrais une chambre».","(oui|non|reservation|chambre|je voudrais|j'ai)","Oui, j'ai une réservation au nom de Garcia.","Sí, tengo una reserva a nombre de García.","une réservation=una reserva;au nom de=a nombre de;une chambre=una habitación"),
+T9("Quel est votre nom de famille, s'il vous plaît ?","¿Cuál es su apellido, por favor?","«Je m'appelle…» o «Mon nom est…». Si te piden deletrearlo: «Comment ça s'écrit ?» ya lo conoces.","(je m'appelle|mon nom|c'est|au nom)","Je m'appelle Garcia.","Me llamo García.","le nom de famille=el apellido"),
+T9("Pour combien de nuits ?","¿Para cuántas noches?","Contesta «Pour + número + nuits»: «Pour deux nuits».","(pour|nuit|deux|trois|une|quatre|cinq)","Pour deux nuits.","Para dos noches.","une nuit=una noche;deux nuits=dos noches"),
+T9("Voici votre clé. La chambre est au troisième étage.","Aquí tiene su llave. La habitación está en la tercera planta.","Da las gracias: «Merci beaucoup».","(merci|d'accord|ok|parfait)","Merci beaucoup !","¡Muchas gracias!","la clé=la llave;le troisième étage=la tercera planta"),
+T9("Vous avez besoin d'autre chose ?","¿Necesita algo más?","«Non, merci» o pide algo: «Oui, le wifi, s'il vous plaît». Cierra con «Bonne nuit».","(non|oui|merci|wifi|petit-dejeuner)","Non, merci. Bonne nuit !","No, gracias. ¡Buenas noches!","avoir besoin de=necesitar;autre chose=otra cosa;bonne nuit=buenas noches")
+]},
+{t:"En el restaurante",tag:"x",d:"Pedir mesa, comida, bebida, postre y la cuenta.",turns:[
+T9("Bonsoir, une table pour combien de personnes ?","Buenas noches, ¿una mesa para cuántas personas?","«Une table pour + número + personnes»: «Une table pour deux personnes, s'il vous plaît».","(table|pour|deux|trois|quatre|une personne)","Une table pour deux personnes, s'il vous plaît.","Una mesa para dos personas, por favor.","une table=una mesa;une personne=una persona"),
+T9("Voici le menu. Qu'est-ce que vous prenez comme plat ?","Aquí tiene la carta. ¿Qué toma de plato principal?","Pide con «Je voudrais…» o «Je prends…» y el plato.","(je prends|je voudrais|poulet|poisson|pates|salade|steak)","Je voudrais le poulet avec des frites, s'il vous plaît.","Quisiera el pollo con patatas fritas, por favor.","le poulet=el pollo;le poisson=el pescado;les pâtes=la pasta;la salade=la ensalada;les frites=las patatas fritas;le plat=el plato principal"),
+T9("Et comme boisson ?","¿Y para beber?","Pide una bebida: «De l'eau», «Du vin», «De la bière», «Un jus d'orange».","(eau|vin|biere|jus|coca|boisson|un |une |du |de la )","De l'eau, s'il vous plaît.","Agua, por favor.","de l'eau=agua;du vin=vino;de la bière=cerveza;un jus=un zumo"),
+T9("Vous prenez un dessert ?","¿Va a tomar postre?","«Oui, une glace» o «Non, merci». Puedes pedir: une glace (helado), une tarte (tarta), un gâteau.","(oui|non|dessert|glace|gateau|tarte|merci)","Oui, une glace à la vanille.","Sí, un helado de vainilla.","une glace=un helado;une tarte=una tarta;le dessert=el postre"),
+T9("Tout s'est bien passé ?","¿Todo ha ido bien?","Responde «Oui, c'était délicieux» (estaba delicioso) y da las gracias.","(oui|delicieux|bon|merci|tres bien)","Oui, c'était délicieux, merci !","Sí, estaba delicioso, ¡gracias!","délicieux=delicioso;c'était=era / estaba"),
+T9("Vous voulez l'addition ?","¿Quiere la cuenta?","Pídela: «Oui, l'addition, s'il vous plaît».","(addition|oui)","Oui, l'addition, s'il vous plaît.","Sí, la cuenta, por favor.","l'addition=la cuenta")
+]},
+{t:"Hacer un plan con un amigo",tag:"x",d:"Hablar tuteando: planes del fin de semana y quedar.",turns:[
+T9("Salut ! Tu fais quoi ce week-end ?","¡Hola! ¿Qué haces este fin de semana?","Con amigos se usa «tu» (informal). Responde con tu plan: «Je vais + lugar» (voy a…): «Je vais au cinéma». O «Je travaille», «Je reste à la maison».","(je vais|je travaille|je fais|je ne fais|j'etudie|je reste|j'ai)","Je vais au cinéma avec des amis.","Voy al cine con unos amigos.","ce week-end=este fin de semana;je vais au cinéma=voy al cine;je reste à la maison=me quedo en casa"),
+T9("D'accord ! Moi, je vais voir un film avec des amis. Tu veux venir avec nous ?","¡Vale! Yo voy a ver una película con unos amigos. ¿Quieres venir con nosotros?","Acepta con «Oui, avec plaisir !» o rechaza con «Désolé, je ne peux pas».","(oui|non|avec plaisir|desole|je ne peux|bonne idee|d'accord)","Oui, avec plaisir !","¡Sí, con mucho gusto!","avec plaisir=con gusto;je ne peux pas=no puedo;désolé=lo siento;bonne idée=buena idea;voir un film=ver una película"),
+T9("On se retrouve à quelle heure ?","¿A qué hora quedamos?","Di la hora con «À + número + heures»: «À huit heures».","(a [a-z]+ heure|heures|huit|sept|neuf|dix|[0-9])","À huit heures.","A las ocho.","à huit heures=a las ocho;on se retrouve=quedamos"),
+T9("Parfait ! Je t'envoie l'adresse. À samedi !","¡Perfecto! Te mando la dirección. ¡Hasta el sábado!","Confirma y despídete: «D'accord, à samedi !».","(a samedi|a bientot|d'accord|ok|merci|au revoir)","D'accord, à samedi !","Vale, ¡hasta el sábado!","je t'envoie l'adresse=te mando la dirección;à samedi=hasta el sábado")
+]},
+{t:"En la universidad",tag:"x",d:"Hablar de estudios, idiomas y horarios con un compañero.",turns:[
+T9("Bonjour ! Comment vous appelez-vous ?","¡Hola! ¿Cómo se llama?","«Je m'appelle + nombre». Puedes añadir que eres nuevo/a: «Je suis nouveau / nouvelle».","(je m'appelle|oui|je suis|moi c'est)","Oui, je suis nouveau. Je m'appelle Marc.","Sí, soy nuevo. Me llamo Marc.","nouveau / nouvelle=nuevo / nueva"),
+T9("Qu'est-ce que vous étudiez ?","¿Qué estudia?","«J'étudie + materia»: la gestion, le droit, l'économie…","(j'etudie|je fais|etudiant)","J'étudie la gestion d'entreprise.","Estudio gestión de empresas.","j'étudie=estudio;la gestion=la gestión;le droit=el derecho;l'économie=la economía"),
+T9("Vous parlez quelles langues ?","¿Qué idiomas habla?","«Je parle + idiomas»: español, catalán, inglés… Une con «et» (y).","(je parle|espagnol|anglais|catalan|francais)","Je parle espagnol, catalan et anglais.","Hablo español, catalán e inglés.","l'espagnol=el español;le catalan=el catalán;l'anglais=el inglés;le français=el francés"),
+T9("Vous avez cours de français quel jour ?","¿Qué día tiene clase de francés?","«J'ai cours le + día»: le mardi (los martes), le mercredi (los miércoles)…","(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)","J'ai cours le mardi et le mercredi.","Tengo clase los martes y los miércoles.","lundi=lunes;mardi=martes;mercredi=miércoles;jeudi=jueves;vendredi=viernes;samedi=sábado;dimanche=domingo"),
+T9("Le français, c'est difficile ?","¿El francés es difícil?","Opina: «Oui, c'est un peu difficile» o «Non, c'est facile».","(oui|non|difficile|facile|un peu|pas)","Un peu difficile, mais j'aime bien !","Un poco difícil, ¡pero me gusta!","difficile=difícil;facile=fácil;un peu=un poco")
+]},
+{t:"Hobbies y comida",tag:"x",d:"Contar qué te gusta hacer, comer y escuchar.",turns:[
+T9("Qu'est-ce que vous aimez faire le week-end ?","¿Qué le gusta hacer el fin de semana?","«J'aime + infinitivo»: jouer au football, faire du sport, sortir avec des amis, lire…","(j'aime|j'adore|je prefere|je regarde|je joue|je fais|je sors)","J'aime jouer au football et sortir avec des amis.","Me gusta jugar al fútbol y salir con amigos.","jouer au football=jugar al fútbol;faire du sport=hacer deporte;sortir avec des amis=salir con amigos;lire=leer"),
+T9("Vous faites du sport ?","¿Hace deporte?","«Oui, je fais du sport» o «Non, je ne fais pas de sport». Añade la frecuencia: souvent, parfois, rarement.","(oui|non|je fais|je ne fais|souvent|rarement|parfois)","Oui, je fais du sport deux fois par semaine.","Sí, hago deporte dos veces por semana.","deux fois par semaine=dos veces por semana;faire du sport=hacer deporte"),
+T9("Qu'est-ce que vous aimez manger ?","¿Qué le gusta comer?","«J'aime / J'adore + comida». Con artículo: les pâtes, la pizza, le poisson…","(j'aime|j'adore|je prefere|pates|pizza|poisson|poulet|fromage|legumes)","J'adore les pâtes et la pizza.","Me encantan la pasta y la pizza.","les pâtes=la pasta;le fromage=el queso;les légumes=las verduras;le poulet=el pollo"),
+T9("Il y a quelque chose que vous n'aimez pas manger ?","¿Hay algo que no le guste comer?","Usa la negación: «Je n'aime pas + comida». Si nada: «Non, j'aime tout».","(je n'aime pas|je deteste|non|rien|j'aime tout)","Je n'aime pas le poisson.","No me gusta el pescado.","quelque chose=algo;tout=todo;rien=nada"),
+T9("Vous écoutez quel type de musique ?","¿Qué tipo de música escucha?","«J'écoute + tipo»: du rock, du jazz, du reggae… (con «du» delante).","(j'ecoute|j'aime|musique|rock|jazz|reggae|salsa|pop|reggaeton|classique)","J'écoute du rock et du reggae.","Escucho rock y reggae.","le rock=el rock;le jazz=el jazz;le reggaeton=el reguetón;la musique classique=la música clásica")
+]},
+{t:"Comprar un billete de tren",tag:"x",d:"Pedir un billete, elegir ida/vuelta y pagar.",turns:[
+T9("Bonjour, vous désirez ?","Buenos días, ¿qué desea?","Pide el billete: «Je voudrais un billet pour + ciudad».","(je voudrais|un billet|billet|pour)","Je voudrais un billet pour Paris, s'il vous plaît.","Quisiera un billete para París, por favor.","un billet=un billete;pour=para"),
+T9("Aller simple ou aller-retour ?","¿Solo ida o ida y vuelta?","Elige: «Un aller simple» (solo ida) o «Un aller-retour» (ida y vuelta).","(aller simple|aller-retour|aller retour)","Un aller-retour, s'il vous plaît.","Uno de ida y vuelta, por favor.","aller simple=solo ida;aller-retour=ida y vuelta"),
+T9("Vous voyagez quand ?","¿Cuándo viaja?","Di cuándo: demain (mañana), lundi (el lunes)… o «le 12 novembre».","(demain|aujourd'hui|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|le [0-9]|novembre|decembre|janvier)","Demain matin.","Mañana por la mañana.","demain=mañana;aujourd'hui=hoy;le matin=por la mañana;le soir=por la noche"),
+T9("Ça fait trente-cinq euros. Vous payez comment ?","Son treinta y cinco euros. ¿Cómo paga?","Elige: «Par carte» o «En espèces».","(carte|especes|cash)","Par carte.","Con tarjeta."),
+T9("Voici votre billet. Bon voyage !","Aquí tiene su billete. ¡Buen viaje!","Da las gracias y despídete.","(merci|au revoir|bon voyage|vous aussi)","Merci, au revoir !","¡Gracias, adiós!","bon voyage=buen viaje")
+]},
+{t:"En una fiesta (informal)",tag:"x",d:"Conocer a alguien tuteando, de forma natural.",turns:[
+T9("Salut ! Moi, c'est Léa. Et toi ?","¡Hola! Yo soy Léa. ¿Y tú?","Entre jóvenes se tutea. «Moi, c'est + nombre» es una forma informal de decir tu nombre.","(moi c'est|je m'appelle|salut|bonjour)","Salut Léa ! Moi, c'est Marc.","¡Hola, Léa! Yo soy Marc.","moi, c'est…=yo soy… (informal)"),
+T9("Tu es d'où ?","¿De dónde eres?","«Je suis de + ciudad / país». Puedes devolver la pregunta con «Et toi ?».","(je suis de|je suis d'|j'habite|je viens)","Je suis de Barcelone. Et toi ?","Soy de Barcelona. ¿Y tú?","d'où=de dónde"),
+T9("Tu fais quoi dans la vie ?","¿A qué te dedicas?","Es informal para preguntar la profesión: «Je suis étudiant(e)» o «Je travaille dans…».","(je suis|je travaille|j'etudie)","Je suis étudiant en gestion.","Soy estudiante de gestión.","tu fais quoi dans la vie ?=¿a qué te dedicas?"),
+T9("Tu as quel âge ?","¿Cuántos años tienes?","Edad con avoir: «J'ai + número + ans».","j'ai [a-z -]+ ans","J'ai dix-neuf ans.","Tengo diecinueve años."),
+T9("Tu aimes la musique ?","¿Te gusta la música?","«Oui, j'adore !» / «Oui, j'aime bien…» / «Non, je n'aime pas…».","(oui|non|j'aime|j'adore|je n'aime|je deteste)","Oui, j'adore la musique !","¡Sí, me encanta la música!")
+]},
+{t:"En el aeropuerto",tag:"x",d:"Facturar: pasaporte, destino, equipaje y asiento.",turns:[
+T9("Votre passeport, s'il vous plaît.","Su pasaporte, por favor.","Entrégalo diciendo «Voilà» (aquí tiene) y «mon passeport».","(voila|tenez|voici|oui)","Voilà mon passeport.","Aquí tiene mi pasaporte.","voilà=aquí tiene;le passeport=el pasaporte"),
+T9("Quelle est votre destination ?","¿Cuál es su destino?","«Je vais à + ciudad» (à Paris) o «Je vais en / au + país».","(je vais|je voyage|destination|a |au |en |aux )","Je vais à Paris.","Voy a París.","la destination=el destino"),
+T9("Vous avez des bagages ?","¿Tiene equipaje?","«Oui, j'ai une valise» o «Non, je n'ai pas de bagages».","(oui|non|valise|bagage|j'ai|je n'ai)","Oui, j'ai une valise.","Sí, tengo una maleta.","les bagages=el equipaje;une valise=una maleta"),
+T9("Vous préférez côté couloir ou côté fenêtre ?","¿Prefiere asiento de pasillo o de ventana?","«Je préfère + opción»: «côté fenêtre» o «côté couloir».","(couloir|fenetre|je prefere)","Je préfère côté fenêtre.","Prefiero junto a la ventana.","côté couloir=lado pasillo;côté fenêtre=lado ventana"),
+T9("Voici votre carte d'embarquement. Bon voyage !","Aquí tiene su tarjeta de embarque. ¡Buen viaje!","Da las gracias y despídete.","(merci|bon voyage|au revoir|vous aussi)","Merci, au revoir !","¡Gracias, adiós!","la carte d'embarquement=la tarjeta de embarque")
+]}
+];
+let cv=null;
+function convMenu(){const v=$('#view');window.WANT=null;
+const sect=tg=>`<h3 style="margin:16px 0 4px">${tg==='t'?'📚 Del temario':'✨ Extra · fuera del temario'}</h3><p class="mut" style="margin:0 0 6px">${tg==='t'?'Con lo que has visto en clase.':'Situaciones nuevas: te explico el vocabulario que no has dado.'}</p>`+CONV.map((c,i)=>c.tag===tg?`<button class="card" style="display:block;width:100%;text-align:left;margin:6px 0" data-c="${i}"><b>${c.t}</b> <span class="mut">· ${c.turns.length} turnos</span><br><span class="mut">${c.d}</span></button>`:'').join('');
+v.innerHTML='<p>Elige una conversación. Yo hablo en francés y, en cada turno, te explico <b>qué dice</b> y <b>cómo contestar</b>.</p>'+sect('t')+sect('x');
+v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>convStart(+b.dataset.c))}
+function convStart(i){cv={sc:i,i:0,ok:0,miss:[]};convShow()}
+function convStopMic(){const t=ENG.tg;if(t){ENG.tg=null;clearTimeout(t.st);clearTimeout(t.to)}}
+function convShow(){const v=$('#view'),c=CONV[cv.sc],t=c.turns[cv.i];if(!t){convEnd();return}
+const sc0=cv,i0=cv.i,alive=()=>tab==='talk'&&cv===sc0&&cv.i===i0;window.WANT=[t.ex];ENG.alts=[];
+v.innerHTML=`<div class="row" style="align-items:center"><button class="ghost" id="back">← Conversaciones</button><span class="mut">${esc(c.t)} · ${cv.i+1}/${c.turns.length}</span></div>
+<div class="bub bot"><b style="font-size:18px">${esc(t.q)}</b><div class="row"><button class="w" id="qs">🔊</button><button class="w" id="ql">🐢 Lento</button></div></div>
+<div class="card"><div>🇪🇸 <b>Dice:</b> ${esc(t.es)}</div><div style="margin-top:6px">💡 <b>Cómo contestar:</b> ${esc(t.how)}</div>${t.v.length?`<div class="mut" style="margin-top:8px">${c.tag==='x'?'Vocabulario nuevo':'Vocabulario útil'} (toca para oírlo):</div><div>${t.v.map(([f,e],k)=>`<button class="w" data-vw="${k}">${esc(f)} <span class="mut">= ${esc(e)}</span></button>`).join('')}</div>`:''}</div>
+<input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="ghost" id="mic">🎤 Decirlo</button><button class="ghost" id="hint">💡 Ver ejemplo</button><button class="pri" id="chk">Responder</button></div>${DICT_HINT}<div id="fb"></div>`;
+const inp=$('#ans');let done=false,on=false;const lab=s=>{const m=$('#mic');if(m)m.textContent=s};
+$('#back').onclick=()=>{convStopMic();cv=null;talk()};
+$('#qs').onclick=()=>say(t.q);$('#ql').onclick=()=>say(t.q,.55);
+v.querySelectorAll('[data-vw]').forEach(b=>b.onclick=()=>say(t.v[+b.dataset.vw][0]));
+$('#hint').onclick=()=>{if(!done)$('#fb').innerHTML=`<div class="card" style="margin:6px 0">Ejemplo: <b>${esc(t.ex)}</b><br><span class="mut">${esc(t.exes)}</span></div>`};
+const check=()=>{if(done){cv.i++;convShow();return}const val=inp.value.trim();if(!val)return;done=true;convStopMic();
+const ok=t.re.test(norm(val));rec('conv',ok);if(ok)cv.ok++;else cv.miss.push(t);
+$('#fb').innerHTML=`<p class="${ok?'ok':'ko'}"><b>${ok?'✓ Muy bien':'✗ Casi: tu respuesta no encaja con lo que te preguntan'}</b></p><div class="card" style="margin:6px 0">Ejemplo: <b>${esc(t.ex)}</b> <button class="w" id="es">🔊</button><br><span class="mut">${esc(t.exes)}</span></div>`;
+$('#chk').textContent='Siguiente ▶';const e=$('#es');if(e)e.onclick=()=>say(t.ex)};
+$('#chk').onclick=check;inp.onkeydown=e=>{if(e.key==='Enter')check()};
+$('#mic').onclick=()=>{if(done)return;if(on){stopListen();return}on=true;lab('⏹ Parar');$('#fb').innerHTML='<p class="mut">Habla ahora. Revisa el texto y pulsa Responder.</p>';
+listen(tx=>{on=false;lab('🎤 Decirlo');if(!done&&alive())$('#fb').innerHTML=tx?'<p class="mut">Revisa el texto (puedes corregirlo) y pulsa Responder.</p>'+chips():'<p class="ko">No he oído nada. Inténtalo otra vez.</p>'},m=>{on=false;lab('🎤 Decirlo');if(!done&&alive())$('#fb').innerHTML=`<p class="ko">${m}</p>`})};
+say(t.q);inp.focus()}
+function convEnd(){const c=CONV[cv.sc],n=c.turns.length,v=$('#view');window.WANT=null;const sc=cv.sc;
+v.innerHTML=`<div class="card"><h2>${cv.ok===n?'🎉 ':''}Conversación terminada: ${cv.ok}/${n}</h2>${cv.miss.length?`<p class="ko"><b>A repasar:</b></p><ul>${cv.miss.map(t=>`<li>${esc(t.q)} → <b>${esc(t.ex)}</b><br><span class="mut">${esc(t.exes)}</span></li>`).join('')}</ul>`:'<p class="ok">¡Todo bien!</p>'}<div class="row"><button class="pri" id="again">Repetir</button><button id="menu">Otra conversación</button></div></div>`;
+$('#again').onclick=()=>convStart(sc);$('#menu').onclick=()=>{cv=null;talk()}}
+function talk(){window.WANT=null;if(!cv)convMenu();else convShow()}
+/* ===== PRONUNCIAR v2: subpestañas por tema (sin verbos ni gramática), con mezclas ===== */
+const PT=[
+{k:'sal',t:'🗣 Saludar y presentarse',ph:[
+["Bonjour, comment allez-vous ?","Hola, ¿cómo está usted?"],["Je vais bien, merci. Et vous ?","Estoy bien, gracias. ¿Y usted?"],["Salut ! Ça va ?","¡Hola! ¿Qué tal?"],["Bonsoir, madame.","Buenas noches, señora."],["Je m'appelle Claire.","Me llamo Claire."],["Excusez-moi, vous êtes monsieur Laperre ?","Disculpe, ¿es usted el señor Laperre?"],["Je vous présente mon collègue.","Le presento a mi compañero."],["Enchanté.","Encantado."],["Comment ça s'écrit ?","¿Cómo se escribe?"],["S'il vous plaît, madame.","Por favor, señora."],["Merci beaucoup, au revoir.","Muchas gracias, adiós."],["À bientôt !","¡Hasta pronto!"]]},
+{k:'fam',t:'👪 Familia y datos personales',ph:[
+["J'ai un frère et une sœur.","Tengo un hermano y una hermana."],["Je suis enfant unique.","Soy hijo único."],["Mon père s'appelle Pablo, il est ingénieur.","Mi padre se llama Pablo, es ingeniero."],["Ma mère est directrice de la communication.","Mi madre es directora de comunicación."],["Mes grands-parents habitent en Espagne.","Mis abuelos viven en España."],["Mon fils a douze ans et ma fille a huit ans.","Mi hijo tiene doce años y mi hija ocho."],["Je suis célibataire.","Soy soltero."],["Avec mon mari et mes deux enfants.","Con mi marido y mis dos hijos."],["Ma grand-mère est veuve.","Mi abuela es viuda."],["Je suis divorcé et j'ai deux garçons.","Estoy divorciado y tengo dos hijos."],["Quel âge ont vos enfants ?","¿Qué edad tienen sus hijos?"],["Mes petits-enfants habitent à Paris.","Mis nietos viven en París."]]},
+{k:'trab',t:'💼 Trabajo y profesiones',ph:[
+["Je suis étudiant.","Soy estudiante."],["Il est informaticien chez Nofisa.","Es informático en Nofisa."],["Elle est directrice de la communication.","Es directora de comunicación."],["Je travaille dans une entreprise à Toulouse.","Trabajo en una empresa en Toulouse."],["Vous travaillez dans quel secteur ?","¿En qué sector trabaja usted?"],["Je suis dans la communication.","Estoy en el sector de la comunicación."],["Il est responsable marketing.","Es responsable de marketing."],["Elle est assistante de direction.","Es asistente de dirección."],["Mon collègue est chef de projet.","Mi compañero es jefe de proyecto."],["Mon père est boulanger et ma mère est infirmière.","Mi padre es panadero y mi madre es enfermera."],["Il travaille dans le tourisme et elle dans la finance.","Él trabaja en el turismo y ella en las finanzas."],["Elle est vendeuse dans l'hôtellerie.","Es vendedora en la hostelería."]]},
+{k:'pais',t:'🌍 Países y lugares',ph:[
+["J'habite à Barcelone, en Espagne.","Vivo en Barcelona, en España."],["Je travaille au Portugal.","Trabajo en Portugal."],["Je vais aux États-Unis.","Voy a Estados Unidos."],["Amsterdam est aux Pays-Bas.","Ámsterdam está en los Países Bajos."],["La tour Eiffel est à Paris, en France.","La torre Eiffel está en París, en Francia."],["Il habite au Danemark.","Vive en Dinamarca."],["Elle habite en Allemagne.","Vive en Alemania."],["Je voyage en Italie et au Japon.","Viajo a Italia y a Japón."],["Genève est en Suisse.","Ginebra está en Suiza."],["Nous habitons au Canada.","Vivimos en Canadá."],["Il est brésilien et elle est portugaise.","Él es brasileño y ella es portuguesa."],["Je suis de nationalité espagnole.","Soy de nacionalidad española."]]},
+{k:'num',t:'🔢 Números, fechas y alfabeto',ph:[
+["J'ai dix-neuf ans.","Tengo diecinueve años."],["J'ai vingt et un ans.","Tengo veintiún años."],["Il y a trente-deux étudiants.","Hay treinta y dos estudiantes."],["Mon numéro de téléphone est zéro six, douze, quarante-cinq, trente-trois.","Mi teléfono es 06 12 45 33."],["Mon adresse électronique est claire arobase gmail point com.","Mi correo es claire arroba gmail punto com."],["Nous sommes le quatre octobre.","Estamos a cuatro de octubre."],["Ça fait quarante-cinq euros.","Son cuarenta y cinco euros."],["Un, deux, trois, quatre, cinq.","Uno, dos, tres, cuatro, cinco."],["Quarante-neuf, cinquante.","Cuarenta y nueve, cincuenta."],["Mon prénom s'écrit M, A, R, C.","Mi nombre se escribe M, A, R, C."],["Comment ça s'écrit ? C, L, A, I, R, E.","¿Cómo se escribe? C, L, A, I, R, E."],["Vingt-deux, vingt-trois, vingt-quatre.","Veintidós, veintitrés, veinticuatro."]]},
+{k:'gus',t:'❤ Gustos y hábitos',ph:[
+["J'adore les voyages.","Me encantan los viajes."],["J'aime bien l'avion.","Me gusta bastante el avión."],["Je n'aime pas les plateaux-repas.","No me gustan las bandejas de comida."],["Je déteste voyager sans mon passeport.","Odio viajar sin mi pasaporte."],["Je préfère le train.","Prefiero el tren."],["Je voyage toujours en classe affaires.","Siempre viajo en clase business."],["Je voyage souvent avec mon ordinateur.","Viajo a menudo con mi ordenador."],["Nous allons rarement à l'étranger.","Rara vez vamos al extranjero."],["J'écoute quelquefois de la musique avec mes écouteurs.","A veces escucho música con mis auriculares."],["Je ne regarde jamais de films dans l'avion.","Nunca veo películas en el avión."],["Mon mari adore le jazz.","Mi marido adora el jazz."],["Mes enfants aiment beaucoup la musique.","A mis hijos les gusta mucho la música."],["Elle n'aime pas le disco.","No le gusta la música disco."]]},
+{k:'obj',t:'🧳 Objetos (avión y maleta)',ph:[
+["Dans ma valise, j'ai mon passeport et mon visa.","En mi maleta tengo mi pasaporte y mi visado."],["Où est mon portefeuille ?","¿Dónde está mi cartera?"],["J'ai une carte d'identité et une carte de crédit.","Tengo un documento de identidad y una tarjeta de crédito."],["Mon téléphone et mon ordinateur sont dans ma valise.","Mi teléfono y mi ordenador están en mi maleta."],["Je voudrais un oreiller et une couverture, s'il vous plaît.","Quisiera una almohada y una manta, por favor."],["Un journal, des magazines et des écouteurs.","Un periódico, revistas y auriculares."],["J'adore dormir avec un masque dans l'avion.","Me encanta dormir con un antifaz en el avión."],["Je n'aime pas le sandwich de l'avion.","No me gusta el sándwich del avión."],["Un café et un verre d'eau, s'il vous plaît.","Un café y un vaso de agua, por favor."],["J'ai de l'argent dans mon portefeuille.","Tengo dinero en mi cartera."],["Je regarde souvent des films sur mon ordinateur.","Veo a menudo películas en mi ordenador."],["Une cuillère, une fourchette et un couteau.","Una cuchara, un tenedor y un cuchillo."],["J'ai ma caméra et ma photo.","Tengo mi cámara y mi foto."]]}
+];
+let pt=0,pmix=[];
+function pMix(){const all=PT.flatMap(t=>t.ph);pmix=shuf(all).slice(0,8)}
+function sayCur(){return pt>=PT.length?pmix:PT[pt].ph}
+function sayTab2V2(){const vs=(()=>{try{return speechSynthesis.getVoices().filter(v=>/^fr/i.test(v.lang))}catch(e){return[]}})();
+if(pt>=PT.length&&!pmix.length)pMix();
+const cur=sayCur();
+$('#view').innerHTML=`<div class="row" id="ptabs" style="gap:6px">${PT.map((x,i)=>`<button class="${i===pt?'on':''}" style="padding:6px 10px;font-size:14px" data-pt="${i}">${x.t}</button>`).join('')}<button class="${pt>=PT.length?'on':''}" style="padding:6px 10px;font-size:14px" data-pt="${PT.length}">🎲 Mezcla</button></div>
+<div class="card"><p class="mut" style="margin:0 0 6px">Pulsa 🔊 para escuchar y 🎤 para repetir. Verás en verde lo que has dicho bien y en rojo lo que hay que corregir, con consejos para pronunciarlo.</p>${vs.length?`<label class="mut">Voz: <select id="vsel">${vs.map(v=>`<option ${VOICE&&v.name===VOICE.name?'selected':''}>${esc(v.name)}</option>`).join('')}</select></label>`:'<p class="mut" style="margin:0">Tu dispositivo no tiene voz francesa instalada.</p>'}</div>`
++(pt>=PT.length?`<div class="row"><span class="mut" style="align-self:center">8 frases al azar de todos los temas</span><button id="pmx">🔀 Otra mezcla</button></div>`:'')
++cur.map(([f,e],i)=>`<div class="card"><b>${f}</b><br><span class="mut">${e}</span><div class="row"><button data-s="${i}">🔊</button><button data-l="${i}">🐢 Lento</button><button class="pri" data-m="${i}">🎤 Repetir</button></div><div id="r${i}"></div></div>`).join('');
+document.querySelectorAll('[data-pt]').forEach(b=>b.onclick=()=>{convStopMic();pt=+b.dataset.pt;if(pt>=PT.length)pMix();sayTab2()});
+const px=$('#pmx');if(px)px.onclick=()=>{convStopMic();pMix();sayTab2()};
+const sel=$('#vsel');if(sel)sel.onchange=()=>{try{localStorage.setItem('fr-voice',sel.value)}catch(e){}pickVoice();say('Bonjour, je suis votre voix.')};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>say(cur[b.dataset.s][0]));
+document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>say(cur[b.dataset.l][0],.55));
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const i=b.dataset.m,r=$('#r'+i);r.textContent='Escuchando…';
+listen(t=>{const e=toks(cur[i][0]),h=norm(t).replace(/['-]/g,' ').split(' ').filter(Boolean),ok=align(e,h),p=Math.round(100*ok.filter(Boolean).length/e.length);rec('voz',p>=80);
+const bad=e.filter((x,j)=>!ok[j]);
+r.innerHTML=`<p><b class="${p>=80?'ok':'ko'}">${p}%</b> · he oído: «${esc(t)}»</p><div>${e.map((x,j)=>`<button class="w ${ok[j]?'g':'r'}" data-w="${esc(x.w)}">${esc(x.d)}</button>`).join('')}</div>`+(bad.length?`<p class="mut">Palabras a corregir:</p>`+bad.map(x=>`<div class="tip"><b>${esc(x.w)}</b> — ${tip(x.w)}<div class="row"><button data-ws="${esc(x.w)}">🔊</button><button data-wl="${esc(x.w)}">🐢</button><button data-wm="${esc(x.k)}">🎤 Solo esta</button><span class="wr"></span></div></div>`).join(''):'<p class="ok">¡Pronunciación muy buena! 🎉</p>')+`<div class="row"><button data-sl>🐢 Frase lenta</button></div>`;
+r.querySelectorAll('.w').forEach(x=>x.onclick=()=>say(x.dataset.w));r.querySelectorAll('[data-ws]').forEach(x=>x.onclick=()=>say(x.dataset.ws));r.querySelectorAll('[data-wl]').forEach(x=>x.onclick=()=>say(x.dataset.wl,.5));
+r.querySelectorAll('[data-wm]').forEach(x=>x.onclick=()=>{const o=x.parentNode.querySelector('.wr');o.textContent=' escuchando…';listen(tt=>{const hh=norm(tt).replace(/['-]/g,' ').split(' ');const good=hh.includes(x.dataset.wm);rec('voz',good);o.innerHTML=good?' <span class="ok">✓ ¡Bien!</span>':` <span class="ko">he oído «${esc(tt)}», prueba otra vez</span>`},m=>{o.innerHTML=` <span class="ko">${m}</span>`})});
+r.querySelector('[data-sl]').onclick=()=>say(cur[i][0],.55)},m=>{r.innerHTML=`<span class="ko">${m}</span>`})})}
+/* ===== DIAGNÓSTICO COMPLETO + PLAN B (dictado del teclado) ===== */
+const DICT_HINT='<p class="mut" style="font-size:13px;margin:6px 0 0">¿El micro de la app falla? Usa el dictado del teclado en la casilla: el 🎤 del teclado del móvil (con el teclado en francés) o, en ordenador, Win + H / Fn dos veces.</p>';
+function diagInfo(){const ua=navigator.userAgent||'';const r={};
+r.navegador=(ua.match(/(Edg|OPR|SamsungBrowser|Chrome|CriOS|Firefox|FxiOS|Version)\/[0-9.]+/g)||[]).slice(0,2).join(' ')||ua.slice(0,50);
+r.dispositivo=/Android/.test(ua)?'Android':/iPhone|iPad/.test(ua)?'iOS':/Mac/.test(ua)?'Mac':/Windows/.test(ua)?'Windows':/Linux/.test(ua)?'Linux':'?';
+r.app_escritorio_de_Claude=/Electron/.test(ua)?'SÍ (el reconocimiento de voz NO funciona en Electron)':'no';
+r.dentro_de_otra_pagina=(()=>{try{return window.self!==window.top?'sí (iframe)':'no'}catch(e){return 'sí (iframe)'}})();
+r.politica_microfono=(()=>{try{const p=document.permissionsPolicy||document.featurePolicy;return p?(p.allowsFeature('microphone')?'permitido':'BLOQUEADO por la página contenedora'):'desconocido'}catch(e){return 'desconocido'}})();
+r.reconocimiento_de_voz=(window.SpeechRecognition||window.webkitSpeechRecognition)?'disponible':'NO disponible';
+r.conexion_segura=window.isSecureContext?'sí':'NO';
+r.origen=(()=>{try{return location.origin}catch(e){return '?'}})();
+r.modo=MODE;r.permiso=ENG.perm||'?';r.ultimo_error=ENG.err||'ninguno';return r}
+function diagText(){const r=diagInfo();return Object.entries(r).map(([k,v])=>k.replace(/_/g,' ')+': '+v).join('\n')+'\n--- registro ---\n'+LOG.join('\n')}
+async function micMeter(out){out.textContent='Pidiendo micrófono…';let st;
+try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){out.innerHTML='✗ No se puede capturar audio: <b>'+esc(e.name||'error')+'</b>. Es un bloqueo de permisos del navegador o de la página que contiene la app.';lg('captura de audio: '+(e.name||'error'));return}
+lg('captura de audio: permiso concedido');
+const AC=window.AudioContext||window.webkitAudioContext;let ac,an,buf;try{ac=new AC();const src=ac.createMediaStreamSource(st);an=ac.createAnalyser();an.fftSize=512;src.connect(an);buf=new Uint8Array(an.fftSize)}catch(e){st.getTracks().forEach(t=>t.stop());out.textContent='✓ Se abre el micrófono, pero no puedo medir el nivel en este navegador.';return}
+let max=0;const t0=Date.now();
+const tick=()=>{an.getByteTimeDomainData(buf);let m=0;for(const x of buf)m=Math.max(m,Math.abs(x-128));max=Math.max(max,m);out.textContent='Habla ahora… '+'█'.repeat(Math.min(30,Math.round(m/3)));
+if(Date.now()-t0<4000)requestAnimationFrame(tick);else{st.getTracks().forEach(t=>t.stop());try{ac.close()}catch(e){}
+out.textContent=max>10?'✓ El micrófono capta tu voz (nivel '+max+'). Si aun así el reconocimiento falla, el problema es del servicio de voz del navegador, no del micrófono.':'✗ El micrófono está abierto pero casi no capta sonido (nivel '+max+'). Revisa qué micrófono usa el navegador y el volumen del sistema.';lg('nivel de audio: '+max)}};tick()}
+function micTab(){micTabV8();const v=$('#view');if(!v.insertAdjacentHTML)return;
+const r=diagInfo();const bad=[];if(/Electron|SÍ/.test(r.app_escritorio_de_Claude))bad.push('Estás en la app de escritorio de Claude: ahí el reconocimiento de voz no funciona. Abre la página en Chrome.');if(/BLOQUEADO/.test(r.politica_microfono))bad.push('La página que contiene esta app bloquea el micrófono. Abre la app en una pestaña propia de Chrome o usa el archivo francais.html.');if(r.reconocimiento_de_voz!=='disponible')bad.push('Este navegador no tiene reconocimiento de voz. Usa Chrome (Android/ordenador) o Safari (iPhone).');if(r.conexion_segura!=='sí')bad.push('La página no está en conexión segura, el micrófono no funcionará.');
+v.insertAdjacentHTML('beforeend',`<div class="card"><h3>Qué le pasa a tu micrófono</h3>${bad.length?'<p class="ko"><b>Posible causa:</b></p><ul>'+bad.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p class="ok">No detecto ningún bloqueo evidente. Haz las dos pruebas de abajo.</p>'}
+<p class="mut" style="margin-bottom:4px"><b>Prueba 1 · ¿El micrófono capta sonido?</b> (separa el micrófono del reconocimiento)</p><div class="row"><button class="pri" id="mm">🎚 Medir mi micrófono (4 s)</button></div><pre id="mmo" class="mut" style="white-space:pre-wrap;margin:6px 0"></pre>
+<p class="mut" style="margin-bottom:4px"><b>Prueba 2 · ¿Reconoce el francés?</b> Pulsa «Probar micrófono» de arriba y di <i>allons</i> o <i>bonjour</i>.</p>
+<p class="mut" style="margin-bottom:4px"><b>Informe</b> (cópialo y mándamelo si sigue fallando):</p><pre id="rep" style="white-space:pre-wrap;font-size:12px;background:rgba(120,140,200,.12);padding:8px;border-radius:8px;margin:0">${esc(diagText())}</pre>
+<div class="row"><button id="repc">📋 Copiar informe</button><button id="repu">↻ Actualizar</button></div>
+<p class="mut" style="margin-top:10px"><b>Plan B que siempre funciona:</b> en Ejercicios, Conversar y Pronunciar puedes dictar con el micrófono del teclado (en francés) en la casilla de texto, sin usar el micro de la app.</p></div>`);
+$('#mm').onclick=()=>micMeter($('#mmo'));
+$('#repu').onclick=()=>{$('#rep').textContent=diagText()};
+$('#repc').onclick=async()=>{const t=diagText();try{await navigator.clipboard.writeText(t);$('#repc').textContent='✓ Copiado'}catch(e){try{const rg=document.createRange();rg.selectNodeContents($('#rep'));const sl=getSelection();sl.removeAllRanges();sl.addRange(rg);$('#repc').textContent='Seleccionado: cópialo a mano'}catch(e2){}}}}
+/* idioma visible en el registro */
+/* ===== PRONUNCIAR: comprobación también por texto/dictado ===== */
+function sayTab2(){const vs=(()=>{try{return speechSynthesis.getVoices().filter(v=>/^fr/i.test(v.lang))}catch(e){return[]}})();
+if(pt>=PT.length&&!pmix.length)pMix();const cur=sayCur();
+$('#view').innerHTML=`<div class="row" id="ptabs" style="gap:6px">${PT.map((x,i)=>`<button class="${i===pt?'on':''}" style="padding:6px 10px;font-size:14px" data-pt="${i}">${x.t}</button>`).join('')}<button class="${pt>=PT.length?'on':''}" style="padding:6px 10px;font-size:14px" data-pt="${PT.length}">🎲 Mezcla</button></div>
+<div class="card"><p class="mut" style="margin:0 0 6px">Pulsa 🔊 para escuchar y 🎤 para repetir. Verás en verde lo que has dicho bien y en rojo lo que hay que corregir, con consejos para pronunciarlo.</p><p class="mut" style="margin:0 0 6px;font-size:13px">¿El micro de la app falla? Dicta con el teclado (en francés) en la casilla de cada frase y pulsa Comprobar.</p>${vs.length?`<label class="mut">Voz: <select id="vsel">${vs.map(v=>`<option ${VOICE&&v.name===VOICE.name?'selected':''}>${esc(v.name)}</option>`).join('')}</select></label>`:'<p class="mut" style="margin:0">Tu dispositivo no tiene voz francesa instalada.</p>'}</div>`
++(pt>=PT.length?`<div class="row"><span class="mut" style="align-self:center">8 frases al azar de todos los temas</span><button id="pmx">🔀 Otra mezcla</button></div>`:'')
++cur.map(([f,e],i)=>`<div class="card"><b>${f}</b><br><span class="mut">${e}</span><div class="row"><button data-s="${i}">🔊</button><button data-l="${i}">🐢 Lento</button><button class="pri" data-m="${i}">🎤 Repetir</button></div><div class="row" style="flex-wrap:nowrap"><input id="ti${i}" data-ti="${i}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="o dicta / escribe aquí lo que dices" style="margin:0"><button data-tc="${i}">Comprobar</button></div><div id="r${i}"></div></div>`).join('');
+document.querySelectorAll('[data-pt]').forEach(b=>b.onclick=()=>{convStopMic();pt=+b.dataset.pt;if(pt>=PT.length)pMix();sayTab2()});
+const px=$('#pmx');if(px)px.onclick=()=>{convStopMic();pMix();sayTab2()};
+const sel=$('#vsel');if(sel)sel.onchange=()=>{try{localStorage.setItem('fr-voice',sel.value)}catch(e){}pickVoice();say('Bonjour, je suis votre voix.')};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>say(cur[b.dataset.s][0]));
+document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>say(cur[b.dataset.l][0],.55));
+const evalSay=(i,t)=>{const r=$('#r'+i);const e=toks(cur[i][0]),h=norm(t).replace(/['-]/g,' ').split(' ').filter(Boolean),ok=align(e,h),p=Math.round(100*ok.filter(Boolean).length/e.length);rec('voz',p>=80);
+const bad=e.filter((x,j)=>!ok[j]);
+r.innerHTML=`<p><b class="${p>=80?'ok':'ko'}">${p}%</b> · he oído: «${esc(t)}»</p><div>${e.map((x,j)=>`<button class="w ${ok[j]?'g':'r'}" data-w="${esc(x.w)}">${esc(x.d)}</button>`).join('')}</div>`+(bad.length?`<p class="mut">Palabras a corregir:</p>`+bad.map(x=>`<div class="tip"><b>${esc(x.w)}</b> — ${tip(x.w)}<div class="row"><button data-ws="${esc(x.w)}">🔊</button><button data-wl="${esc(x.w)}">🐢</button><button data-wm="${esc(x.k)}">🎤 Solo esta</button><span class="wr"></span></div></div>`).join(''):'<p class="ok">¡Pronunciación muy buena! 🎉</p>')+`<div class="row"><button data-sl>🐢 Frase lenta</button></div>`;
+r.querySelectorAll('.w').forEach(x=>x.onclick=()=>say(x.dataset.w));r.querySelectorAll('[data-ws]').forEach(x=>x.onclick=()=>say(x.dataset.ws));r.querySelectorAll('[data-wl]').forEach(x=>x.onclick=()=>say(x.dataset.wl,.5));
+r.querySelectorAll('[data-wm]').forEach(x=>x.onclick=()=>{const o=x.parentNode.querySelector('.wr');o.textContent=' escuchando…';listen(tt=>{const hh=norm(tt).replace(/['-]/g,' ').split(' ');const good=hh.includes(x.dataset.wm);rec('voz',good);o.innerHTML=good?' <span class="ok">✓ ¡Bien!</span>':` <span class="ko">he oído «${esc(tt)}», prueba otra vez</span>`},m=>{o.innerHTML=` <span class="ko">${m}</span>`})});
+r.querySelector('[data-sl]').onclick=()=>say(cur[i][0],.55)};
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const i=b.dataset.m,r=$('#r'+i);r.textContent='Escuchando…';listen(t=>evalSay(i,t),m=>{r.innerHTML=`<span class="ko">${m}</span>`})});
+document.querySelectorAll('[data-tc]').forEach(b=>b.onclick=()=>{const i=b.dataset.tc,v=($('#ti'+i)||{}).value||'';if(v.trim())evalSay(i,v)});
+document.querySelectorAll('[data-ti]').forEach(inp=>inp.onkeydown=e=>{if(e.key==='Enter'){const v=inp.value;if(v.trim())evalSay(inp.dataset.ti,v)}})}
+
+/* ===== Frases con hueco (cloze) ===== */
+const BL='<span style="display:inline-block;min-width:80px;border-bottom:2px solid var(--ac);margin:0 4px">&nbsp;</span>';
+function mkCloze(cat,items){return items.map(([sen,ans,es,show])=>{
+ const a=[];ans.forEach(x=>{a.push(x);a.push(sen.replace('___',x))});
+ return {c:cat,p:(cat==='vobj'&&typeof im==='function'?im(ans[ans.length-1]):'')+esc(sen).replace('___',BL),a,es:show?es:'',px:show?'':es}})}
+const CZ={
+hab:[
+['Tous les jours, je prends le métro. Je prends ___ le métro.',['toujours'],'siempre',0],
+['Je vais au cinéma deux fois par semaine. Je vais ___ au cinéma.',['souvent'],'a menudo',0],
+['Je vais ___ au théâtre : une ou deux fois par an.',['parfois','quelquefois'],'a veces',0],
+['Je ne mange presque pas de viande. Je mange ___ de la viande.',['rarement'],'raramente',0],
+['Je ne fume pas du tout. Je ne fume ___.',['jamais'],'nunca',0],
+["J'___ le chocolat ! C'est mon dessert préféré.",['adore'],'me encanta',0],
+['Je ___ les araignées : j\'ai très peur !',['déteste'],'odio',0],
+["J'___ bien le café, mais ce n'est pas mon préféré.",['aime'],'me gusta (bastante)',0],
+['Je ___ le thé au café.',['préfère'],'prefiero',1],
+['Nous allons ___ à Paris.',['parfois','quelquefois'],'a veces',1],
+['Ils vont ___ chez leurs grands-parents.',['souvent'],'a menudo',1],
+["Le dimanche, je ne travaille ___.",['jamais'],'nunca',0]],
+vobj:[
+["Dans l'avion, je dors avec un ___ sous la tête.",['oreiller','un oreiller'],'almohada',0],
+["J'ai froid : je demande une ___ à l'hôtesse.",['couverture','une couverture'],'manta',0],
+['Pendant le vol, je lis un ___ avec les nouvelles du jour.',['journal','un journal'],'periódico',0],
+['Pour écouter de la musique, je mets mes ___.',['écouteurs','des écouteurs'],'auriculares',0],
+['Pour dormir, je mets un ___ sur les yeux.',['masque','un masque'],'antifaz',0],
+["J'ai soif : un ___ d'eau, s'il vous plaît.",['verre','un verre'],'vaso',0],
+["À l'aéroport, je montre mon ___ au policier.",['passeport','un passeport'],'pasaporte',0],
+['Mon argent et mes cartes sont dans mon ___.',['portefeuille','un portefeuille'],'cartera',0],
+['Mes vêtements sont dans ma ___.',['valise','une valise'],'maleta',0],
+['Je paie avec ma ___ de crédit.',['carte','une carte'],'tarjeta',0],
+["Je n'ai pas d'___ : je n'ai pas de monnaie.",['argent',"l'argent"],'dinero',1],
+['Je travaille avec mon ___ : c\'est un portable.',['ordinateur','un ordinateur'],'ordenador',0],
+['Pour entrer dans certains pays, il faut un ___.',['visa','un visa'],'visado',1]],
+vfam:[
+['Le père de mon père, c\'est mon ___.',['grand-père','grand père','mon grand-père'],'abuelo',0],
+['La mère de ma mère, c\'est ma ___.',['grand-mère','grand mère','ma grand-mère'],'abuela',0],
+['Mon père et ma mère, ce sont mes ___.',['parents','mes parents'],'padres',0],
+['Le fils de mes parents, c\'est mon ___.',['frère','mon frère'],'hermano',0],
+['La fille de mes parents, c\'est ma ___.',['sœur','soeur','ma sœur'],'hermana',0],
+['Je suis marié : ma ___ s\'appelle Anna.',['femme','ma femme'],'esposa',0],
+['Je suis mariée : mon ___ s\'appelle Paul.',['mari','mon mari'],'marido',0],
+['Mes fils et mes filles, ce sont mes ___.',['enfants','mes enfants'],'hijos',0],
+['Je n\'ai ni frère ni sœur : je suis enfant ___.',['unique'],'único',1],
+['Mes parents, mes frères et mes sœurs, c\'est ma ___.',['famille','ma famille'],'familia',0]],
+vsec:[
+["Je travaille dans un hôtel : c'est le secteur de l'___.",['hôtellerie',"l'hôtellerie"],'hostelería',0],
+["Le professeur travaille dans l'___.",['enseignement',"l'enseignement"],'enseñanza',0],
+["L'ingénieur développe des applications : il travaille dans l'___.",['informatique',"l'informatique"],'informática',0],
+['La banque, c\'est le secteur de la ___.',['finance','la finance'],'finanzas',0],
+['Les agences de voyage, c\'est le ___.',['tourisme','le tourisme'],'turismo',0],
+['Le cuisinier travaille dans la ___.',['restauration','la restauration'],'restauración',0],
+['Le camion, le train et l\'avion, ce sont les ___.',['transports','les transports'],'transportes',0],
+['Le vendeur travaille dans le ___.',['commerce','le commerce'],'comercio',0],
+['Le journaliste travaille dans la ___.',['communication','la communication'],'comunicación',0],
+["Une usine, c'est le secteur de l'___.",['industrie',"l'industrie"],'industria',0]],
+vper:[
+["Il n'a pas de femme : il est ___.",['célibataire'],'soltero',0],
+["Elle a un mari : elle est ___.",['mariée'],'casada',0],
+['Mes parents ne sont plus ensemble : ils sont ___.',['divorcés'],'divorciados',0],
+['Son mari est mort : elle est ___.',['veuve'],'viuda',0],
+["Marie, c'est mon ___ ; Dupont, c'est mon nom de famille.",['prénom','mon prénom'],'nombre (de pila)',0],
+["Dupont, c'est mon ___ de famille.",['nom','mon nom'],'apellido',0],
+['Mon adresse ___ : marie@mail.com',['électronique'],'electrónica (correo)',1],
+['Il a 20 ans : quel est son ___ ?',['âge','age'],'edad',0],
+['Je suis né en Espagne : ma ___ est espagnole.',['nationalité','ma nationalité'],'nacionalidad',0]]};
+for(const k in CZ){const it=CZ[k];C[k].g=()=>mkCloze(k,it)}
+
+render();micUI();
+</script></body></html>
