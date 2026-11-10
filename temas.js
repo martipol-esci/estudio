@@ -19,7 +19,8 @@ window.ASIG = [
       ['T5', 'Ethics & organization'],
       ['T6', 'Marketing'],
       ['T7', 'Human resources'],
-      ['OPS', 'Operations, vertical integration & outsourcing']
+      ['OPS', 'Operations, vertical integration & outsourcing'],
+      ['T9', 'Finance']
     ] },
   { id: 'francais', nombre: 'Français A1', emoji: '🇫🇷', color: 'var(--c-fra)', pagina: 'francais.html', prog: 'fr-prog',
     secciones: ['Aprender', 'Ejercicios', 'Pronunciar', 'Conversar', 'Micro'],
@@ -32,6 +33,7 @@ window.ASIG = [
       ['Países', 'Países, nacionalidades y lugares'],
       ['Números', 'Números, fechas y alfabeto'],
       ['Gustos', 'Gustos y hábitos'],
+      ['Tiempo', 'El tiempo (il y a / il fait)'],
       ['Vocabulario', 'Vocabulario: objetos']
     ] }
 ];

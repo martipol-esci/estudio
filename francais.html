@@ -753,5 +753,14 @@ vper:[
 ['Je suis né en Espagne : ma ___ est espagnole.',['nationalité','ma nationalité'],'nacionalidad',0]]};
 for(const k in CZ){const it=CZ[k];C[k].g=()=>mkCloze(k,it)}
 
+/* ===== L15–L16 (AulaESCI, noviembre 2026): el tiempo (il y a / il fait) y frases útiles en clase ===== */
+{const N0=NEWTH;NEWTH=()=>N0().concat([
+S('Le temps : IL Y A / IL FAIT','Pour parler du temps qu’il fait.',tb(['Structure','Exemples'],[[bl('Il fait')+' + adjectif','Il fait beau. · Il fait froid. · Il fait chaud.'],[bl('Il y a')+' + du / des + nom','Il y a du soleil. · Il y a du vent. · Il y a des nuages.'],[bl('Il')+' + verbe','Il pleut.'],['Le ciel '+bl('est')+' + adjectif','Le ciel est bleu. · Le ciel est nuageux.']])+'<p>⚠ Negación: Il '+bl('ne')+' fait '+bl('pas')+' froid. · Il '+bl('n’')+'y a '+bl('pas')+' de vent.</p><p class="mut">Entra en el parcial del 17 de noviembre, junto con: verbos en -ER, negación (ne… pas, ne… jamais), en / au / aux, adjetivos posesivos y quel / quelle.</p>'),
+S('Les phrases utiles en classe','Pour demander de l’aide en cours.',tb(['En français','En castellano'],[['Qu’est-ce que ça veut dire… ?','¿Qué quiere decir…?'],['Comment on dit… en français ?','¿Cómo se dice… en francés?'],['Je ne comprends pas.','No entiendo.'],['Tu peux répéter, s’il te plaît ?','¿Puedes repetir, por favor? (tu)'],['Vous pouvez répéter, s’il vous plaît ?','¿Puede repetir, por favor? (vous)'],['Tu peux parler plus lentement, s’il te plaît ?','¿Puedes hablar más despacio, por favor?']]))])}
+GR.splice(GR.length-1,0,['🌦 El tiempo',[/Le temps/]]);GR[0][1].push(/phrases utiles/);
+PH.push(['Il fait beau aujourd’hui.','Hoy hace buen tiempo.'],['Il y a du soleil.','Hace sol.'],['Il y a du vent.','Hace viento.'],['Il pleut.','Llueve.'],['Le ciel est nuageux.','El cielo está nublado.'],['Il ne fait pas froid.','No hace frío.'],['Je ne comprends pas.','No entiendo.'],['Vous pouvez répéter, s’il vous plaît ?','¿Puede repetir, por favor?'],['Comment on dit ça en français ?','¿Cómo se dice eso en francés?'],['Tu peux parler plus lentement, s’il te plaît ?','¿Puedes hablar más despacio, por favor?']);
+const MET=[['hace buen tiempo','il fait beau'],['hace frío','il fait froid'],['hace calor','il fait chaud'],['hace sol','il y a du soleil'],['hace viento','il y a du vent'],['hay nubes','il y a des nuages'],['llueve','il pleut'],['el cielo está azul','le ciel est bleu'],['el cielo está nublado','le ciel est nuageux'],['no hace frío','il ne fait pas froid'],['no entiendo','je ne comprends pas'],['¿cómo se dice… en francés?','comment on dit en français','comment on dit'],['¿qué quiere decir?','qu’est-ce que ça veut dire'],['¿puede repetir, por favor? (vous)','vous pouvez répéter s’il vous plaît','vous pouvez répéter']];
+C.met={l:'El tiempo y frases de clase',g:()=>MET.map(([es,...fr])=>({c:'met',p:`¿Cómo se dice <b>${es}</b>?`,a:fr}))};
+QG.push(['🌦 El tiempo y la clase',['met']]);
 render();micUI();
 </script></body></html>

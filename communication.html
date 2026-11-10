@@ -40,6 +40,7 @@ label.r{display:inline-flex;gap:6px;align-items:center;margin-right:12px;font-si
 <nav id="nav"></nav>
 <div id="view"></div>
 </main>
+<script src="communication-aula.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -469,7 +470,7 @@ $('#again').onclick=()=>{qz=null;quiz();$('#start').click()};$('#menu').onclick=
 v.innerHTML=sc+`<div class="card"><h2>Round ${qz.round}: ${bien.length} passed · ${mal.length} to repeat</h2>${bien.length?`<p class="ok"><b>✓ Passed</b></p><ul>${L(bien)}</ul>`:''}<p class="ko"><b>✗ To repeat</b></p><ul>${L(mal)}</ul><div class="row"><button class="pri" id="rep">Repeat the failed ones</button><button id="menu">Exit</button></div></div>`;
 $('#rep').onclick=()=>{mal.forEach(q=>{delete q.ord;q.draft=''});qz.qs=shuf(mal);qz.i=0;qz.wrong=[];qz.ok=[];qz.round++;showQ()};$('#menu').onclick=()=>{qz=null;quiz()}}
 /* load uploaded syllabus: db inside claude.ai, localStorage elsewhere */
-if(!window.claude){UPS=LS.get('ct-uploads',[]);DBST='local';applyUploads()}
+if(!window.claude){UPS=(window.AULA||[]).concat(LS.get('ct-uploads',[]));DBST='local';applyUploads()}
 render();
 if(window.claude)(async()=>{try{DB=await claude.use('db')}catch(e){DB=null}
 if(!DB){UPS=LS.get('ct-uploads',[]);DBST='local';applyUploads();rerender();return}
