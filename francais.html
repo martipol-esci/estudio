@@ -340,11 +340,36 @@ ENG.use=Date.now();ENG.err='';CT.fails=0;
 const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),base:CT.n||0,last:''};ENG.tg=tg;
 tg.to=setTimeout(()=>{if(ENG.tg===tg){ENG.tg=null;err('No te he oído. Pulsa el micro y habla enseguida.')}},CT.on?10000:20000);
 const r=contRec();if(!CT.on){try{r.start()}catch(x){lg('start: '+x.message);if(!/already/i.test(x.message)){CT.rec=null;ENG.tg=null;clearTimeout(tg.to);err('No se pudo activar el micrófono ('+x.message+').')}}}}
-function listen(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}if(MODE==='cont')listenCont(cb,err,live);else listenStd(cb,err,live)}
-function stopListen(){if(MODE==='cont'){const t=ENG.tg;if(t)finish(t)}else stopListenStd()}
-function engStop(){const t=ENG.tg;ENG.tg=null;if(t){clearTimeout(t.st);clearTimeout(t.to)}const c=CT.rec;CT.rec=null;CT.on=false;try{c&&c.abort()}catch(e){}try{ENG.rec&&ENG.on&&ENG.rec.abort()}catch(e){}ENG.on=false;micUI();if(t)t.err('Micrófono detenido.')}
+/* ===== MICRÓFONO v9: un motor NUEVO en cada pulsación, que se cierra del todo al terminar.
+   Así nunca queda un motor antiguo "sordo" de la vez anterior. Si el motor se corta sin oír nada, se reabre solo. ===== */
+const AND=/Android/i.test(navigator.userAgent);
+function killRec(){const r=ENG.rec,c=CT.rec;ENG.rec=null;CT.rec=null;CT.on=false;ENG.on=false;[r,c].forEach(x=>{if(!x)return;x.onstart=x.onresult=x.onerror=x.onend=x.onaudiostart=x.onspeechstart=null;try{x.abort()}catch(e){}})}
+function listen(cb,err,live){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari). Escribe la respuesta.');return}
+try{speechSynthesis.cancel()}catch(e){}
+if(ENG.tg){const p=ENG.tg;ENG.tg=null;clearTimeout(p.st);clearTimeout(p.to);try{p.err('Cancelado.')}catch(e){}}
+const tg={err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),last:'',tries:0,stopped:false};ENG.tg=tg;ENG.err='';ENG.use=Date.now();
+const done=(ok,m)=>{if(ENG.tg!==tg)return;clearTimeout(tg.st);clearTimeout(tg.to);ENG.tg=null;killRec();micUI();if(ok)cb(tg.last);else err(m)};tg.done=done;
+const NO='No te he oído. Pulsa el micro y habla.';
+const begin=()=>{killRec();const r=new R();r.lang='fr-FR';r.continuous=!AND;r.interimResults=true;r.maxAlternatives=5;let lerr='';ENG.rec=r;
+r.onstart=()=>{if(ENG.rec!==r)return;ENG.on=true;ENG.perm='granted';lg('escuchando (intento '+(tg.tries+1)+')');micUI()};
+r.onaudiostart=()=>lg('micrófono recibiendo audio');r.onspeechstart=()=>lg('voz detectada');
+r.onresult=e=>{if(ENG.rec!==r||ENG.tg!==tg)return;const s=[];for(let i=0;i<e.results.length;i++){const x=e.results[i];s.push(x.isFinal?pick(x):x[0].transcript.trim())}
+const txt=fixTxt(joinSegs(s));if(!txt)return;tg.last=txt;ENG.vt=txt;const lr=e.results[e.results.length-1];ENG.alts=altsOf(lr);tg.live(txt);if(lr.isFinal)lg('oído: '+txt);
+clearTimeout(tg.to);clearTimeout(tg.st);tg.st=setTimeout(()=>done(true),lr.isFinal?700:2000)};
+r.onerror=e=>{if(ENG.rec!==r)return;lerr=e.error;ENG.err=e.error;lg('error: '+e.error);if(e.error==='not-allowed'||e.error==='service-not-allowed')ENG.perm='denied'};
+r.onend=()=>{if(ENG.rec!==r||ENG.tg!==tg)return;lg('motor terminado');
+if(tg.last)return done(true);
+if(lerr&&lerr!=='no-speech'&&lerr!=='aborted')return done(false,ERR[lerr]||('Error de voz ('+lerr+')'));
+if(tg.stopped)return done(false,NO);
+if(tg.tries<3){tg.tries++;lg('se cortó sin oír nada: reabro el micro');setTimeout(()=>{if(ENG.tg===tg)begin()},150);return}
+done(false,NO)};
+try{r.start()}catch(x){lg('start: '+x.message);done(false,'No se pudo activar el micrófono ('+x.message+').')}};
+tg.to=setTimeout(()=>done(false,NO),15000);
+begin();micUI()}
+function stopListen(){const t=ENG.tg;if(!t)return;t.stopped=true;if(t.last)t.done(true);else{try{ENG.rec.stop()}catch(e){t.done(false,'No te he oído. Pulsa el micro y habla.')}}}
+function engStop(){const t=ENG.tg;if(t)t.done(false,'Micrófono detenido.');else{killRec();micUI()}}
 function setMode(m){MODE=m;try{localStorage.setItem('fr-mode',m)}catch(e){}engStop();lg('modo: '+m);micTab()}
-function micTabV8(){micTabV6();const v=$('#view');if(v.insertAdjacentHTML)v.insertAdjacentHTML('afterbegin',`<div class="card"><h3>Modo de micrófono</h3><p class="mut"><b>Continuo</b>: pide permiso una sola vez y no lo repite. <b>Normal</b>: más simple, pero el navegador puede pedir permiso en cada pulsación.</p><div class="row"><button id="m1" class="${MODE==='cont'?'pri':''}">Continuo</button><button id="m2" class="${MODE==='cont'?'':'pri'}">Normal</button></div><p class="mut">Si te transcribe palabras de otro idioma: en iPhone añade Francés en Ajustes → General → Teclado → Teclados, y activa el dictado; en Android instala el idioma francés en el teclado de Google.</p></div>`);const a=$('#m1'),b=$('#m2');if(a)a.onclick=()=>setMode('cont');if(b)b.onclick=()=>setMode('std')}
+function micTabV8(){micTabV6();const v={};/* v9: ya no hay modos */if(v.insertAdjacentHTML)v.insertAdjacentHTML('afterbegin',`<div class="card"><h3>Modo de micrófono</h3><p class="mut"><b>Continuo</b>: pide permiso una sola vez y no lo repite. <b>Normal</b>: más simple, pero el navegador puede pedir permiso en cada pulsación.</p><div class="row"><button id="m1" class="${MODE==='cont'?'pri':''}">Continuo</button><button id="m2" class="${MODE==='cont'?'':'pri'}">Normal</button></div><p class="mut">Si te transcribe palabras de otro idioma: en iPhone añade Francés en Ajustes → General → Teclado → Teclados, y activa el dictado; en Android instala el idioma francés en el teclado de Google.</p></div>`);const a=$('#m1'),b=$('#m2');if(a)a.onclick=()=>setMode('cont');if(b)b.onclick=()=>setMode('std')}
 /* ===== L14: pronombres tónicos, verbos en -ER, países y preposiciones, gustos y hábitos, negación ===== */
 PH.push(['Moi, je suis français.','Yo soy francés.'],['Nous, nous sommes suisses.','Nosotros somos suizos.'],['Vous travaillez dans quel secteur ?','¿En qué sector trabaja usted?'],['Je suis dans la communication.','Trabajo en comunicación.'],['J’habite en France.','Vivo en Francia.'],['Je travaille au Portugal.','Trabajo en Portugal.'],['Je vais aux États-Unis.','Voy a Estados Unidos.'],['J’adore les voyages.','Me encantan los viajes.'],['Je n’aime pas les plateaux-repas.','No me gustan las bandejas de comida.'],['Je voyage souvent en avion.','Viajo a menudo en avión.'],['Nous allons rarement à l’étranger.','Rara vez vamos al extranjero.'],['Je suis divorcé et j’ai deux garçons.','Estoy divorciado y tengo dos hijos.']);
 DL.splice(DL.length-1,0,['Vous travaillez dans quel secteur ?',/(je travaille|je suis) /,'Je travaille dans la communication.'],['Vous habitez où ?',/j'habite (en|au|aux|a) /,'J’habite en Espagne, à Barcelone.'],['Vous aimez voyager en avion ?',/(j'aime|j'adore|je deteste|je n'aime|je prefere)/,'J’adore voyager en avion.'],['Vous voyagez souvent ?',/(toujours|souvent|parfois|quelquefois|rarement|jamais)/,'Je voyage rarement.']);
