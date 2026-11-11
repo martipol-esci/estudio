@@ -88,7 +88,7 @@ function tarjeta(e){const d=CAL.pd(e.desde);
   return `<button class="ev n${e.n}${e.hecha?' hecha':''}" data-id="${esc(e.id)}"><span class="d"><b>${d.getDate()}</b><span>${d.toLocaleDateString('es-ES',{month:'short'}).replace('.','')}</span></span>
   <span class="b"><span class="tt">${esc(e.t)}</span>
   <span><span class="lv">${CAL.NIV[e.n]}</span> ${chip(e.asig)} <span class="mut">${CAL.cuando(e)}${e.hora?' · '+e.hora:''}${e.hasta?' · hasta el '+CAL.pd(e.hasta).getDate():''}</span></span>
-  <span class="mut">${CAL.TIPOS[e.tipo]||''}${peso}${e.src==='mio'?' · añadido por ti':''}</span>
+  <span class="mut">${CAL.TIPOS[e.tipo]||''}${peso}${e.src==='mio'?' · añadido por ti':e.editado?' · editado por ti':''}</span>
   ${e.nota?`<span class="mut">${esc(e.nota)}</span>`:''}</span></button>`}
 
 function pinta(){
@@ -117,17 +117,19 @@ function previa(){const e=Object.assign({src:edit?edit.src:'mio',hasta:edit?edit
   if(!e.desde){$('#prev').innerHTML='';return}const n=CAL.nivel(e);$('#prev').innerHTML=`Se verá como <span class="lv n${n}">${CAL.NIV[n]}</span>`}
 function abrir(e,dia){edit=e||null;const aula=e&&e.src==='aula';
   $('#dt').textContent=e?(aula?'Editar (leído del aula)':'Editar'):'Añadir al calendario';
-  $('#dinfo').textContent=aula?'El título y la fecha vienen del aula. Puedes cambiar el tipo, el peso y marcarlo como hecho.':'Solo se guarda en este dispositivo.';
+  $('#dinfo').textContent=aula?'Viene del aula: no se puede eliminar ni cambiar de nombre. Puedes cambiar el día, la hora y la nota.':'Solo se guarda en este dispositivo.';
   $('#ft').value=e?e.t:'';$('#fd').value=e?e.desde:(dia||sel);$('#fh').value=e?e.hora||'':'';$('#fa').value=e?e.asig||'':'';
   $('#fk').value=e?e.tipo:'entrega';$('#fp').value=e&&e.peso!=null?e.peso:'';$('#fn').value=e?e.nota||'':'';$('#fx').checked=!!(e&&e.hecha);
-  ['#ft','#fd','#fh','#fa','#fn'].forEach(s=>$(s).disabled=!!aula);
-  $('#bdel').style.display=e?'':'none';$('#bdel').textContent=aula?'Restablecer':'Eliminar';
+  ['#ft','#fa'].forEach(s=>$(s).disabled=!!aula);
+  $('#bdel').style.display=e&&(!aula||e.editado)?'':'none';$('#bdel').textContent=aula?'Volver a lo del aula':'Eliminar';
   previa();$('#dlg').showModal()}
 ['#fk','#fp','#fd','#fx'].forEach(s=>$(s).addEventListener('input',previa));
 $('#bcan').onclick=()=>$('#dlg').close();
 $('#bdel').onclick=()=>{if(!edit)return;if(edit.src==='aula')CAL.guardarOv(edit.id,null);else CAL.borrarMio(edit.id);$('#dlg').close();pinta()};
 $('#frm').addEventListener('submit',()=>{const v=leer();
-  if(edit&&edit.src==='aula')CAL.guardarOv(edit.id,{tipo:v.tipo,peso:v.peso,hecha:v.hecha});
+  if(edit&&edit.src==='aula'){const o={tipo:v.tipo,peso:v.peso,hecha:v.hecha,desde:v.desde,hora:v.hora,nota:v.nota};
+    if(edit.hasta){const h=CAL.pd(edit.hasta);h.setDate(h.getDate()+Math.round((CAL.pd(v.desde)-CAL.pd(edit.desde))/864e5));o.hasta=CAL.ymd(h)}
+    CAL.guardarOv(edit.id,o);sel=v.desde;const d=CAL.pd(v.desde);mes=new Date(d.getFullYear(),d.getMonth(),1)}
   else{v.id=edit?edit.id:'m'+Date.now().toString(36);CAL.guardarMio(v);sel=v.desde;const d=CAL.pd(v.desde);mes=new Date(d.getFullYear(),d.getMonth(),1)}
   pinta()});
 
