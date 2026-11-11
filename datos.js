@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-11T12:04',
+  actualizado: '2026-11-11T18:05',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -16,8 +16,8 @@ window.DATOS = {
   tareas: [
     { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'pendiente', tipo: 'seminario',
       porque: 'Es la entrega más cercana y todavía no está subida.' },
-    { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'pendiente', tipo: 'seminario',
-      porque: 'Vence el jueves a primera hora: en la práctica hay que dejarlo hecho el miércoles.' },
+    { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'entregada', tipo: 'seminario',
+      porque: 'Enviado el 11 de noviembre y pendiente de calificar.' },
     { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'pendiente', tipo: 'entrega', peso: 20,
       porque: 'Presentación final de la asignatura: además de subirla hay que ensayarla.' },
     { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 15,
@@ -31,7 +31,7 @@ window.DATOS = {
   /* Fechas que no son entregas */
   fechas: [
     { t: 'Midterm 2 de Mathematics', asig: 'mates', desde: '2026-11-16', hora: '08:30', tipo: 'examen', peso: 20, nota: 'Lectures 7–16, 10 preguntas tipo test. Ese día la clase de las 8:30 es en la Sala de Actos.' },
-    { t: 'Examen parcial 2', asig: 'francais', desde: '2026-11-17', tipo: 'examen', peso: 10, nota: 'Parcial de francés (10 % del trimestre).' },
+    { t: 'Examen parcial 2', asig: 'francais', desde: '2026-11-17', tipo: 'examen', peso: 10, nota: 'Parcial de francés (10 % del trimestre). Entra: verbos en -ER, negación (ne… pas, ne… jamais), en / au / aux, posesivos (mon, ma…), quel / quelle, il y a / il fait.' },
     { t: 'Exposiciones del Final Project', asig: 'business', desde: '2026-11-23', hasta: '2026-11-25', tipo: 'entrega', peso: 5, nota: 'De 9:45 a 10:45, un grupo cada 15 minutos.' },
     { t: 'Examen final · Communication Techniques', asig: 'communication', desde: '2026-12-02', hora: '09:00', tipo: 'examen', peso: 60, nota: 'De 9:00 a 11:00. Aulas: Sala de Actos + 1.1 + 1.2. Vale el 60 % del bloque de Communication.' },
     { t: 'Examen final · Business Organization', asig: 'business', desde: '2026-12-04', hora: '09:00', tipo: 'examen', peso: 40, nota: 'De 9:00 a 11:00. Aulas: Sala de Actos + 1.1 + 1.2. Vale el 40 % de la nota.' },
