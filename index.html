@@ -17,11 +17,19 @@
 </div></header>
 
 <main>
-<section class="hero cover">
+<section class="hero cover conchat">
   <span class="badge" id="curso">📍 ESCI-UPF</span>
   <h1><b>Hola,</b> Martí</h1>
 </section>
+<section class="chat" id="chat" aria-label="Chat de estudio">
+  <div class="chd"><b>💬 Pregúntame</b><span class="mut">tareas · temario · ejercicios</span><button class="clr" type="button" title="Borrar la conversación">Borrar</button></div>
+  <div class="log" aria-live="polite"></div>
+  <form autocomplete="off"><input type="text" placeholder="Pregúntame algo…" aria-label="Tu mensaje" enterkeyhint="send"><button class="btn pri" type="submit">Enviar</button></form>
+</section>
 </main>
+<script src="datos.js"></script>
+<script src="cal.js"></script>
+<script src="chat.js"></script>
 
 <script>
 /* Curso y trimestre según la fecha. Primer curso = 2026-27. Trimestres: 1.º sep–dic · 2.º ene–mar · 3.º abr–ago. */
