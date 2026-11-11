@@ -143,7 +143,7 @@ const DIAS=['Lunes','Martes','Miércoles','Jueves','Viernes'];
 $('#horario').innerHTML=D.horario?`<div class="panel" style="overflow-x:auto;margin-top:12px"><table style="border-collapse:collapse;width:100%"><tr><th></th>${DIAS.map(d=>`<th style="padding:6px 8px;text-align:left">${d}</th>`).join('')}</tr>${D.horario.map(r=>`<tr><th style="padding:6px 8px;text-align:left;white-space:nowrap">${esc(r.hora)}</th>${DIAS.map((_,i)=>{const c=r.dias[i];return c?`<td style="padding:6px 8px;border:1px solid var(--bd);border-left:4px solid ${D.asig[c.asig].color}"><b>${esc(D.asig[c.asig].nombre)}</b>${c.aula?'<br><span class="mut">'+esc(c.aula)+'</span>':''}</td>`:'<td style="border:1px solid var(--bd)"></td>'}).join('')}</tr>`).join('')}</table></div>`
   :'<div class="note">AulaESCI no publica el horario de clases, así que todavía no está aquí. Pásale a Claude tu horario (una foto, un PDF o escrito) y lo añade.</div>';
 const u=new Date(D.actualizado);
-$('#upd').textContent='Entregas y exámenes leídos de AulaESCI el '+u.toLocaleDateString('es-ES',{day:'numeric',month:'long'})+' a las '+u.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'. Lo que añades tú se guarda solo en este dispositivo.';
+$('#upd').textContent='Entregas, exámenes y horario leídos de la intranet de ESCI el '+u.toLocaleDateString('es-ES',{day:'numeric',month:'long'})+' a las '+u.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'. Lo que añades tú se guarda solo en este dispositivo.';
 pinta();
 </script>
 </body></html>
