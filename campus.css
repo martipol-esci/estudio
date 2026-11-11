@@ -188,3 +188,4 @@ main.cols .colmain{max-width:860px}
 .chat .log{overflow-x:hidden}.msg{min-width:0}.msg .col{grid-template-columns:minmax(0,1fr)}.msg .chip{white-space:normal;overflow-wrap:anywhere}
 .chd b{white-space:nowrap}
 @media (max-width:560px){.chd .mut{display:none}}
+.msg .tema{font-size:13.5px;color:var(--ink);background:#fff7e6;border:1px solid #f3d08a;border-radius:99px;padding:3px 12px;display:inline-block}

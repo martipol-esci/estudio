@@ -323,7 +323,8 @@ function begin(D, o, about) {
 function ask(keep) {
   const q = EX.qs[EX.i]; if (!q) return end();
   const D = EX.D, fr = D.id === 'francais';
-  const hd = `<p class="mut">Ejercicio ${EX.i + 1}/${EX.qs.length}${!fr && q.t != null && D.T[q.t] ? ' · ' + D.T[q.t].n : ''} · ${qLabel(q)}</p>`;
+  const grp = fr ? (D.QG.find(x => x[1].includes(q.c)) || [])[0] : q.t != null && D.T[q.t] ? tName(D, q.t) : '';
+  const hd = `<p class="mut">Ejercicio ${EX.i + 1}/${EX.qs.length} · ${qLabel(q)}</p>${grp ? `<p class="tema">📌 Tema: <b>${grp}</b></p>` : ''}`;
   const ctl = `<div class="row">${btn(`skip|${EX.id}|${EX.i}`, 'Saltar', 'chip ghost')}${btn(`stop|${EX.id}`, 'Terminar', 'chip ghost')}</div>`;
   EX.wait = q.type !== 'mc';
   let h;
