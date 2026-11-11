@@ -259,11 +259,15 @@ if(!R){err('Tu navegador no admite reconocimiento de voz (prueba Chrome o Safari
 try{speechSynthesis.cancel()}catch(e){}
 if(ENG.tg)fail('Cancelado.');
 const tg={cb,err,live:live||(x=>{const i=$('#ans');if(i)i.value=x}),base:ENG.n||0,last:''};ENG.tg=tg;arm(tg,ENG.on?10000:20000);if(!ENG.on)engStart()}
+/* ===== cada pregunta dice de qué tema es y qué hay que poner ===== */
+const QHOW={verbes:'Conjuga el verbo (être, avoir o aller) para esa persona.',er:'Conjuga el verbo en -ER para esa persona.',neg:'Escribe la frase en negativo (ne… pas).',pos:'Pon el posesivo: mon, ma o mes.',ton:'Pon el pronombre tónico: moi, toi, lui, elle, nous, vous, eux, elles.',tv:'Escribe tu o vous.',nat:'Escribe la nacionalidad en femenino.',pro:'Escribe la profesión en femenino.',pays:'Pon el artículo del país: le, la, l’ o les.',prep:'Pon la preposición: à, en, au o aux.',nb:'Escribe el número en letras.',hab:'Tradúcelo al francés.',vfam:'Vocabulario de la familia.',vper:'Vocabulario de estado civil y datos personales.',vsec:'Vocabulario de sectores de actividad.',vobj:'Vocabulario de objetos.'};
+function qTema(q){const g=(QG.find(x=>x[1].includes(q.c))||[])[0],l=C[q.c]?C[q.c].l:'';if(!g&&!l)return '';
+return `<p style="margin:0 0 10px;padding:8px 12px;border-radius:10px;background:var(--acs);font-size:14.5px">📌 <b>${[g,l].filter(Boolean).join(' · ')}</b>${QHOW[q.c]?`<br><span class="mut">${QHOW[q.c]}</span>`:''}</p>`}
 function showQ(){const v=$('#view');
 if(!qz.wrong){qz.wrong=[];qz.ok=[];qz.first=[];qz.round=1;qz.total=qz.qs.length}
 const q=qz.qs[qz.i];if(!q){endPass();return}
 const qs0=qz.qs,i0=qz.i,alive=()=>tab==='quiz'&&qz&&qz.qs===qs0&&qz.i===i0;
-v.innerHTML=`<p class="mut">Ronda ${qz.round} · pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card"><h2>${q.p}</h2>${q.es?`<p class="mut" style="margin:-4px 0 8px">En castellano: <b>${esc(q.es)}</b></p>`:''}${q.px?'<div id="px" style="margin-bottom:8px"><button class="ghost" id="pxb">💡 Pista en castellano</button></div>':''}<input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="ghost" id="mic">🎤 Decirlo</button><button class="pri" id="chk">Responder</button></div>${DICT_HINT}<div id="fb"></div></div>`;
+v.innerHTML=`<p class="mut">Ronda ${qz.round} · pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card">${qTema(q)}<h2>${q.p}</h2>${q.es?`<p class="mut" style="margin:-4px 0 8px">En castellano: <b>${esc(q.es)}</b></p>`:''}${q.px?'<div id="px" style="margin-bottom:8px"><button class="ghost" id="pxb">💡 Pista en castellano</button></div>':''}<input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="ghost" id="mic">🎤 Decirlo</button><button class="pri" id="chk">Responder</button></div>${DICT_HINT}<div id="fb"></div></div>`;
 const inp=$('#ans');let done=false,on=false;window.WANT=q.a;ENG.alts=[];ENG.vt='';
 const lab=s=>{$('#mic').textContent=s};
 const check=()=>{if(done)return;const val=inp.value;if(!val.trim())return;done=true;if(ENG.tg){clearTimeout(ENG.tg.to);clearTimeout(ENG.tg.st);ENG.tg=null}

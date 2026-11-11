@@ -422,7 +422,7 @@ qz={qs:pool,i:0,round:1,ok:[],wrong:[],first:[],total:pool.length,mock:CFG.k==='
 function finish(q,ok,score){rec(String(q.t),ok);if(qz.round===1&&score!=null)qz.scores.push({c:q.c,s:score});if(ok)qz.ok.push(q);else{qz.wrong.push(q);if(!qz.first.includes(q))qz.first.push(q)}}
 function showQ(){const v=$('#view'),q=qz.qs[qz.i];if(!q)return endPass();
 const cr=q.c?CRIT[q.c]:null;
-const head=`<p class="mut">${qz.mock?'🎯 Mock exam · ':''}Round ${qz.round} · question ${qz.i+1}/${qz.qs.length} · <span class="tag">${T[q.t].n}</span> <span class="tag">${cr?cr[0]+' '+cr[1]:'⚡ Quick review'}</span></p><div class="bar"><i style="width:${100*qz.i/qz.qs.length}%"></i></div>`;
+const head=`<p class="mut">${qz.mock?'🎯 Mock exam · ':''}Round ${qz.round} · question ${qz.i+1}/${qz.qs.length} · <span class="tag">📌 ${T[q.t].n} · ${T[q.t].t}</span> <span class="tag">${cr?cr[0]+' '+cr[1]:'⚡ Quick review'}</span></p><div class="bar"><i style="width:${100*qz.i/qz.qs.length}%"></i></div>`;
 const next=`<button class="pri" id="nx">Next →</button>`;
 if(q.type==='mc'){const ord=q.ord||(q.ord=shuf([0,1,2,3]));
 v.innerHTML=head+`<div class="card"><h2>${q.q}</h2>${ord.map((oi,j)=>`<button class="opt" data-o="${oi}"><span class="l">${'ABCD'[j]}</span><span>${q.o[oi]}</span></button>`).join('')}<div id="fb"></div></div>`;
