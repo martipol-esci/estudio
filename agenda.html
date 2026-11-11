@@ -1,54 +1,149 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Horario y tareas · Estudio</title>
-<link rel="stylesheet" href="hub.css">
-</head><body><main style="max-width:760px">
-<a class="home" href="index.html">&larr; Inicio</a>
-<h1>🗓️ Horario y tareas</h1>
-<p class="mut" id="upd"></p>
+<title>Calendario · Estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="campus.css">
+</head><body>
+<header class="top"><div class="in">
+  <a class="brand" href="index.html"><i>🎓</i><span>Estudio</span></a>
+  <nav class="nav">
+    <a href="index.html">Asignaturas</a>
+    <a class="on" href="agenda.html">Calendario</a>
+    <a href="notas.html">Notas</a>
+    <a href="actualizar.html">Temario nuevo</a>
+  </nav>
+</div></header>
 
-<h2>Tareas pendientes, por prioridad</h2>
-<div id="pend"></div>
+<main>
+<div class="calhead">
+  <h1 id="mes"></h1>
+  <div class="sp">
+    <button class="ib" id="ant" aria-label="Mes anterior">‹</button>
+    <button class="btn sec" id="hoyb" style="padding:8px 16px">Hoy</button>
+    <button class="ib" id="sig" aria-label="Mes siguiente">›</button>
+    <button class="btn pri" id="nuevo" style="padding:9px 18px">＋ Añadir</button>
+  </div>
+</div>
 
-<h2>Próximas fechas</h2>
-<div id="fechas"></div>
+<div class="cal">
+  <div class="dow"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+  <div class="days" id="days"></div>
+</div>
+<div class="legend">
+  <span class="n3">Muy importante: exámenes y entregas del 15 % o más</span>
+  <span class="n2">Importante: entregas del 5 al 15 %</span>
+  <span class="n1">Poco importante: menos del 5 % y seminarios</span>
+  <span class="n0">Hecho o pasado</span>
+</div>
+<p class="mut" style="margin:6px 2px 0">Lo amarillo pasa a naranja cuando faltan menos de 3 días, y lo naranja a rojo cuando es para hoy o mañana.</p>
 
-<h2>Horario de clases</h2>
+<div class="panel" id="panel"></div>
+
+<h2 class="sec">Pendiente, por importancia</h2>
+<p class="mut">Primero lo que vence en menos de 3 días; después, lo más importante.</p>
+<div class="next" id="lista"></div>
+
+<h2 class="sec">Horario de clases</h2>
 <div id="horario"></div>
 
-<h2>Entregadas</h2>
-<div id="hechas"></div>
+<p class="mut" id="upd" style="margin-top:22px"></p>
 </main>
+
+<dialog id="dlg"><form method="dialog" id="frm">
+  <h3 id="dt"></h3>
+  <p class="mut" id="dinfo" style="margin:0"></p>
+  <label>Título<input id="ft" maxlength="80" required></label>
+  <div class="two">
+    <label>Día<input id="fd" type="date" required></label>
+    <label>Hora (opcional)<input id="fh" type="time"></label>
+  </div>
+  <div class="two">
+    <label>Asignatura<select id="fa"></select></label>
+    <label>Tipo<select id="fk"></select></label>
+  </div>
+  <label id="lp">Peso en la nota final, en % (opcional)<input id="fp" type="number" min="0" max="100" step="0.5" inputmode="decimal"></label>
+  <label>Nota (opcional)<textarea id="fn" maxlength="300"></textarea></label>
+  <label class="chk"><input id="fx" type="checkbox"> Ya está hecho</label>
+  <div class="prev" id="prev"></div>
+  <div class="acts">
+    <button type="button" class="btn del" id="bdel">Eliminar</button>
+    <button type="button" class="btn sec" id="bcan">Cancelar</button>
+    <button type="submit" class="btn pri">Guardar</button>
+  </div>
+</form></dialog>
+
 <script src="datos.js"></script>
+<script src="cal.js"></script>
 <script>
 const D=DATOS,$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fd=(s,o)=>new Date(s).toLocaleDateString('es-ES',o||{weekday:'long',day:'numeric',month:'long'});
-const fh=s=>new Date(s).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-const dia=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
-function falta(v){const ms=new Date(v)-Date.now(),dd=Math.round((dia(v)-dia(Date.now()))/864e5);
-  if(ms<0)return{txt:'Fuera de plazo',cls:'late'};
-  if(dd===0)return{txt:'Hoy · '+fh(v),cls:'late'};
-  if(dd===1)return{txt:'Mañana · '+fh(v),cls:'soon'};
-  if(dd<=3)return{txt:'En '+dd+' días',cls:'soon'};
-  return{txt:'En '+dd+' días',cls:''}}
-const chip=a=>{const x=D.asig[a];return `<span class="chip" style="--c:${x.color}">${x.emoji} ${esc(x.nombre)}</span>`};
-$('#upd').textContent='Leído de AulaESCI el '+fd(D.actualizado,{day:'numeric',month:'long'})+' a las '+fh(D.actualizado)+'. No se actualiza solo: pídele a Claude que lo vuelva a leer.';
+const chip=a=>{const x=D.asig[a];return x?`<span class="chip" style="--c:${x.color}">${x.emoji} ${esc(x.nombre)}</span>`:''};
+let hoy=CAL.hoy(),mes=new Date(hoy.getFullYear(),hoy.getMonth(),1),sel=CAL.ymd(hoy),EVS=[],edit=null;
 
-const P=D.tareas.filter(t=>t.estado==='pendiente'),H=D.tareas.filter(t=>t.estado!=='pendiente');
-$('#pend').innerHTML=P.length?P.map((t,i)=>{const f=falta(t.vence);
-  return `<div class="task" style="--c:${D.asig[t.asig].color}"><span class="num">${i+1}</span><div class="tb">
-  <div class="tt">${esc(t.t)}</div><div>${chip(t.asig)} <span class="mut">${esc(t.donde||'')}</span></div>
-  <div class="when"><b class="due ${f.cls}">${f.txt}</b> <span class="mut">· ${fd(t.vence)}, ${fh(t.vence)}</span></div>
-  <div class="mut why">${esc(t.porque)}</div></div></div>`}).join(''):'<div class="card good">No tienes ninguna entrega pendiente. 🎉</div>';
+function carga(){EVS=CAL.eventos().map(e=>(e.n=CAL.nivel(e),e))}
+function tarjeta(e){const d=CAL.pd(e.desde);
+  const peso=e.tipo==='entrega'?(e.peso!=null?` · ${e.peso} % de la nota${e.pesoEst&&!e.editado?' (estimado)':''}`:' · peso sin indicar'):'';
+  return `<button class="ev n${e.n}${e.hecha?' hecha':''}" data-id="${esc(e.id)}"><span class="d"><b>${d.getDate()}</b><span>${d.toLocaleDateString('es-ES',{month:'short'}).replace('.','')}</span></span>
+  <span class="b"><span class="tt">${esc(e.t)}</span>
+  <span><span class="lv">${CAL.NIV[e.n]}</span> ${chip(e.asig)} <span class="mut">${CAL.cuando(e)}${e.hora?' · '+e.hora:''}${e.hasta?' · hasta el '+CAL.pd(e.hasta).getDate():''}</span></span>
+  <span class="mut">${CAL.TIPOS[e.tipo]||''}${peso}${e.src==='mio'?' · añadido por ti':''}</span>
+  ${e.nota?`<span class="mut">${esc(e.nota)}</span>`:''}</span></button>`}
 
-$('#fechas').innerHTML=(D.fechas||[]).length?D.fechas.map(f=>`<div class="card"><b>${esc(f.t)}</b> ${chip(f.asig)}<br><span class="mut">${fd(f.desde,{day:'numeric',month:'long'})}${f.hasta?' – '+fd(f.hasta,{day:'numeric',month:'long'}):''}${f.nota?' · '+esc(f.nota):''}</span></div>`).join(''):'<p class="mut">Nada más en el calendario.</p>';
+function pinta(){
+  carga();
+  $('#mes').textContent=mes.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+  const ini=new Date(mes);ini.setDate(1-((mes.getDay()+6)%7));
+  const fin=new Date(mes.getFullYear(),mes.getMonth()+1,0),n=Math.ceil(((mes.getDay()+6)%7+fin.getDate())/7)*7;
+  let h='';for(let i=0;i<n;i++){const d=new Date(ini);d.setDate(ini.getDate()+i);const s=CAL.ymd(d);
+    const L=CAL.enDia(EVS,s).sort((a,b)=>b.n-a.n);
+    h+=`<button class="day${d.getMonth()!==mes.getMonth()?' out':''}${s===CAL.ymd(hoy)?' hoy':''}${s===sel?' sel':''}" data-d="${s}" aria-label="${d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}${L.length?', '+L.length+' cosas':''}">
+      <span class="dn">${d.getDate()}</span>${L.slice(0,3).map(e=>`<span class="pill n${e.n}${e.hecha?' hecha':''}">${esc(e.t)}</span>`).join('')}${L.length>3?`<span class="more">+${L.length-3} más</span>`:''}</button>`}
+  $('#days').innerHTML=h;
+  const L=CAL.enDia(EVS,sel).sort((a,b)=>b.n-a.n);
+  $('#panel').innerHTML=`<div class="hd"><h3>${CAL.pd(sel).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}</h3><button class="btn pri" id="addd">＋ Añadir a este día</button></div>
+    <div class="next">${L.length?L.map(tarjeta).join(''):'<p class="mut" style="margin:0">Nada este día. Toca «Añadir» para apuntar algo.</p>'}</div>`;
+  const P=CAL.pendientes();
+  $('#lista').innerHTML=P.length?P.map(tarjeta).join(''):'<p class="mut">No tienes nada pendiente. 🎉</p>';
+}
+
+/* editor */
+$('#fa').innerHTML='<option value="">Sin asignatura</option>'+Object.keys(D.asig).map(k=>`<option value="${k}">${esc(D.asig[k].nombre)}</option>`).join('');
+$('#fk').innerHTML=Object.keys(CAL.TIPOS).map(k=>`<option value="${k}">${CAL.TIPOS[k]}</option>`).join('');
+function leer(){const p=$('#fp').value;return{t:$('#ft').value.trim(),desde:$('#fd').value,hora:$('#fh').value,asig:$('#fa').value,tipo:$('#fk').value,
+  peso:$('#fk').value==='entrega'&&p!==''?Number(p):null,nota:$('#fn').value.trim(),hecha:$('#fx').checked}}
+function previa(){const e=Object.assign({src:edit?edit.src:'mio',hasta:edit?edit.hasta:''},leer());$('#lp').style.display=e.tipo==='entrega'?'':'none';
+  if(!e.desde){$('#prev').innerHTML='';return}const n=CAL.nivel(e);$('#prev').innerHTML=`Se verá como <span class="lv n${n}">${CAL.NIV[n]}</span>`}
+function abrir(e,dia){edit=e||null;const aula=e&&e.src==='aula';
+  $('#dt').textContent=e?(aula?'Editar (leído del aula)':'Editar'):'Añadir al calendario';
+  $('#dinfo').textContent=aula?'El título y la fecha vienen del aula. Puedes cambiar el tipo, el peso y marcarlo como hecho.':'Solo se guarda en este dispositivo.';
+  $('#ft').value=e?e.t:'';$('#fd').value=e?e.desde:(dia||sel);$('#fh').value=e?e.hora||'':'';$('#fa').value=e?e.asig||'':'';
+  $('#fk').value=e?e.tipo:'entrega';$('#fp').value=e&&e.peso!=null?e.peso:'';$('#fn').value=e?e.nota||'':'';$('#fx').checked=!!(e&&e.hecha);
+  ['#ft','#fd','#fh','#fa','#fn'].forEach(s=>$(s).disabled=!!aula);
+  $('#bdel').style.display=e?'':'none';$('#bdel').textContent=aula?'Restablecer':'Eliminar';
+  previa();$('#dlg').showModal()}
+['#fk','#fp','#fd','#fx'].forEach(s=>$(s).addEventListener('input',previa));
+$('#bcan').onclick=()=>$('#dlg').close();
+$('#bdel').onclick=()=>{if(!edit)return;if(edit.src==='aula')CAL.guardarOv(edit.id,null);else CAL.borrarMio(edit.id);$('#dlg').close();pinta()};
+$('#frm').addEventListener('submit',()=>{const v=leer();
+  if(edit&&edit.src==='aula')CAL.guardarOv(edit.id,{tipo:v.tipo,peso:v.peso,hecha:v.hecha});
+  else{v.id=edit?edit.id:'m'+Date.now().toString(36);CAL.guardarMio(v);sel=v.desde;const d=CAL.pd(v.desde);mes=new Date(d.getFullYear(),d.getMonth(),1)}
+  pinta()});
+
+document.addEventListener('click',ev=>{
+  const c=ev.target.closest('.ev[data-id]');if(c){const e=EVS.find(x=>x.id===c.dataset.id);if(e)abrir(e);return}
+  const d=ev.target.closest('.day');if(d){sel=d.dataset.d;pinta();return}
+  if(ev.target.closest('#addd')||ev.target.closest('#nuevo'))abrir(null,sel)});
+$('#ant').onclick=()=>{mes=new Date(mes.getFullYear(),mes.getMonth()-1,1);pinta()};
+$('#sig').onclick=()=>{mes=new Date(mes.getFullYear(),mes.getMonth()+1,1);pinta()};
+$('#hoyb').onclick=()=>{hoy=CAL.hoy();mes=new Date(hoy.getFullYear(),hoy.getMonth(),1);sel=CAL.ymd(hoy);pinta()};
 
 const DIAS=['Lunes','Martes','Miércoles','Jueves','Viernes'];
-$('#horario').innerHTML=D.horario?`<div class="card" style="overflow-x:auto"><table class="hor"><tr><th></th>${DIAS.map(d=>`<th>${d}</th>`).join('')}</tr>${D.horario.map(r=>`<tr><th>${esc(r.hora)}</th>${DIAS.map((_,i)=>{const c=r.dias[i];return c?`<td style="--c:${D.asig[c.asig].color}"><b>${esc(D.asig[c.asig].nombre)}</b>${c.aula?'<br><span class="mut">'+esc(c.aula)+'</span>':''}</td>`:'<td></td>'}).join('')}</tr>`).join('')}</table></div>`
-  :'<div class="card warn">AulaESCI no publica el horario de clases, así que todavía no está aquí. Pásale a Claude tu horario (una foto, un PDF o escrito) y lo añade.</div>';
-
-$('#hechas').innerHTML=H.length?H.map(t=>`<div class="card done">✅ <b>${esc(t.t)}</b> ${chip(t.asig)}<br><span class="mut">${esc(t.porque)}</span></div>`).join(''):'<p class="mut">Todavía ninguna.</p>';
+$('#horario').innerHTML=D.horario?`<div class="panel" style="overflow-x:auto;margin-top:12px"><table style="border-collapse:collapse;width:100%"><tr><th></th>${DIAS.map(d=>`<th style="padding:6px 8px;text-align:left">${d}</th>`).join('')}</tr>${D.horario.map(r=>`<tr><th style="padding:6px 8px;text-align:left;white-space:nowrap">${esc(r.hora)}</th>${DIAS.map((_,i)=>{const c=r.dias[i];return c?`<td style="padding:6px 8px;border:1px solid var(--bd);border-left:4px solid ${D.asig[c.asig].color}"><b>${esc(D.asig[c.asig].nombre)}</b>${c.aula?'<br><span class="mut">'+esc(c.aula)+'</span>':''}</td>`:'<td style="border:1px solid var(--bd)"></td>'}).join('')}</tr>`).join('')}</table></div>`
+  :'<div class="note">AulaESCI no publica el horario de clases, así que todavía no está aquí. Pásale a Claude tu horario (una foto, un PDF o escrito) y lo añade.</div>';
+const u=new Date(D.actualizado);
+$('#upd').textContent='Entregas y exámenes leídos de AulaESCI el '+u.toLocaleDateString('es-ES',{day:'numeric',month:'long'})+' a las '+u.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'. Lo que añades tú se guarda solo en este dispositivo.';
+pinta();
 </script>
 </body></html>

@@ -2,48 +2,76 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mis asignaturas · Estudio</title>
-<link rel="stylesheet" href="hub.css">
-</head><body><main>
-<h1>📚 Mis asignaturas</h1>
-<p class="mut">Elige una asignatura para ver su temario y practicar.</p>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="campus.css">
+</head><body>
+<header class="top"><div class="in">
+  <a class="brand" href="index.html"><i>🎓</i><span>Estudio</span></a>
+  <nav class="nav">
+    <a class="on" href="index.html">Asignaturas</a>
+    <a href="agenda.html">Calendario</a>
+    <a href="notas.html">Notas</a>
+    <a href="actualizar.html">Temario nuevo</a>
+  </nav>
+</div></header>
 
-<h2>Asignaturas</h2>
+<main>
+<section class="hero">
+  <span class="badge">📍 ESCI-UPF · Mi curso</span>
+  <h1><b>Mis asignaturas,</b><br>todo en un solo sitio</h1>
+  <p>Temario, ejercicios, calendario de entregas y notas de <strong>Communication</strong>, <strong>Business</strong> y <strong>Français</strong>.</p>
+  <div class="cta">
+    <a class="btn pri" href="agenda.html">🗓️ VER EL CALENDARIO</a>
+    <a class="btn sec" href="notas.html">🎓 Mis notas</a>
+  </div>
+</section>
+
+<h2 class="sec">Asignaturas</h2>
+<p class="mut">Elige una asignatura para ver su temario y practicar.</p>
 <div class="grid" id="subs"></div>
 
-<h2>Mi curso</h2>
-<div class="grid">
-  <a class="subj" href="agenda.html" style="--c:var(--c-age)">
-    <span class="em">🗓️</span><span class="nm">Horario y tareas</span>
-    <span class="pg" id="agpg">Entregas pendientes por prioridad</span><span class="go">Abrir →</span></a>
-  <a class="subj" href="notas.html" style="--c:var(--c-not)">
-    <span class="em">🎓</span><span class="nm">Calificaciones</span>
-    <span class="pg" id="ntpg">Notas y media por asignatura</span><span class="go">Abrir →</span></a>
-</div>
+<h2 class="sec">Lo próximo</h2>
+<p class="mut">Lo más importante primero. El color indica la importancia.</p>
+<div class="next" id="next"></div>
 
-<h2>Temario nuevo</h2>
-<a class="subj wide" href="actualizar.html" style="--c:var(--c-upd)">
-  <span class="em">📤</span>
-  <span><span class="nm">Actualizar temario</span><br><span class="mut">Sube apuntes nuevos de cualquier asignatura, a un tema que ya tienes o como tema nuevo.</span></span>
-  <span class="go" id="updgo">Subir apuntes →</span>
-</a>
+<h2 class="sec">Mi curso</h2>
+<div class="grid">
+  <a class="subj side" href="agenda.html" style="--c:var(--c-age)">
+    <span class="ico">🗓️</span><span class="bd"><span class="nm">Calendario y tareas</span>
+    <span class="pg" id="agpg">Entregas y exámenes del mes</span><span class="go">Abrir →</span></span></a>
+  <a class="subj side" href="notas.html" style="--c:var(--c-not)">
+    <span class="ico">🎓</span><span class="bd"><span class="nm">Calificaciones</span>
+    <span class="pg" id="ntpg">Notas y media por asignatura</span><span class="go">Abrir →</span></span></a>
+  <a class="subj side" href="actualizar.html" style="--c:var(--c-upd)">
+    <span class="ico">📤</span><span class="bd"><span class="nm">Actualizar temario</span>
+    <span class="pg">Sube apuntes nuevos a un tema que ya tienes o como tema nuevo.</span><span class="go" id="updgo">Subir apuntes →</span></span></a>
+</div>
 </main>
+
 <script src="temas.js"></script>
 <script src="datos.js"></script>
-<script>
-try{const P=DATOS.tareas.filter(t=>t.estado==='pendiente'),nx=P[0];
-  if(nx)document.getElementById('agpg').textContent=`${P.length} entrega${P.length>1?'s':''} pendiente${P.length>1?'s':''} · la primera: ${nx.t}`;
-  document.getElementById('ntpg').textContent=`${DATOS.notas.reduce((n,a)=>n+a.items.length,0)} notas en ${DATOS.notas.length} asignaturas`}catch(e){}
-</script>
+<script src="cal.js"></script>
 <script>
 const get=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 document.getElementById('subs').innerHTML=ASIG.map(a=>{
   const P=get(a.prog,{});let n=0,ok=0;Object.values(P).forEach(x=>{n+=x.n||0;ok+=x.ok||0});
   const pg=n?`${n} preguntas respondidas · ${Math.round(100*ok/n)}% de aciertos`:'Aún sin practicar en este dispositivo';
   return `<a class="subj" href="${a.pagina}" style="--c:${a.color}">
-    <span class="em">${a.emoji}</span><span class="nm">${a.nombre}</span>
+    <span class="ico">${a.emoji}</span><span class="nm">${a.nombre}</span>
     <span class="tags">${a.secciones.map(s=>`<span class="tag">${s}</span>`).join('')}</span>
     <span class="pg">${pg}</span><span class="go">Abrir →</span></a>`}).join('');
 const pend=get('hub-pend',[]).filter(x=>!x.sent).length;
 if(pend)document.getElementById('updgo').textContent=`${pend} pendiente${pend>1?'s':''} de enviar →`;
+try{
+  const P=CAL.pendientes(),A=DATOS.asig;
+  document.getElementById('next').innerHTML=P.length?P.slice(0,4).map(e=>{const d=CAL.pd(e.desde),a=A[e.asig];
+    return `<a class="ev n${e.n}" href="agenda.html"><span class="d"><b>${d.getDate()}</b><span>${d.toLocaleDateString('es-ES',{month:'short'}).replace('.','')}</span></span>
+    <span class="b"><span class="tt">${esc(e.t)}</span><span><span class="lv">${CAL.NIV[e.n]}</span> ${a?`<span class="chip" style="--c:${a.color}">${esc(a.nombre)}</span>`:''} <span class="mut">${CAL.cuando(e)}</span></span></span></a>`}).join('')
+    :'<p class="mut">No tienes nada pendiente. 🎉</p>';
+  if(P.length)document.getElementById('agpg').textContent=`${P.length} cosa${P.length>1?'s':''} pendiente${P.length>1?'s':''} · la primera: ${P[0].t}`;
+  document.getElementById('ntpg').textContent=`${DATOS.notas.reduce((n,a)=>n+a.items.length,0)} notas en ${DATOS.notas.length} asignaturas`;
+}catch(e){}
 </script>
 </body></html>

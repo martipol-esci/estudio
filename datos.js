@@ -10,25 +10,28 @@ window.DATOS = {
     mates:         { nombre: 'Mathematics', emoji: '📐', color: 'var(--c-mat)' }
   },
 
+  /* tipo: 'examen' | 'entrega' | 'seminario' | 'otro'. peso: % de la nota final (pesoEst: true = estimado, sin confirmar en el plan docente).
+     El color de importancia lo calcula cal.js a partir de tipo, peso y fecha. */
   /* Tareas, ya ordenadas por prioridad (la primera es la más urgente). estado: 'pendiente' | 'entregada' */
   tareas: [
-    { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'pendiente',
+    { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'pendiente', tipo: 'seminario',
       porque: 'Es la entrega más cercana y todavía no está subida.' },
-    { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'pendiente',
+    { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'pendiente', tipo: 'seminario',
       porque: 'Vence el jueves a primera hora: en la práctica hay que dejarlo hecho el miércoles.' },
-    { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'pendiente',
+    { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'pendiente', tipo: 'entrega', peso: 20, pesoEst: true,
       porque: 'Presentación final de la asignatura: además de subirla hay que ensayarla.' },
-    { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente',
+    { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 20, pesoEst: true,
       porque: 'Es el trabajo más largo de los que quedan: conviene avanzarlo esta semana.' },
-    { t: 'Final Project · presentación (PPT)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente',
+    { t: 'Final Project · presentación (PPT)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 20, pesoEst: true,
       porque: 'Va con el documento. Las exposiciones son del 23 al 25 de noviembre: 10 min + 5 de preguntas.' },
-    { t: 'News article · presentación (PPT)', asig: 'business', donde: 'News article Presentation', vence: '2026-11-11T23:59', estado: 'entregada',
+    { t: 'News article · presentación (PPT)', asig: 'business', donde: 'News article Presentation', vence: '2026-11-11T23:59', estado: 'entregada', tipo: 'entrega',
       porque: 'Enviada y pendiente de calificar.' }
   ],
 
   /* Fechas que no son entregas */
   fechas: [
-    { t: 'Exposiciones del Final Project', asig: 'business', desde: '2026-11-23', hasta: '2026-11-25', nota: 'De 9:45 a 10:45, un grupo cada 15 minutos.' }
+    { t: 'Examen parcial 2', asig: 'francais', desde: '2026-11-17', tipo: 'examen', peso: 10, nota: 'Parcial de francés (10 % del trimestre).' },
+    { t: 'Exposiciones del Final Project', asig: 'business', desde: '2026-11-23', hasta: '2026-11-25', tipo: 'entrega', peso: 20, pesoEst: true, nota: 'De 9:45 a 10:45, un grupo cada 15 minutos.' }
   ],
 
   /* Horario de clases: AulaESCI no lo publica. Se rellenará cuando esté disponible. */
