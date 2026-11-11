@@ -22,23 +22,11 @@
   <p class="mut">Elige una asignatura para ver su temario y practicar.</p>
   <div class="grid" id="subs"></div>
 
-  <h2 class="sec">Mi curso</h2>
-  <div class="grid">
-    <a class="subj side" href="agenda.html" style="--c:var(--c-age)">
-      <span class="ico">🗓️</span><span class="bd"><span class="nm">Calendario y tareas</span>
-      <span class="pg">Entregas y exámenes del mes</span><span class="go">Abrir →</span></span></a>
-    <a class="subj side" href="notas.html" style="--c:var(--c-not)">
-      <span class="ico">🎓</span><span class="bd"><span class="nm">Calificaciones</span>
-      <span class="pg" id="ntpg">Notas y media por asignatura</span><span class="go">Abrir →</span></span></a>
-    <a class="subj side" href="actualizar.html" style="--c:var(--c-upd)">
-      <span class="ico">📤</span><span class="bd"><span class="nm">Actualizar temario</span>
-      <span class="pg">Sube apuntes nuevos a un tema que ya tienes o como tema nuevo.</span><span class="go" id="updgo">Subir apuntes →</span></span></a>
-  </div>
 </div>
 
 <aside class="pend">
   <h2 class="sec">Tareas pendientes</h2>
-  <p class="mut">Por orden de entrega.</p>
+  <p class="mut">Esta semana, por orden de entrega.</p>
   <ol class="todo" id="todo"></ol>
   <a class="go" href="agenda.html">Ver el calendario →</a>
 </aside>
@@ -57,14 +45,12 @@ document.getElementById('subs').innerHTML=ASIG.map(a=>{
     <span class="ico">${a.emoji}</span><span class="nm">${a.nombre}</span>
     <span class="tags">${a.secciones.map(s=>`<span class="tag">${s}</span>`).join('')}</span>
     <span class="pg">${pg}</span><span class="go">Abrir →</span></a>`}).join('');
-const pend=get('hub-pend',[]).filter(x=>!x.sent).length;
-if(pend)document.getElementById('updgo').textContent=`${pend} pendiente${pend>1?'s':''} de enviar →`;
 try{
-  const P=CAL.porFecha(),A=DATOS.asig;
+  const h=CAL.hoy(),dom=new Date(h);dom.setDate(h.getDate()+(7-(h.getDay()||7)));const fin=CAL.ymd(dom);
+  const P=CAL.porFecha().filter(e=>e.desde<=fin),A=DATOS.asig;
   document.getElementById('todo').innerHTML=P.length?P.map(e=>{const a=A[e.asig];
     return `<li class="n${e.n}"><span class="tt">${esc(e.t)}</span>${a?`<span class="mut">${a.emoji} ${esc(a.nombre)}</span>`:''}</li>`}).join('')
-    :'<li class="n0"><span class="tt">No tienes nada pendiente 🎉</span></li>';
-  document.getElementById('ntpg').textContent=`${DATOS.notas.reduce((n,a)=>n+a.items.length,0)} notas en ${DATOS.notas.length} asignaturas`;
+    :'<li class="n0"><span class="tt">Nada más esta semana 🎉</span></li>';
 }catch(e){}
 </script>
 </body></html>

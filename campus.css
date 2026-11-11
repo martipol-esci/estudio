@@ -123,3 +123,11 @@ dialog .prev{font-size:13.5px}
 .todo .mut{font-size:13px}
 .pend .go{font:800 14.5px Montserrat,sans-serif;color:var(--c-age);text-decoration:none}
 @media (max-width:860px){.cols{grid-template-columns:1fr;gap:0}.pend{position:static}}
+
+/* asignaturas: recuadro de tareas estrecho y pegado al lateral derecho */
+main.cols{max-width:1360px;grid-template-columns:minmax(0,1fr) 220px;gap:32px}
+main.cols .colmain{max-width:860px}
+.pend{padding:2px 12px 14px}
+.todo li{padding:7px 10px}.todo .tt{font-size:14px}.todo .mut{font-size:12px}
+.todo .tt::before{content:none}
+@media (max-width:860px){main.cols{grid-template-columns:1fr;gap:0}}
