@@ -57,9 +57,14 @@ window.CAL = (function () {
     return eventos().map(e => (e.n = nivel(e), e)).filter(e => e.n > 0)
       .sort((a, b) => ya(a) - ya(b) || b.n - a.n ||a.desde.localeCompare(b.desde) || (a.hora || '').localeCompare(b.hora || ''));
   }
+  /* pendientes por orden de entrega: lo que vence antes, primero */
+  function porFecha() {
+    return eventos().map(e => (e.n = nivel(e), e)).filter(e => e.n > 0)
+      .sort((a, b) => a.desde.localeCompare(b.desde) || (a.hora || '99').localeCompare(b.hora || '99'));
+  }
   function enDia(evs, s) { return evs.filter(e => e.desde <= s && s <= (e.hasta || e.desde)) }
   function guardarMio(m) { const L = LS.get(K_MIO, []); const i = L.findIndex(x => x.id === m.id); if (i >= 0) L[i] = m; else L.push(m); LS.set(K_MIO, L) }
   function borrarMio(id) { LS.set(K_MIO, LS.get(K_MIO, []).filter(x => x.id !== id)) }
   function guardarOv(id, o) { const ov = LS.get(K_OV, {}); if (o) ov[id] = o; else delete ov[id]; LS.set(K_OV, ov) }
-  return { eventos, nivel, base, dias, cuando, pendientes, enDia, guardarMio, borrarMio, guardarOv, ymd, pd, hoy, TIPOS, NIV };
+  return { eventos, nivel, base, dias, cuando, pendientes, porFecha, enDia, guardarMio, borrarMio, guardarOv, ymd, pd, hoy, TIPOS, NIV };
 })();

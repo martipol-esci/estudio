@@ -35,3 +35,4 @@ button{border-radius:12px}
 button.pri,button.on{color:#fff}
 .chips button{border-radius:99px}
 select,input[type=text],textarea{border-radius:12px}
+:root:root:root{--c-com:#4f46e5;--c-bus:#10a37f;--c-fra:#e5484d;--c-upd:#7c3aed;--c-mat:#b45309;--c-age:#0891b2;--c-not:#9333ea}
