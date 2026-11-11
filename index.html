@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="campus.css">
-</head><body>
+</head><body class="portada">
 <header class="top"><div class="in">
   <a class="brand" href="index.html"><i>🎓</i><span>Estudio</span></a>
   <nav class="nav">
@@ -22,9 +22,17 @@
   <h1><b>Hola,</b> Martí</h1>
 </section>
 <section class="chat" id="chat" aria-label="Chat de estudio">
-  <div class="chd"><b>💬 Pregúntame</b><span class="mut">tareas · temario · ejercicios</span><button class="clr" type="button" title="Borrar la conversación">Borrar</button></div>
+  <div class="chd"><button class="clr" type="button" title="Borrar la conversación y volver al inicio">✕ Nueva conversación</button></div>
   <div class="log" aria-live="polite"></div>
-  <form autocomplete="off"><input type="text" placeholder="Pregúntame algo…" aria-label="Tu mensaje" enterkeyhint="send"><button class="btn pri" type="submit">Enviar</button></form>
+  <form autocomplete="off"><input type="text" placeholder="Pregúntame algo…" aria-label="Tu mensaje" enterkeyhint="send"><button class="send" type="submit" aria-label="Enviar">↑</button></form>
+  <div class="sugg">
+    <button data-say="¿Qué tengo para hoy?">¿Qué tengo para hoy?</button>
+    <button data-say="¿Qué tengo esta semana?">¿Qué tengo esta semana?</button>
+    <button data-say="¿Cuándo es el próximo examen?">Próximo examen</button>
+    <button data-say="Temario de Business">Temario de Business</button>
+    <button data-say="Ejercicios tipo test de Communication">Ejercicios de Communication</button>
+    <button data-say="Ejercicios de francés: posesivos">Ejercicios de francés</button>
+  </div>
 </section>
 </main>
 <script src="datos.js"></script>

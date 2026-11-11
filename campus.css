@@ -189,3 +189,31 @@ main.cols .colmain{max-width:860px}
 .chd b{white-space:nowrap}
 @media (max-width:560px){.chd .mut{display:none}}
 .msg .tema{font-size:13.5px;color:var(--ink);background:#fff7e6;border:1px solid #f3d08a;border-radius:99px;padding:3px 12px;display:inline-block}
+
+/* ===== portada tipo buscador (v2) ===== */
+body.portada{background:radial-gradient(ellipse 70% 55% at 50% 62%,#cfe4fb 0%,#e6f0fc 45%,#f6f8fb 100%) fixed;min-height:100vh}
+body.portada main{max-width:none;padding:0 16px}
+body.portada .cover.conchat{padding:clamp(40px,16vh,150px) 0 26px}
+.chat{max-width:860px;background:none;border:0;box-shadow:none;border-radius:0;overflow:visible}
+.chat .chd{display:none;border:0;padding:8px 4px 0;justify-content:flex-end}
+.chat .chd .clr{margin-left:auto;font-size:13.5px;background:rgba(255,255,255,.7);border:1px solid var(--bd);border-radius:99px;padding:6px 14px}
+.chat .log{display:none;height:auto;min-height:0;padding:10px 4px 16px;gap:14px}
+.chat form{background:#fff;border:0;border-radius:99px;padding:8px 8px 8px 12px;box-shadow:0 6px 28px rgba(11,37,64,.12);align-items:center}
+.chat form input{border:0;background:none;font-size:17px;padding:12px 12px}
+.chat form input:focus{outline:none}
+.chat form:focus-within{box-shadow:0 6px 28px rgba(11,37,64,.12),0 0 0 2px var(--gold)}
+.chat .send{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--gold);color:var(--navy);font:800 20px Montserrat,sans-serif;cursor:pointer}
+.chat .send:hover{filter:brightness(1.05)}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px 0 40px}
+.sugg button{font:600 14px "Open Sans",sans-serif;padding:8px 15px;border-radius:99px;border:1px solid rgba(11,37,64,.12);background:rgba(255,255,255,.75);color:var(--ink);cursor:pointer}
+.sugg button:hover{background:#fff;border-color:var(--gold)}
+/* con conversación: desaparece el saludo y los mensajes salen desde arriba */
+body.chatting .cover,body.chatting .sugg{display:none}
+body.chatting .chat{height:calc(100dvh - 58px - env(safe-area-inset-top,0px));padding-bottom:14px}
+body.chatting .chat .chd{display:flex}
+body.chatting .chat .log{display:flex;flex:1}
+.msg.bot{background:#fff;box-shadow:0 1px 3px rgba(11,37,64,.05)}
+.msg .sec,.msg .fra section{background:#f8fafc}
+@media (max-width:560px){.chat .log{height:auto;padding:8px 0 12px}.chat form input{font-size:16px}}
+body.chatting .chat .log::after{content:'';flex:none;height:calc(100% - 90px)}
+.chat .log{scroll-behavior:auto}body.chatting .chat .log::after{height:100%}

@@ -115,10 +115,12 @@ const tName = (D, ti) => (D.T[ti].n ? D.T[ti].n + ' · ' : '') + D.T[ti].t;
 const btn = (cmd, label, cls) => `<button class="${cls || 'chip'}" data-cmd="${esc(cmd)}">${label}</button>`;
 const sayb = t => `<button class="chip" data-say="${esc(t)}">${esc(t)}</button>`;
 function add(who, html, keep) {
-  const d = document.createElement('div'); d.className = 'msg ' + who; d.innerHTML = html; log.appendChild(d);
-  if (!keep) log.scrollTop = who === 'yo' ? log.scrollHeight : Math.max(0, d.offsetTop - 10);
+  const d = document.createElement('div'); d.className = 'msg ' + who; d.innerHTML = html; log.appendChild(d); modo();
+  if (!keep) log.scrollTop = Math.max(0, (who === 'yo' ? d.offsetTop : (d.previousElementSibling && d.previousElementSibling.classList.contains('yo') ? d.previousElementSibling : d).offsetTop) - 10);
   save(); return d;
 }
+/* sin mensajes: portada con «Hola, Martí» y el buscador; con mensajes: solo la conversación, desde arriba */
+function modo() { document.body.classList.toggle('chatting', log.children.length > 0) }
 function save() {
   const L = [...log.children].filter(x => !x.classList.contains('tmp')).map(x => [x.className, x.innerHTML]);
   for (const n of [60, 25, 8]) { try { localStorage.setItem(K, JSON.stringify({ L: L.slice(-n), ctx })); return } catch (e) {} }
@@ -340,7 +342,8 @@ function record(q, ok) {
   if (ok) EX.ok++; else EX.bad.push(q);
   try { const D = EX.D; if (D.id === 'francais') D.w.eval('rec')(q.c, ok); else if (D.rec) D.rec(String(q.t), ok) } catch (e) {}
 }
-function next(fb) { const d = add('bot', fb); EX.i++; ask(true); log.scrollTop = Math.max(0, d.offsetTop - 10) }
+let SCR = false;
+function next(fb) { const d = add('bot', fb); EX.i++; ask(true); log.scrollTop = Math.max(0, d.offsetTop - 10); SCR = true }
 function answerMC(b) {
   const [id, i, oi] = b.dataset.x.split('|').map(Number); if (!EX || EX.id !== id || EX.i !== i) return;
   const q = EX.qs[i], ok = oi === q.a;
@@ -419,21 +422,23 @@ async function handle(text) {
   return theory(text, n);
 }
 async function run(fn) {
-  const t = document.createElement('div'); t.className = 'msg bot tmp'; t.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; log.appendChild(t); log.scrollTop = log.scrollHeight;
+  const t = document.createElement('div'); t.className = 'msg bot tmp'; t.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; log.appendChild(t);
   try { await fn() } catch (e) { console.error(e); add('bot', '<p>No he podido cargar esa parte de la web. Comprueba la conexión y vuelve a intentarlo.</p>') }
   t.remove(); save();
+  /* la pregunta se queda arriba y la respuesta sale justo debajo */
+  const ys = log.querySelectorAll('.msg.yo'), y = ys[ys.length - 1]; if (y && !SCR) log.scrollTop = Math.max(0, y.offsetTop - 10); SCR = false;
 }
 function send(text) { text = text.trim(); if (!text) return; add('yo', esc(text)); run(() => handle(text)) }
 
 form.addEventListener('submit', e => { e.preventDefault(); const t = inp.value; inp.value = ''; send(t) });
-log.addEventListener('click', e => {
+box.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b || b.disabled) return;
   if (b.dataset.say) send(b.dataset.say);
   else if (b.dataset.x) answerMC(b);
   else if (b.dataset.cmd) { const c = b.dataset.cmd; if (!/^(skip|stop)\|/.test(c)) add('yo', esc(b.textContent)); run(() => cmd(c)) }
 });
 const clr = box.querySelector('.clr');
-if (clr) clr.onclick = () => { EX = null; LAST = null; ctx = {}; log.innerHTML = ''; inp.placeholder = 'Pregúntame algo…'; try { localStorage.removeItem(K) } catch (e) {} welcome() };
+if (clr) clr.onclick = () => { EX = null; LAST = null; ctx = {}; log.innerHTML = ''; inp.placeholder = 'Pregúntame algo…'; try { localStorage.removeItem(K) } catch (e) {} modo(); scrollTo(0, 0) };
 
 /* ================= recuperar la conversación ================= */
 let old = null; try { old = JSON.parse(localStorage.getItem(K) || 'null') } catch (e) {}
@@ -441,7 +446,7 @@ if (old && old.L && old.L.length) {
   ctx = old.ctx || {};
   old.L.forEach(([c, h]) => { const d = document.createElement('div'); d.className = c; d.innerHTML = h; log.appendChild(d) });
   log.querySelectorAll('[data-x],[data-cmd^="skip|"],[data-cmd^="stop|"],[data-cmd="rep"],[data-cmd="again"]').forEach(b => b.disabled = true);  /* los ejercicios a medias no se retoman */
-  log.scrollTop = log.scrollHeight;
-} else welcome();
+  modo(); log.scrollTop = log.scrollHeight;
+}
 setTimeout(() => { loadAll().catch(() => {}) }, 1200);   /* precarga el temario para que la primera respuesta sea rápida */
 })();
