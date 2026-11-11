@@ -1,0 +1,37 @@
+/* Diseño claro para el interior de las asignaturas y «Temario nuevo».
+   Se carga DESPUÉS de los estilos propios de cada página y solo cambia el aspecto: colores, tipografía, barra superior.
+   --sub (color de la asignatura) se define en el <html> de cada página. */
+:root:root:root{--bg:#f6f8fb;--fg:#1f2d3d;--mut:#64748b;--card:#fff;--bd:#e3e8ef;
+  --ac:var(--sub,#4f46e5);--acs:color-mix(in srgb,var(--sub,#4f46e5) 9%,#fff);--fx:color-mix(in srgb,var(--sub,#4f46e5) 6%,#fff);
+  --ok:#15803d;--oks:rgba(21,128,61,.1);--ko:#dc2626;--kos:rgba(220,38,38,.09);--tr:#b45309;--trs:rgba(247,168,51,.16);
+  --ink:#0b2540;--gold:#f7a833;color-scheme:light}
+body{font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+h1,h2,h3{font-family:Montserrat,system-ui,sans-serif}
+main>h1{font-size:clamp(24px,4.6vw,34px);font-weight:800;color:var(--ink);margin:22px 0 14px;line-height:1.15}
+h2{color:var(--ink);font-weight:800}
+
+/* barra superior (igual que la portada) */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);padding-top:env(safe-area-inset-top,0px)}
+.top .in{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.top .brand{display:flex;align-items:center;gap:9px;font:800 19px Montserrat,system-ui,sans-serif;color:var(--ink);text-decoration:none;flex:none}
+.top .brand i{font-style:normal;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#fbbf4d,#f59e0b);font-size:18px}
+.top .tabs{margin:0 0 0 auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
+.top .tabs::-webkit-scrollbar{display:none}
+.top .tabs a{flex:none;padding:8px 15px;border-radius:99px;font:700 14.5px Montserrat,system-ui,sans-serif;color:var(--ink);text-decoration:none;white-space:nowrap}
+.top .tabs a:hover{background:#eef2f7}
+.top .tabs a.on{background:var(--gold);color:var(--ink)}
+@media (max-width:560px){.top .brand span{display:none}.top .tabs a{padding:8px 12px;font-size:14px}}
+
+/* pestañas de la asignatura */
+#nav{gap:8px;margin-bottom:18px}
+#nav button{border-radius:99px;padding:9px 18px;font:700 14.5px Montserrat,system-ui,sans-serif;color:var(--ink);background:#fff}
+#nav button:hover{background:#eef2f7}
+#nav button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 4px 12px rgba(247,168,51,.3)}
+
+/* tarjetas y botones */
+.card,.bub{border-radius:16px;box-shadow:0 1px 2px rgba(11,37,64,.04)}
+.card{padding:16px 18px}
+button{border-radius:12px}
+button.pri,button.on{color:#fff}
+.chips button{border-radius:99px}
+select,input[type=text],textarea{border-radius:12px}
