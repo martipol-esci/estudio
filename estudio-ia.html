@@ -25,17 +25,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .msg.ia{max-width:100%}
 .nota{max-width:860px;margin:0 auto 30px;text-align:center;color:var(--mut);font-size:13px}
 body.chatting .nota{display:none}
+/* asignaturas, calendario y notas se abren aquí dentro, debajo de la barra */
+#vista{border:0;width:100%;height:calc(100dvh - 56px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));background:var(--bg);display:block}
+#vista[hidden]{display:none}
+body.viendo main{display:none}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
 <header class="top"><div class="in">
-  <a class="brand" href="https://martipol-esci.github.io/estudio/"><i>🎓</i><span>Chat</span></a>
-  <nav class="nav">
-    <a href="https://martipol-esci.github.io/estudio/asignaturas.html">Asignaturas</a>
-    <a href="https://martipol-esci.github.io/estudio/agenda.html">Calendario</a>
-    <a href="https://martipol-esci.github.io/estudio/notas.html">Notas</a>
+  <a class="brand" href="#chat" data-v="chat"><i>🎓</i><span>Estudio</span></a>
+  <nav class="nav" id="menu">
+    <a class="on" href="#chat" data-v="chat">Chat</a>
+    <a href="#asignaturas" data-v="asignaturas">Asignaturas</a>
+    <a href="#calendario" data-v="calendario">Calendario</a>
+    <a href="#notas" data-v="notas">Notas</a>
   </nav>
 </div></header>
+<iframe id="vista" title="Página de estudio" hidden></iframe>
 
 <main>
 <section class="hero cover conchat">
@@ -66,5 +72,34 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   const ORD=['Primer','Segundo','Tercer','Cuarto'],c=Math.min(Math.max(ini-2026,0),3),t=m>=9?0:m<=3?1:2;
   document.getElementById('curso').textContent=`📍 ESCI-UPF · ${ORD[c]} curso · ${ORD[t]} trimestre`;
   document.body.classList.add('portada')})();
+
+/* Navegación: todo vive en esta página. El chat es la vista principal; asignaturas, calendario y notas se cargan en el marco #vista.
+   Las páginas de dentro traen su propia barra y enlaces a index.html: se oculta la barra y esos enlaces vuelven al chat. */
+(function(){
+  const PAG={asignaturas:'asignaturas.html',calendario:'agenda.html',notas:'notas.html'},
+        DE={'asignaturas.html':'asignaturas','business.html':'asignaturas','communication.html':'asignaturas','francais.html':'asignaturas','agenda.html':'calendario','notas.html':'notas'};
+  const f=document.getElementById('vista'),menu=document.getElementById('menu');
+  const marca=v=>menu.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  function ir(v,hash){
+    if(!PAG[v])v='chat';
+    document.body.classList.toggle('viendo',v!=='chat');f.hidden=v==='chat';marca(v);
+    if(v!=='chat'){f.src=PAG[v]}
+    if(hash!==false){try{if(location.hash.slice(1)!==v)location.hash=v}catch(e){}}
+    scrollTo(0,0);
+  }
+  window.irA=ir;
+  const destino=h=>{h=String(h||'').split(/[?#]/)[0];return /(^|\/)index\.html$/.test(h)?'chat':/(^|\/)actualizar\.html$/.test(h)?'fuera':DE[h.replace(/^.*\//,'')]&&PAG[DE[h.replace(/^.*\//,'')]]===h.replace(/^.*\//,'')?DE[h.replace(/^.*\//,'')]:null};
+  f.addEventListener('load',()=>{let d;try{d=f.contentDocument}catch(e){return}if(!d||!d.body)return;
+    const st=d.createElement('style');st.textContent='header.top{display:none!important}body{padding-top:6px}';(d.head||d.body).appendChild(st);
+    const v=DE[(d.location.pathname||'').replace(/^.*\//,'')];if(v)marca(v);
+    d.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const k=destino(a.getAttribute('href'));
+      if(k==='chat'){e.preventDefault();ir('chat')}else if(k==='fuera'){e.preventDefault()}},true);
+  });
+  document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;
+    if(a.dataset.v){e.preventDefault();ir(a.dataset.v);return}
+    const k=destino(a.getAttribute('href'));if(k&&k!=='fuera'){e.preventDefault();ir(k)}});
+  addEventListener('hashchange',()=>ir(location.hash.slice(1),false));
+  if(PAG[location.hash.slice(1)])ir(location.hash.slice(1),false);
+})();
 </script>
 <script src="chat.js"></script>
