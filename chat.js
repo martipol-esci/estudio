@@ -489,7 +489,8 @@ async function ai(text) {
   CTL = new AbortController(); let got = '';
   const pinta = (t, fin) => { d.innerHTML = md(t) + (fin ? '' : '<p class="mut"><button class="chip ghost" data-stop>Parar</button></p>') };
   try {
-    const r = await SAMPLE(msgs, { cache: false, signal: CTL.signal, onText: ({ text: t }) => { got = t; pinta(t) } });
+    /* modelTier 'quick' = el modelo más ligero (el que menos gasta). Martí lo quiere SIEMPRE así: no subir de nivel. */
+    const r = await SAMPLE(msgs, { modelTier: 'quick', cache: false, signal: CTL.signal, onText: ({ text: t }) => { got = t; pinta(t) } });
     got = r.text; pinta(got, true); if (r.truncated) d.insertAdjacentHTML('beforeend', '<p class="mut">La respuesta se ha cortado por larga. Pídeme que siga.</p>');
   } catch (e) {
     const code = e && e.code; got = (e && e.text) || (code === 'cancelled' ? got : '');
