@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-11T18:05',
+  actualizado: '2026-11-12T09:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -14,8 +14,8 @@ window.DATOS = {
      El color de importancia lo calcula cal.js a partir de tipo, peso y fecha. */
   /* Tareas, ya ordenadas por prioridad (la primera es la más urgente). estado: 'pendiente' | 'entregada' */
   tareas: [
-    { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'pendiente', tipo: 'seminario',
-      porque: 'Es la entrega más cercana y todavía no está subida.' },
+    { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'entregada', tipo: 'seminario',
+      porque: 'Enviada el 11 de noviembre y pendiente de calificar.' },
     { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'entregada', tipo: 'seminario',
       porque: 'Enviado el 11 de noviembre y pendiente de calificar.' },
     { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'pendiente', tipo: 'entrega', peso: 20,
