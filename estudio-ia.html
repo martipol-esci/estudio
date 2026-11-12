@@ -25,6 +25,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .msg.ia{max-width:100%}
 .nota{max-width:860px;margin:0 auto 30px;text-align:center;color:var(--mut);font-size:13px}
 body.chatting .nota{display:none}
+/* adjuntos */
+.chat .clip{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--bd);background:#fff;color:var(--ink);font:400 24px/1 "Open Sans",sans-serif;cursor:pointer}
+.chat .clip:hover{border-color:var(--gold);background:#fff7e6}
+.chat form{padding-left:8px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 6px 8px}
+.att{display:inline-flex;align-items:center;gap:6px;max-width:100%;background:#fff;border:1px solid var(--bd);border-radius:99px;padding:5px 6px 5px 12px;font-size:13.5px;color:var(--ink);overflow-wrap:anywhere}
+.att button{border:0;background:#eef2f7;color:var(--mut);border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;flex:none}
+.msg .atts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.msg .atts span{background:rgba(255,255,255,.16);border-radius:99px;padding:2px 10px;font-size:12.5px}
 /* asignaturas, calendario y notas se abren aquí dentro, debajo de la barra */
 #vista{border:0;width:100%;height:calc(100dvh - 56px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));background:var(--bg);display:block}
 #vista[hidden]{display:none}
@@ -52,7 +61,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 <section class="chat" id="chat" aria-label="Chat de estudio con IA">
   <div class="chd"><span class="iab off">Conectando con Claude…</span><button class="clr" type="button" id="nueva" title="Borrar la conversación y volver al inicio">✕ Nueva conversación</button></div>
   <div class="log" aria-live="polite"></div>
-  <form autocomplete="off"><input type="text" id="pregunta" placeholder="Pregúntame algo…" aria-label="Tu mensaje" enterkeyhint="send"><button class="send" type="submit" aria-label="Enviar">↑</button></form>
+  <div class="tray" hidden aria-live="polite"></div>
+  <input type="file" id="archivos" multiple hidden accept="image/jpeg,image/png,image/webp,image/gif,.pdf,.docx,.pptx,.txt,.md,.csv">
+  <form autocomplete="off"><button class="clip" type="button" id="adjuntar" aria-label="Adjuntar archivos" title="Adjuntar imágenes, PDF, Word, PowerPoint o texto">+</button><input type="text" id="pregunta" placeholder="Pregúntame algo…" aria-label="Tu mensaje" enterkeyhint="send"><button class="send" type="submit" aria-label="Enviar">↑</button></form>
   <div class="sugg">
     <button data-say="¿Qué tengo para hoy?">¿Qué tengo para hoy?</button>
     <button data-say="Explícame la diferencia entre adverse selection y moral hazard con un ejemplo">Explícame adverse selection vs moral hazard</button>
