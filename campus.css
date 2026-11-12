@@ -217,3 +217,11 @@ body.chatting .chat .log{display:flex;flex:1}
 @media (max-width:560px){.chat .log{height:auto;padding:8px 0 12px}.chat form input{font-size:16px}}
 body.chatting .chat .log::after{content:'';flex:none;height:calc(100% - 90px)}
 .chat .log{scroll-behavior:auto}body.chatting .chat .log::after{height:100%}
+/* enlace al chat con IA (artefacto de claude.ai) */
+.ialink{display:inline-flex;align-items:center;gap:6px;font:800 14px Montserrat,system-ui,sans-serif;color:#fff;background:linear-gradient(135deg,#6d4aff,#8f6bff);border-radius:99px;padding:9px 18px;text-decoration:none;box-shadow:0 6px 18px rgba(109,74,255,.28)}
+.ialink:hover{filter:brightness(1.07)}
+.iacta{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 40px;text-align:center}
+.iacta .mut{font-size:13px}
+.sugg{margin-bottom:22px}
+body.chatting .iacta{display:none}
+.chat .chd .ialink{padding:6px 14px;font-size:13px;box-shadow:none}

@@ -22,6 +22,9 @@ const SUBJ = {
 const IDS = Object.keys(SUBJ);
 let ctx = {};          /* último tema del que se ha hablado: {asig, ti, si} */
 let EX = null, sid = 0, PEND = '';
+/* IA: solo existe cuando la página se abre como artefacto de claude.ai (window.claude). En la web normal SAMPLE queda en null y el chat funciona sin IA. */
+let SAMPLE = null, TURNS = [], CTL = null, STICKY = '';
+try { if (window.claude && window.claude.use) window.claude.use('sample').then(s => { SAMPLE = s || null; document.querySelectorAll('.iab').forEach(b => { b.textContent = s ? '✨ IA activada' : 'IA no disponible aquí: funciona sin IA'; b.classList.toggle('off', !s) }) }) } catch (e) {}
 
 /* ================= carga de asignaturas ================= */
 const LOADING = {};
@@ -29,6 +32,7 @@ function load(id) {
   return LOADING[id] || (LOADING[id] = new Promise((ok, ko) => {
     const f = document.createElement('iframe'); f.hidden = true; f.tabIndex = -1; f.setAttribute('aria-hidden', 'true'); f.src = SUBJ[id].pag;
     f.onload = () => { try { ok(build(id, f.contentWindow)) } catch (e) { ko(e) } }; f.onerror = ko; document.body.appendChild(f);
+    setTimeout(() => ko(new Error('La asignatura ' + id + ' no ha cargado a tiempo')), 15000);
   }));
 }
 const loadAll = () => Promise.all(IDS.map(load));
@@ -123,7 +127,7 @@ function add(who, html, keep) {
 function modo() { document.body.classList.toggle('chatting', log.children.length > 0) }
 function save() {
   const L = [...log.children].filter(x => !x.classList.contains('tmp')).map(x => [x.className, x.innerHTML]);
-  for (const n of [60, 25, 8]) { try { localStorage.setItem(K, JSON.stringify({ L: L.slice(-n), ctx })); return } catch (e) {} }
+  for (const n of [60, 25, 8]) { try { localStorage.setItem(K, JSON.stringify({ L: L.slice(-n), ctx, T: TURNS.slice(-12), S: STICKY })); return } catch (e) {} }
 }
 function welcome() {
   add('bot', `<p><b>¡Hola, Martí!</b> Pregúntame por tus tareas, pídeme una parte del temario o que te ponga ejercicios.</p>
@@ -403,6 +407,102 @@ async function cmd(c) {
   if (k === 'again') { if (LAST) begin(LAST.D, LAST.o, LAST.about); else add('bot', '<p>Esa ronda ya no la tengo guardada. Pídeme ejercicios otra vez.</p>'); return }
 }
 
+/* ================= IA (solo en el artefacto) ================= */
+/* Markdown sencillo → HTML (lo que escribe Claude): títulos, negrita, cursiva, código, listas y tablas */
+function md(src) {
+  const inl = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>').replace(/(^|[\s(])_([^_\s][^_]*)_(?=[\s).,;:!?]|$)/g, '$1<i>$2</i>');
+  const L = String(src).replace(/\r/g, '').split('\n'), out = []; let i = 0;
+  const cells = l => l.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+  while (i < L.length) {
+    const l = L[i];
+    if (/^```/.test(l)) { const b = []; i++; while (i < L.length && !/^```/.test(L[i])) b.push(L[i++]); i++; out.push(`<pre>${esc(b.join('\n'))}</pre>`); continue }
+    if (/^\s*$/.test(l)) { i++; continue }
+    const h = l.match(/^(#{1,4})\s+(.*)$/); if (h) { out.push(`<h4>${inl(h[2])}</h4>`); i++; continue }
+    if (/^\s*([-*_])\1\1+\s*$/.test(l)) { out.push('<hr>'); i++; continue }
+    if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < L.length && /^\s*\|?[\s:|-]+\|?\s*$/.test(L[i + 1]) && L[i + 1].includes('-')) {
+      const hd = cells(l), rows = []; i += 2; while (i < L.length && /^\s*\|.*\|\s*$/.test(L[i])) rows.push(cells(L[i++]));
+      out.push(`<div class="tw"><table><tr>${hd.map(c => `<th>${inl(c)}</th>`).join('')}</tr>${rows.map(r => `<tr>${r.map(c => `<td>${inl(c)}</td>`).join('')}</tr>`).join('')}</table></div>`); continue;
+    }
+    const ul = /^\s*[-*•]\s+/, ol = /^\s*\d+[.)]\s+/;
+    if (ul.test(l) || ol.test(l)) { const re = ul.test(l) ? ul : ol, tag = re === ul ? 'ul' : 'ol', it = [];
+      while (i < L.length && (re.test(L[i]) || (/^\s{2,}\S/.test(L[i]) && it.length))) { if (re.test(L[i])) it.push(L[i].replace(re, '')); else it[it.length - 1] += ' ' + L[i].trim(); i++ }
+      out.push(`<${tag}>${it.map(x => `<li>${inl(x)}</li>`).join('')}</${tag}>`); continue }
+    if (/^>\s?/.test(l)) { const b = []; while (i < L.length && /^>\s?/.test(L[i])) b.push(L[i++].replace(/^>\s?/, '')); out.push(`<div class="case">${b.map(inl).join('<br>')}</div>`); continue }
+    const p = [l]; i++; while (i < L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|```|\s*[-*•]\s+|\s*\d+[.)]\s+|>|\s*\|)/.test(L[i])) p.push(L[i++]);
+    out.push(`<p>${p.map(inl).join('<br>')}</p>`);
+  }
+  return out.join('');
+}
+const plain = s => strip(s).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').trim();
+function secPlain(D, ti, si) {
+  const s = D.T[ti].s[si];
+  if (s.html) return `### ${plain(s.h)}\n${s.es ? 'Resumen en castellano: ' + plain(s.es) + '\n' : ''}${plain(s.html.replace(/<\/(tr|p|div|h3|li)>/g, '\n').replace(/<\/t[dh]>/g, ' | '))}`;
+  return `### ${plain(s.h)}\n` + [(s.k || []).map(x => `- ${plain(x[0])}: ${plain(x[1] || '')}`).join('\n'), (s.tbl || []).map(r => r.map(plain).join(' | ')).join('\n'), (s.f || []).map(x => 'Fórmula: ' + plain(x)).join('\n'), s.ej ? 'Ejemplo: ' + plain(s.ej) : '', s.tr ? 'Trampa de examen: ' + plain(s.tr) : ''].filter(Boolean).join('\n');
+}
+function reglas(Ds) {
+  const h = CAL.hoy(), A_ = A();
+  const idx = Ds.map(D => `## ${SUBJ[D.id].nombre}\n` + D.T.map((t, i) => `- ${plain(tName(D, i))}: ${t.s.map(s => plain(s.h)).join(' · ')}`).join('\n')).join('\n\n');
+  const pen = CAL.porFecha().map(e => `- ${e.desde}${e.hasta && e.hasta !== e.desde ? ' a ' + e.hasta : ''}${e.hora ? ' ' + e.hora : ''} · ${e.t} (${(A_[e.asig] || {}).nombre || 'sin asignatura'}; ${e.tipo}${e.peso != null ? '; ' + e.peso + ' % de la nota' : ''})${e.nota ? ' — ' + e.nota : ''}`).join('\n') || '- (nada pendiente)';
+  const hor = ((window.DATOS || {}).horario || []).map(r => r.hora + ': ' + r.dias.map((c, d) => c ? ['L', 'M', 'X', 'J', 'V'][d] + ' ' + ((A_[c.asig] || {}).nombre || c.asig) : '').filter(Boolean).join(', ')).join('\n');
+  const nts = ((window.DATOS || {}).notas || []).map(x => `- ${(A_[x.asig] || {}).nombre || x.asig}: ${x.items.map(i => i.n + ' ' + i.nota).join('; ')}`).join('\n');
+  return `Eres el tutor de estudio de Martí, estudiante de primer curso en ESCI-UPF (Barcelona). Estás dentro de su web de estudio y le ayudas con tres asignaturas: Business Organization, Communication Techniques y Français A1. Hoy es ${h.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.
+
+CÓMO RESPONDER
+- Responde siempre en castellano, claro y directo, sin relleno. Usa Markdown sencillo (negritas, listas, tablas pequeñas). Nada de HTML.
+- Business y Communication: explica en castellano pero deja los términos clave en inglés, tal como salen en sus apuntes (moral hazard, register…). Los ejercicios de estas dos asignaturas se formulan en inglés, como en su examen; él puede contestar en inglés o en castellano, y tú corriges en castellano.
+- Francés: si pide vocabulario, frases, conjugaciones o que le hables en francés, eso va en francés, con la traducción entre paréntesis al lado. Las explicaciones de gramática van en castellano con los ejemplos en francés. Nivel A1: no uses estructuras que no ha visto.
+- Básate en el MATERIAL DEL TEMARIO que acompaña a cada pregunta: es lo que entra en su examen. Si lo que pregunta no está en ese material ni en el índice, puedes explicarlo igualmente, pero avisa en una frase de que no está en sus apuntes.
+- Si pide que le expliques algo porque no lo entiende, explícalo con otras palabras y un ejemplo cotidiano, no repitas el esquema tal cual.
+- Ejercicios: ponlos del tipo y sobre el tema que pida (test con opciones A–D, desarrollo, casos, cálculo, traducción, conjugación…). Si no dice cuántos, pon 4. Antes de cada ejercicio indica el tema («Tema: T3 · Incentive conflicts» o «Tema: Posesivos») y qué hay que hacer. NO des las soluciones al plantearlos: espera su respuesta, y entonces corrige uno por uno diciendo qué está bien, qué falla y cuál era la respuesta correcta, con una explicación breve. Si deja alguno sin contestar, dale la solución.
+- Para fechas, tareas, exámenes, horario y notas usa solo los datos de abajo; no inventes fechas.
+- Mathematics no tiene temario en la web: si pregunta por mates, ayúdale con lo que sepas y dilo.
+
+LO QUE TIENE PENDIENTE (por fecha)
+${pen}
+
+HORARIO SEMANAL
+${hor}
+
+NOTAS
+${nts}
+
+ÍNDICE DEL TEMARIO DE LA WEB (temas y apartados)
+${idx}`;
+}
+function material(Ds, text, n) {   /* los apartados del temario que tienen que ver con la pregunta */
+  const T = toks(text), sj = subjIn(n), use = sj ? Ds.filter(D => D.id === sj) : Ds, B = [], LIM = 16000;
+  const push = (D, ti, si) => { const t = `[${SUBJ[D.id].nombre} · ${plain(tName(D, ti))}]\n${secPlain(D, ti, si)}`; if (!B.includes(t) && B.join('\n\n').length + t.length < LIM) B.push(t) };
+  if (hasTopicRef(n)) (sj ? use : Ds.filter(D => D.id !== 'francais')).forEach(D => { const ti = topicRef(n, D); if (ti >= 0) { D.T[ti].s.forEach((s, si) => push(D, ti, si)); ctx = { asig: D.id, ti } } });
+  const R = find(use, T);
+  R.filter(r => r.e.k === 'topic').slice(0, 1).forEach(r => { r.D.T[r.e.ti].s.forEach((s, si) => push(r.D, r.e.ti, si)); ctx = { asig: r.D.id, ti: r.e.ti } });
+  R.filter(r => r.e.k === 'sec').slice(0, 6).forEach((r, k) => { push(r.D, r.e.ti, r.e.si); if (!k && !B.length) ctx = { asig: r.D.id, ti: r.e.ti, si: r.e.si } });
+  if (B.length) { const r = R.find(x => x.e.k === 'sec'); if (r && !hasTopicRef(n)) ctx = { asig: r.D.id, ti: r.e.ti, si: r.e.si }; STICKY = B.join('\n\n'); return STICKY }
+  return STICKY;   /* pregunta de seguimiento («ponme ejercicios de eso»): se reutiliza el último material */
+}
+const AI_ERR = { not_granted: 'No has dado permiso para usar a Claude en esta página, así que no puedo contestar con IA. Si cambias de idea, recarga la página y acéptalo.', sampling_disabled: 'Claude no está disponible para esta cuenta.', rate_limited: 'Has llegado al límite de uso de tu plan de Claude o has preguntado muy seguido. Prueba dentro de un rato.', session_expired: 'Tu sesión de claude.ai ha caducado: vuelve a iniciar sesión y recarga.', refused: 'Claude no ha querido contestar a eso. Prueba a preguntarlo de otra forma.', prompt_too_large: 'La conversación es demasiado larga. Pulsa «Nueva conversación» y vuelve a preguntar.', empty_completion: 'No ha salido ninguna respuesta. Prueba a preguntarlo de otra forma.' };
+async function ai(text) {
+  const n = norm(text), Ds = await loadAll(), mat = material(Ds, text, n);
+  const t0 = log.querySelector('.tmp'); if (t0) t0.remove();
+  const d = document.createElement('div'); d.className = 'msg bot ia'; d.innerHTML = '<p class="mut"><span class="dots"><i></i><i></i><i></i></span> Pensando… <button class="chip ghost" data-stop>Parar</button></p>'; log.appendChild(d); modo();
+  const ys = log.querySelectorAll('.msg.yo'), y = ys[ys.length - 1]; if (y) log.scrollTop = Math.max(0, y.offsetTop - 10);
+  const msgs = [{ role: 'user', content: reglas(Ds) }].concat(TURNS.slice(-12), [{ role: 'user', content: text + (mat ? '\n\n---\nMATERIAL DEL TEMARIO relacionado (de la web de Martí; no lo ha escrito él en este mensaje):\n' + mat : '') }]);
+  CTL = new AbortController(); let got = '';
+  const pinta = (t, fin) => { d.innerHTML = md(t) + (fin ? '' : '<p class="mut"><button class="chip ghost" data-stop>Parar</button></p>') };
+  try {
+    const r = await SAMPLE(msgs, { cache: false, signal: CTL.signal, onText: ({ text: t }) => { got = t; pinta(t) } });
+    got = r.text; pinta(got, true); if (r.truncated) d.insertAdjacentHTML('beforeend', '<p class="mut">La respuesta se ha cortado por larga. Pídeme que siga.</p>');
+  } catch (e) {
+    const code = e && e.code; got = (e && e.text) || (code === 'cancelled' ? got : '');
+    if (got) pinta(got, true); else d.innerHTML = '';
+    if (code !== 'cancelled') d.insertAdjacentHTML('beforeend', `<p class="kok">${AI_ERR[code] || 'Ha fallado la conexión con Claude. Vuelve a intentarlo.'}</p>`);
+    else d.insertAdjacentHTML('beforeend', '<p class="mut">Parado.</p>');
+    if (code === 'not_granted' || code === 'sampling_disabled' || code === 'capability_disabled' || code === 'not_declared') { SAMPLE = null; document.querySelectorAll('.iab').forEach(b => { b.textContent = 'Sin IA en esta visita'; b.classList.add('off') }) }
+  }
+  CTL = null;
+  if (got) { TURNS.push({ role: 'user', content: text }, { role: 'assistant', content: got }); TURNS = TURNS.slice(-12); while (TURNS.length && TURNS[0].role !== 'user') TURNS.shift() }
+  save();
+}
+
 /* ================= entender el mensaje ================= */
 const RE_EX = /ejercic|practic|\bpregunt(ame|as?)\b|\btests?\b|quiz|ponme a prueba|examiname|simulacro|\bproblemas?\b/;
 const RE_TASK = /\btareas?\b|pendiente|entrega|deberes|examen|parcial|midterm|que tengo|que me queda|que hay que hacer|que debo hacer|vence|calendario|agenda/;
@@ -412,6 +512,13 @@ async function handle(text) {
   if (EX && /^(salir|terminar|para|parar|stop|cancelar|basta|fin)$/.test(n)) return end(true);
   if (EX && /^[abcd]$/.test(n)) { const bs = log.querySelectorAll(`[data-x^="${EX.id}|${EX.i}|"]`), b = bs['abcd'.indexOf(n)]; if (b && !b.disabled) return answerMC(b) }
   if (EX) { EX = null; inp.placeholder = 'Pregúntame algo…' }   /* estaba en un test y pregunta otra cosa: se deja el ejercicio */
+  if (SAMPLE) {   /* con IA: lo del calendario se responde al instante desde los datos; todo lo demás lo contesta Claude */
+    const corto = n.split(' ').length <= 9 && !/explic|entra|estudi|prepar|resum|ejercic|practic|por que|como/.test(n);
+    if (corto && /horario|que clases?\b|clases? (tengo|hay|de hoy|de manana)/.test(n)) return horario(n);
+    if (corto && RE_TASK.test(n)) return tasks(n);
+    if (corto && /\bnotas?\b|calificacion|que he sacado/.test(n)) return notas(n);
+    return ai(text);
+  }
   if (/^(hola|buenas|buenos dias|hey|ayuda|help|que puedes hacer|que sabes hacer)\b/.test(n) && n.split(' ').length <= 4) return welcome();
   if (/^(gracias|muchas gracias|vale|ok|perfecto|genial)$/.test(n)) return add('bot', '<p>¡A ti! Cuando quieras seguimos.</p>');
   if (RE_EX.test(n)) return exercises(text, n);
@@ -435,15 +542,16 @@ box.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b || b.disabled) return;
   if (b.dataset.say) send(b.dataset.say);
   else if (b.dataset.x) answerMC(b);
+  else if (b.dataset.stop != null) { if (CTL) CTL.abort() }
   else if (b.dataset.cmd) { const c = b.dataset.cmd; if (!/^(skip|stop)\|/.test(c)) add('yo', esc(b.textContent)); run(() => cmd(c)) }
 });
 const clr = box.querySelector('.clr');
-if (clr) clr.onclick = () => { EX = null; LAST = null; ctx = {}; log.innerHTML = ''; inp.placeholder = 'Pregúntame algo…'; try { localStorage.removeItem(K) } catch (e) {} modo(); scrollTo(0, 0) };
+if (clr) clr.onclick = () => { if (CTL) CTL.abort(); TURNS = []; STICKY = ''; EX = null; LAST = null; ctx = {}; log.innerHTML = ''; inp.placeholder = 'Pregúntame algo…'; try { localStorage.removeItem(K) } catch (e) {} modo(); scrollTo(0, 0) };
 
 /* ================= recuperar la conversación ================= */
 let old = null; try { old = JSON.parse(localStorage.getItem(K) || 'null') } catch (e) {}
 if (old && old.L && old.L.length) {
-  ctx = old.ctx || {};
+  ctx = old.ctx || {}; TURNS = old.T || []; STICKY = old.S || '';
   old.L.forEach(([c, h]) => { const d = document.createElement('div'); d.className = c; d.innerHTML = h; log.appendChild(d) });
   log.querySelectorAll('[data-x],[data-cmd^="skip|"],[data-cmd^="stop|"],[data-cmd="rep"],[data-cmd="again"]').forEach(b => b.disabled = true);  /* los ejercicios a medias no se retoman */
   modo(); log.scrollTop = log.scrollHeight;
