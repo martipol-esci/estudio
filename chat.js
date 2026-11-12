@@ -489,8 +489,12 @@ async function ai(text) {
   CTL = new AbortController(); let got = '';
   const pinta = (t, fin) => { d.innerHTML = md(t) + (fin ? '' : '<p class="mut"><button class="chip ghost" data-stop>Parar</button></p>') };
   try {
-    /* modelTier 'quick' = el modelo más ligero (el que menos gasta). Martí lo quiere SIEMPRE así: no subir de nivel. */
-    const r = await SAMPLE(msgs, { modelTier: 'quick', cache: false, signal: CTL.signal, onText: ({ text: t }) => { got = t; pinta(t) } });
+    /* Regla de Martí: el modelo que menos gaste DE LOS QUE LO HACEN BIEN. Lo sencillo (vocabulario, conjugar, tests, preguntas cortas) va al
+       modelo ligero ('quick'); lo que pide razonar (explicar dudas, casos, desarrollo, corregir respuestas escritas, planificar) va al normal ('default'). Nunca 'complex'. */
+    const prev = TURNS.length ? TURNS[TURNS.length - 1].content : '';
+    const dificil = /explic|no entiendo|no lo entiendo|por que|diferencia|\bcasos?\b|desarrollo|analiz|analis|razon|argument|corrig|correg|organiz|planific|resum|demuestr|calcul|compar|redact|\bcarta\b|letter|essay/.test(n)
+      || (text.length > 140 && /\?|ejercicio|tema:|pregunta/i.test(prev));   /* respuesta larga a unos ejercicios: hay que corregirla bien */
+    const r = await SAMPLE(msgs, { modelTier: dificil ? 'default' : 'quick', cache: false, signal: CTL.signal, onText: ({ text: t }) => { got = t; pinta(t) } });
     got = r.text; pinta(got, true); if (r.truncated) d.insertAdjacentHTML('beforeend', '<p class="mut">La respuesta se ha cortado por larga. Pídeme que siga.</p>');
   } catch (e) {
     const code = e && e.code; got = (e && e.text) || (code === 'cancelled' ? got : '');
