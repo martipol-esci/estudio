@@ -100,7 +100,7 @@ function learn(){$('#view').innerHTML=TH.map(([t,h])=>`<div class="card"><h3>${t
 function quizOld(){const v=$('#view');
 if(!qz){const acc=k=>P[k]?` <span class="mut">(${Math.round(100*P[k].ok/P[k].n)}% · ${P[k].n})</span>`:'';
 v.innerHTML=`<p>Elige un tema (10 preguntas al azar):</p><div class="row"><button class="pri" data-c="mix">🎲 Mezcla</button>${Object.entries(C).map(([k,o])=>`<button data-c="${k}">${o.l}${acc(k)}</button>`).join('')}</div><p class="mut">Se acepta sin acentos. Puedes responder con el micro (🎤).</p>`;
-v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?Object.values(C).flatMap(o=>o.g()):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}showQ()}
+v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?mezcla(10):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}showQ()}
 function showQOld(){const v=$('#view'),q=qz.qs[qz.i];
 if(!q){v.innerHTML=`<div class="card"><h2>Resultado: ${qz.s}/${qz.qs.length}</h2><button class="pri" id="again">Otra ronda</button></div>`;$('#again').onclick=()=>{qz=null;quiz()};return}
 v.innerHTML=`<p class="mut">Pregunta ${qz.i+1}/${qz.qs.length}</p><div class="card"><h2>${q.p}</h2><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu respuesta en francés"><div class="row"><button class="pri" id="chk">Comprobar</button><button class="ghost" id="mic">🎤 Decirlo</button></div><div id="fb"></div></div>`;
@@ -456,7 +456,7 @@ const QG=[['⚙ Verbos',['verbes','er','neg']],['📐 Gramática',['pos','ton','
 function quiz(){const v=$('#view');
 if(!qz){const acc=k=>P[k]?` <span class="mut">(${Math.round(100*P[k].ok/P[k].n)}% · ${P[k].n})</span>`:'';
 v.innerHTML='<p>Elige un tema (10 preguntas al azar):</p><div class="row"><button class="pri" data-c="mix">🎲 Mezcla de todo</button></div>'+QG.map(([t,ks])=>`<h3 style="margin:14px 0 4px">${t}</h3><div class="row">${ks.filter(k=>C[k]).map(k=>`<button data-c="${k}">${C[k].l}${acc(k)}</button>`).join('')}</div>`).join('')+'<p class="mut">Se acepta sin acentos. Puedes responder con el micro (🎤).</p>';
-v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?Object.values(C).flatMap(o=>o.g()):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}
+v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;const all=c==='mix'?mezcla(10):C[c].g();qz={qs:shuf(all).slice(0,10),i:0,s:0};showQ()});return}
 showQ()}
 /* ===== NÚMEROS: cuadrícula ordenada ===== */
 function numsHTML(){const cell=n=>{const w=num(n);return `<div class="nc" data-w="${w}" onclick="say(this.dataset.w)"><span class="n">${n}</span><span class="w">${w.replace(' et ',' <b class="b">et</b> ')}</span></div>`};
@@ -806,5 +806,88 @@ C.faire={l:'Faire',g:()=>FAIRE.map(([p,f])=>({c:'faire',p:`FAIRE: <b>${p}</b> �
 const FAM2=[['tío','l’oncle','mon oncle'],['tía','la tante','ma tante'],['primo','le cousin','mon cousin'],['prima','la cousine','ma cousine'],['sobrino','le neveu','mon neveu'],['sobrina','la nièce','ma nièce'],['suegro','le beau-père','mon beau-père'],['suegra','la belle-mère','ma belle-mère'],['cuñado','le beau-frère','mon beau-frère'],['cuñada','la belle-sœur','ma belle-sœur'],['bisabuelo','l’arrière-grand-père','mon arrière-grand-père'],['bisabuela','l’arrière-grand-mère','mon arrière-grand-mère'],['tener hambre','avoir faim','j’ai faim'],['tener sed','avoir soif','j’ai soif'],['tener frío','avoir froid','j’ai froid'],['tener calor','avoir chaud','j’ai chaud'],['tener miedo','avoir peur','j’ai peur'],['¡Felices vacaciones!','bonnes vacances'],['¡Buen viaje!','bon voyage'],['¡Que tengas un buen día!','bonne journée']];
 C.fam2={l:'Familia ampliada, sensaciones y deseos',g:()=>FAM2.map(([es,...f])=>({c:'fam2',p:`¿Cómo se dice <b>${es}</b>?`,a:f.flatMap(x=>[x,x.replace(/^(le|la|les|l’|mon|ma|mes)\s?/,'')])}))};
 QG[0][1].push('faire');QG[1][1].push('pos2');QG[2][1].push('fam2');
+/* ===== MÁS EJERCICIOS, generados al azar cada vez, y mezcla equilibrada (noviembre 2026) =====
+   Son ejercicios propios sobre la teoría de la web (no los de clase). Cada g() devuelve preguntas distintas en cada ronda. */
+{
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+const PERS=[0,1,2,2,3,4,5,5];                                   /* je tu il elle nous vous ils elles → persona 0..5 */
+const PRON=['Je','Tu','Il','Elle','Nous','Vous','Ils','Elles'];
+const vow=w=>/^[aeiouyéèêàâîôûh]/i.test(w);
+const suj=(k,f)=>k===0&&vow(f)?'J’'+f:PRON[k]+' '+f;            /* «J’aime» / «Tu aimes» */
+const VB=['aimer','habiter','parler','travailler','étudier','écouter','regarder','manger','voyager','chercher','jouer','danser','chanter','détester','adorer','téléphoner','arriver','rester','visiter','cuisiner','dessiner','marcher','commencer','inviter','organiser'];
+const conj=(v,i)=>{const s=v.slice(0,-2);if(i===3&&/g$/.test(s))return s+'eons';if(i===3&&/c$/.test(s))return s.slice(0,-1)+'çons';return s+['e','es','e','ons','ez','ent'][i]};
+const CMP={aimer:['le cinéma','la musique','les voyages'],habiter:['à Lyon','en Espagne','au Portugal'],parler:['français','anglais','avec le directeur'],travailler:['à Paris','dans une banque','chez Nofisa'],étudier:['le français','à Barcelone'],écouter:['la radio','le professeur'],regarder:['la télé','les films'],manger:['au restaurant','à midi'],voyager:['en train','en avion'],chercher:['le passeport','la valise'],jouer:['au tennis','avec les enfants'],danser:['la salsa'],chanter:['très bien'],détester:['l’avion','le lundi'],adorer:['le jazz','les vacances'],téléphoner:['au client','à Marie'],arriver:['à huit heures','en retard'],rester:['à la maison','au bureau'],visiter:['le musée','Paris'],cuisiner:['le dimanche'],dessiner:['très bien'],marcher:['dans le parc'],commencer:['à neuf heures'],inviter:['les collègues'],organiser:['le planning','la réunion']};
+const veces=(n,fn)=>{const o=[],s=new Set();let g=0;while(o.length<n&&g++<n*8){const q=fn();if(q&&!s.has(q.p)){s.add(q.p);o.push(q)}}return o};
+
+/* verbos en -ER dentro de una frase */
+C.er2={l:'Verbos en -ER en frases',g:()=>veces(14,()=>{const v=pk(VB),k=Math.floor(Math.random()*8),f=conj(v,PERS[k]),c=pk(CMP[v]);
+  return {c:'er2',p:`${k===0?'Je / J’':PRON[k]} <b>…</b> ${c}. <span class="mut">(${v})</span>`,a:[f,suj(k,f),suj(k,f)+' '+c],h:k===4&&/[gc]er$/.test(v)?'nous: -geons / -çons':'Terminaciones: -e, -es, -e, -ons, -ez, -ent'}})};
+
+/* negación con ne… pas / ne… jamais */
+C.neg2={l:'Negación: ne… pas / ne… jamais',g:()=>veces(12,()=>{const v=pk(VB),k=Math.floor(Math.random()*8),f=conj(v,PERS[k]),c=pk(CMP[v]),m=pk(['pas','pas','jamais']);
+  return {c:'neg2',p:`En negativo con <b>ne… ${m}</b>: <b>${suj(k,f)} ${c}.</b>`,a:[`${PRON[k]} ${vow(f)?'n’':'ne '}${f} ${m} ${c}`],h:'ne + verbo + '+m+' · delante de vocal: n’'}})};
+
+/* en / au / aux / à */
+C.prep2={l:'En / au / aux / à (países y ciudades)',g:()=>{const V=['J’habite','Je travaille','Je vais','Nous voyageons','Elle habite','Ils travaillent','Tu vas','Vous habitez','Il est','Nous allons'],CIU=['Paris','Lisbonne','Barcelone','Londres','Rome','Berlin','Tokyo','Montréal','Madrid','Bruxelles'];
+  return veces(14,()=>{const v=pk(V);if(Math.random()<.25){const c=pk(CIU);return {c:'prep2',p:`${v} <b>…</b> ${c}.`,a:['à',`${v} à ${c}`],h:'ciudad → à'}}
+    const [n,a]=pk(PAYS),pr=a==='le'?'au':a==='les'?'aux':'en';return {c:'prep2',p:`${v} <b>…</b> ${n}.`,a:[pr,`${v} ${pr} ${n}`],h:a==='le'?'país masculino → au':a==='les'?'país plural → aux':'país femenino o que empieza por vocal → en'}})}};
+
+/* quel / quelle / quels / quelles */
+const QUEL=[['… est votre nom ?','quel'],['… est votre nationalité ?','quelle'],['… est votre profession ?','quelle'],['… âge avez-vous ?','quel'],['… est votre adresse ?','quelle'],['… est votre numéro de téléphone ?','quel'],['… sont vos coordonnées ?','quelles'],['… langues parlez-vous ?','quelles'],['… sports aimez-vous ?','quels'],['… est votre pays préféré ?','quel'],['… films aimez-vous ?','quels'],['Vous travaillez dans … secteur ?','quel'],['Vous êtes de … ville ?','quelle'],['… est la date aujourd’hui ?','quelle'],['… temps fait-il ?','quel'],['… musiques écoutez-vous ?','quelles'],['… est votre prénom ?','quel'],['… est votre situation de famille ?','quelle']];
+C.quel={l:'Quel / quelle / quels / quelles',g:()=>QUEL.map(([s,a])=>({c:'quel',p:s.replace('…','<b>…</b>'),a:[a,s.replace('…',a).replace(/ \?$/,'')],h:'quel (masc.) · quelle (fem.) · quels / quelles (plural)'}))};
+
+/* il fait o il y a */
+const METEO=[['beau','il fait','hace buen tiempo'],['froid','il fait','hace frío'],['chaud','il fait','hace calor'],['19 degrés','il fait','hace 19 grados'],['25 degrés','il fait','hace 25 grados'],['du soleil','il y a','hace sol'],['du vent','il y a','hace viento'],['des nuages','il y a','hay nubes']];
+C.meteo={l:'Il fait o il y a',g:()=>METEO.map(([x,a,es])=>({c:'meteo',p:`<b>…</b> ${x}. <span class="mut">(${es})</span>`,a:[a,a+' '+x],h:'adjetivo o temperatura → il fait · nombre con du / des → il y a'}))
+  .concat([{c:'meteo',p:'En negativo: <b>Il fait froid.</b>',a:['il ne fait pas froid']},{c:'meteo',p:'En negativo: <b>Il y a du vent.</b>',a:['il n’y a pas de vent'],h:'du / des → de en la negación'},{c:'meteo',p:'En negativo: <b>Il fait beau.</b>',a:['il ne fait pas beau']},{c:'meteo',p:'En negativo: <b>Il y a du soleil.</b>',a:['il n’y a pas de soleil'],h:'du / des → de en la negación'}])};
+
+/* posesivos de todas las personas */
+const NOM=[['frère','m'],['père','m'],['vélo','m'],['ordinateur','m'],['passeport','m'],['bureau','m'],['numéro de téléphone','m'],['sœur','f'],['mère','f'],['voiture','f'],['valise','f'],['profession','f'],['nationalité','f'],['amie','v'],['adresse','v'],['entreprise','v'],['idée','v'],['école','v'],['parents','p'],['enfants','p'],['amis','p'],['coordonnées','p'],['livres','p'],['collègues','p']];
+const POSS=[['je','mon','ma','mes'],['tu','ton','ta','tes'],['il','son','sa','ses'],['elle','son','sa','ses'],['nous','notre','notre','nos'],['vous','votre','votre','vos'],['ils','leur','leur','leurs'],['elles','leur','leur','leurs']];
+C.pos3={l:'Posesivos de todas las personas',g:()=>veces(14,()=>{const [n,g]=pk(NOM),P=pk(POSS),a=g==='p'?P[3]:g==='f'?P[2]:P[1];
+  return {c:'pos3',p:`<b>…</b> ${n} <span class="mut">(de: ${P[0]})</span>`,a:[a,a+' '+n],h:g==='v'?'femenino que empieza por vocal → mon / ton / son':g==='p'?'plural':g==='f'?'femenino singular':'masculino singular'}})};
+
+/* pronombres tónicos */
+const TONI=['moi','toi','lui','elle','nous','vous','eux','elles'],ETRE=['je suis','tu es','il est','elle est','nous sommes','vous êtes','ils sont','elles sont'],DONDE=['à Paris','en France','au bureau','dans la salle','de Barcelone','en vacances','en retard','à la maison'];
+C.ton2={l:'Pronombres tónicos (más)',g:()=>veces(10,()=>{const k=Math.floor(Math.random()*8),d=pk(DONDE);
+  return {c:'ton2',p:`<b>…</b>, ${ETRE[k]} ${d}.`,a:[TONI[k],`${TONI[k]}, ${ETRE[k]} ${d}`],h:'moi, toi, lui, elle, nous, vous, eux, elles'}})};
+
+/* ¿être o avoir? */
+const AV=['ai','as','a','a','avons','avez','ont','ont'],ET=['suis','es','est','est','sommes','êtes','sont','sont'];
+const PAV=['faim','soif','froid','chaud','peur','19 ans','un frère','deux enfants','un passeport','une voiture'],PET=['à Paris','en vacances','de Barcelone','au bureau','dans la salle','en retard'];
+C.etav={l:'¿Être o avoir?',g:()=>veces(14,()=>{const k=Math.floor(Math.random()*8),av=Math.random()<.6,x=pk(av?PAV:PET),f=(av?AV:ET)[k];
+  return {c:'etav',p:`${k===0?'Je / J’':PRON[k]} <b>…</b> ${x}. <span class="mut">(être o avoir)</span>`,a:[f,suj(k,f),suj(k,f)+' '+x],h:av?'edad, posesión y sensaciones → avoir':'lugar, origen o estado → être'}})};
+
+/* faire en frases */
+const FA=['fais','fais','fait','fait','faisons','faites','font','font'],QUE=['le planning','des mots croisés','du sport','la cuisine'];
+C.faire2={l:'Faire en frases',g:()=>veces(10,()=>{const k=Math.floor(Math.random()*8),x=pk(QUE);
+  return {c:'faire2',p:`${PRON[k]} <b>…</b> ${x}. <span class="mut">(faire)</span>`,a:[FA[k],`${PRON[k]} ${FA[k]}`,`${PRON[k]} ${FA[k]} ${x}`],h:'je fais, tu fais, il fait, nous faisons, vous faites, ils font'}})};
+
+/* familia: ¿quién es? */
+const QUI=[['Le frère de ma mère, c’est mon …','oncle'],['La sœur de mon père, c’est ma …','tante'],['Le fils de mon oncle, c’est mon …','cousin'],['La fille de ma tante, c’est ma …','cousine'],['La mère de mon père, c’est ma …','grand-mère'],['Le père de ma mère, c’est mon …','grand-père'],['Le fils de ma sœur, c’est mon …','neveu'],['La fille de mon frère, c’est ma …','nièce'],['Le mari de ma sœur, c’est mon …','beau-frère'],['La femme de mon frère, c’est ma …','belle-sœur'],['La mère de mon mari, c’est ma …','belle-mère'],['Le père de ma femme, c’est mon …','beau-père'],['Le fils de mon fils, c’est mon …','petit-fils'],['La fille de ma fille, c’est ma …','petite-fille'],['Le père de mon grand-père, c’est mon …','arrière-grand-père'],['Les parents de mes parents, ce sont mes …','grands-parents'],['Le fils de mes parents, c’est mon …','frère'],['La fille de mes parents, c’est ma …','sœur'],['Les enfants de mes enfants, ce sont mes …','petits-enfants']];
+C.fam3={l:'Familia: ¿quién es?',g:()=>QUI.map(([s,a])=>{const pos=s.match(/(mon|ma|mes) …$/)[1];return {c:'fam3',p:s.replace('…','<b>…</b>'),a:[a,a.replace(/-/g,' '),pos+' '+a,pos+' '+a.replace(/-/g,' ')]}})};
+
+/* adverbios de frecuencia en frases */
+const FRE=[['siempre','toujours'],['a menudo','souvent'],['a veces','parfois'],['raramente','rarement']],FRS=['Je voyage … en train.','Nous mangeons … au restaurant.','Elle écoute … la radio.','Ils regardent … la télé.','Tu travailles … le samedi.','Vous parlez … anglais.','Il arrive … en retard.'];
+C.hab2={l:'Frecuencia en frases',g:()=>veces(10,()=>{const s=pk(FRS);if(Math.random()<.2){const n=s.replace(/^(\S+) (\S+) …/,(m,p,v)=>`${p} ${vow(v)?'n’':'ne '}${v} …`);return {c:'hab2',p:n.replace('…','<b>…</b>')+' <span class="mut">(nunca)</span>',a:['jamais',n.replace('…','jamais').replace(/\.$/,'')],h:'ne… jamais = nunca'}}
+  const [es,fr]=pk(FRE);return {c:'hab2',p:s.replace('…','<b>…</b>')+` <span class="mut">(${es})</span>`,a:[fr,s.replace('…',fr).replace(/\.$/,'')]}})};
+
+/* el tiempo y las frases de clase, por separado (las frases de clase salen poco en la mezcla) */
+C.met={l:'El tiempo (traducir)',g:()=>MET.slice(0,10).map(([es,...fr])=>({c:'met',p:`¿Cómo se dice <b>${es}</b>?`,a:fr}))};
+C.clase={l:'Frases útiles en clase',g:()=>MET.slice(10).map(([es,...fr])=>({c:'clase',p:`¿Cómo se dice <b>${es}</b>?`,a:fr}))};
+
+const grupo=re=>QG.find(x=>re.test(x[0]))||QG[QG.length-1];
+grupo(/Verbos/)[1].push('er2','neg2','etav','faire2');grupo(/Gram/)[1].push('pos3','ton2','quel');grupo(/Familia/)[1].push('fam3');grupo(/Países/)[1].push('prep2');grupo(/Gustos/)[1].push('hab2');
+const gt=grupo(/tiempo/);gt[0]='🌦 El tiempo y la clase';gt[1].push('meteo','clase');
+Object.assign(QHOW,{er2:'Conjuga el verbo entre paréntesis (verbo en -ER).',neg2:'Escribe la frase entera en negativo.',prep2:'Pon la preposición: en, au, aux o à.',quel:'Pon quel, quelle, quels o quelles.',meteo:'Escribe il fait o il y a (o la frase en negativo).',pos3:'Pon el posesivo de la persona indicada: mon, ton, son, notre, votre, leur…',ton2:'Pon el pronombre tónico: moi, toi, lui, elle, nous, vous, eux, elles.',etav:'Conjuga être o avoir, el que corresponda.',faire2:'Conjuga el verbo faire.',fam3:'Escribe el familiar.',hab2:'Pon el adverbio de frecuencia que se indica.',met:'Tradúcelo al francés.',clase:'Tradúcelo al francés.',pos2:'Pon el posesivo: mon, ton, son, notre, votre, leur…',faire:'Conjuga el verbo faire para esa persona.',fam2:'Tradúcelo al francés.'});
+
+/* Mezcla: reparte entre TODOS los tipos en vez de coger al azar de un montón (antes los números, con 50 preguntas, salían sin parar).
+   Peso 2 = lo que entra seguro en el examen; peso bajo = lo que Martí no quiere ver tanto (tu/vous, números, frases de clase). */
+const PESO={tv:.2,nb:.2,clase:.2,er2:2,neg2:2,prep2:2,pos3:2,quel:2,meteo:2,etav:1.5,ton2:1.5};
+window.mezcla=function(n){const ks=Object.keys(C),tot=ks.reduce((s,k)=>s+(PESO[k]==null?1:PESO[k]),0),pools={},out=[],seen=new Set();let g=0;
+  while(out.length<n&&g++<n*40){let r=Math.random()*tot,k=ks[0];for(const x of ks){r-=(PESO[x]==null?1:PESO[x]);if(r<=0){k=x;break}}
+    const p=pools[k]||(pools[k]=shuf(C[k].g())),q=p.pop();if(q&&!seen.has(q.p)){seen.add(q.p);out.push(q)}}
+  return out};
+}
 render();micUI();
 </script></body></html>

@@ -288,6 +288,7 @@ function rank(L, T) { /* primero las preguntas que hablan de lo pedido */
 }
 function makeQs(D, o) { /* o: {ti, T (foco), W (tipos), n, cats} */
   if (D.id === 'francais') {
+    if (!(o.cats && o.cats.length) && D.w.mezcla) return D.w.mezcla(o.n || 8);   /* mezcla equilibrada de la página de francés */
     const ks = (o.cats && o.cats.length ? o.cats : Object.keys(D.C)).filter(k => D.C[k]);
     return shuf(ks.flatMap(k => D.C[k].g())).slice(0, o.n || 8);
   }
