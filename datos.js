@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-13T11:00',
+  actualizado: '2026-11-14T11:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -17,7 +17,9 @@ window.DATOS = {
     { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'entregada', tipo: 'seminario',
       porque: 'Enviada el 11 de noviembre y pendiente de calificar.' },
     { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'entregada', tipo: 'seminario',
-      porque: 'Enviado el 11 de noviembre y pendiente de calificar.' },
+      porque: 'Entregado y calificado: 6,0.' },
+    { t: 'Problem Set I', asig: 'mates', donde: 'Seminaris', vence: '2026-11-19T08:00', estado: 'pendiente', tipo: 'seminario',
+      porque: 'Vence el jueves a primera hora: en la práctica hay que dejarlo hecho el miércoles. Corresponde a las Lectures 17 y 18 (funciones de dos variables y derivadas parciales).' },
     { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'pendiente', tipo: 'entrega', peso: 20,
       porque: 'Presentación final de la asignatura: además de subirla hay que ensayarla.' },
     { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 15,
@@ -49,13 +51,14 @@ window.DATOS = {
 
   /* Calificaciones. media: solo cuando el aula ya da una media calculada; si no, se calcula la media simple de lo calificado. */
   notas: [
-    { asig: 'mates', media: 9.40, mediaTxt: 'Avaluació continuada, calculada por AulaESCI',
+    { asig: 'mates', media: 9.30, mediaTxt: 'Avaluació continuada, calculada por AulaESCI',
       items: [
         { n: 'Problem Set B', nota: 8.0 },
         { n: 'Problem Set F', nota: 9.0 },
+        { n: 'Problem Set H', nota: 6.0 },
         { n: 'Examen parcial 1', nota: 9.5, det: 'P1 3,5 + P2 3,0 + P3 3,0' }
       ],
-      pend: ['Problem Sets A, C, D, E, G y H', 'Examen parcial 2', 'Examen final'] },
+      pend: ['Problem Sets A, C, D, E, G e I', 'Examen parcial 2', 'Examen final'] },
     { asig: 'francais',
       items: [ { n: 'Examen parcial 1', nota: 9.5, det: '10 % del trimestre 1' } ],
       pend: ['Examen parcial 2 (10 %)', 'Treball autònom (10 %)', 'Participació i tasques (10 %)', 'Examen trimestral (60 %)'] },
