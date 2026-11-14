@@ -99,20 +99,26 @@ function show(){const q=S.q,m=MODES[S.mode],lecs=[...new Set(MATES.G.filter(g=>m
   document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>start(S.mode,b.dataset.l===''?null:+b.dataset.l));
   $('#end').onclick=finish;$('#skip').onclick=()=>grade(false,null,true);
   if(q.type==='mc')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>grade(+b.dataset.o===q.a,+b.dataset.o));
-  else{const i=$('#ans');i.focus();const go=()=>{const v=parse(i.value);if(isNaN(v)){$('#fb').innerHTML='<p class="hint">Type a number, for example 12.5 or −3.</p>';i.focus();return}grade(right(q,v),v)};
+  else{const i=$('#ans');i.focus();const go=()=>{if(!i.value.trim()){$('#fb').innerHTML='<p class="hint">Type your answer first, for example 12.5 or −3.</p>';i.focus();return}
+      const v=parse(i.value);grade(!isNaN(v)&&right(q,v),v,false,isNaN(v))};   /* something that is not a number counts as a wrong answer, so the solution is always shown */
     $('#chk').onclick=go;i.onkeydown=e=>{if(e.key==='Enter')go()}}}
 
-function grade(ok,given,skipped){const q=S.q;if(S.done)return;S.done=true;
+function grade(ok,given,skipped,notNum){const q=S.q;if(S.done)return;S.done=true;
   S.n++;if(ok)S.ok++;const p=P[S.mode]=P[S.mode]||{ok:0,n:0};p.n++;if(ok)p.ok++;LS.set('ma-prog',P);
   document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('good');else if(i===given)b.classList.add('bad')});
   const a=$('#ans');if(a)a.readOnly=true;const c=$('#chk');if(c)c.disabled=true;$('#skip').disabled=true;
   const corr=q.type==='mc'?`${'ABCD'[q.a]}) ${q.opts[q.a]}`:`${fmt(q.ans,q.d)}${q.unit?' '+q.unit:''}`;
   if(ok){$('#fb').innerHTML='<div class="fb good">✓ Correct</div>';setTimeout(()=>{S.done=false;next()},850);return}
   /* wrong (or skipped): the worked solution opens and the student moves on when ready */
-  $('#fb').innerHTML=`<div class="fb bad"><b>${skipped?'Skipped.':'✗ Not quite.'}</b> The correct answer is <b>${corr}</b>.
+  $('#fb').innerHTML=`<div class="fb bad" id="wrong"><b>${skipped?'Skipped.':'✗ Not quite.'}</b>${notNum?' Your answer was not a number.':''} The correct answer is <b>${corr}</b>.
     <details class="sol" open><summary>How to solve it</summary><div class="sol">${q.sol}</div></details>
-    <p style="margin:12px 0 0"><button class="pri" id="nx">Next exercise →</button></p></div>`;
-  $('#nx').onclick=()=>{S.done=false;next();scrollTo(0,0)};$('#nx').focus()}
+    <p style="margin:12px 0 0"><button class="pri" id="nx" disabled>Next exercise →</button></p></div>`;
+  /* The answer must stay on screen until the student decides to move on: the button is not focused (a held Enter key used to press it at once)
+     and it only becomes active after a moment. The feedback is scrolled into view because on a phone it can open below the keyboard. */
+  if(a)a.blur();
+  $('#nx').onclick=()=>{S.done=false;next();scrollTo(0,0)};
+  setTimeout(()=>{const b=$('#nx');if(b)b.disabled=false},900);
+  try{$('#wrong').scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}}
 
 function finish(){const s=S;$('#view').innerHTML=`<div class="card"><h2>Session finished</h2><p>${s.n?`You answered <b>${s.n}</b> exercise${s.n>1?'s':''} and got <b>${s.ok}</b> right (${Math.round(100*s.ok/s.n)}%).`:'You did not answer any exercise.'}</p>
   <p><button class="pri" id="again">Practise again</button> <button class="sec" id="back">Change group</button></p></div>`;
