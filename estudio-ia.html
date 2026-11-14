@@ -88,7 +88,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
    Las páginas de dentro traen su propia barra y enlaces a index.html: se oculta la barra y esos enlaces vuelven al chat. */
 (function(){
   const PAG={asignaturas:'asignaturas.html',calendario:'agenda.html',notas:'notas.html'},
-        DE={'asignaturas.html':'asignaturas','business.html':'asignaturas','communication.html':'asignaturas','francais.html':'asignaturas','agenda.html':'calendario','notas.html':'notas'};
+        DE={'asignaturas.html':'asignaturas','business.html':'asignaturas','communication.html':'asignaturas','francais.html':'asignaturas','mates.html':'asignaturas','agenda.html':'calendario','notas.html':'notas'};
   const f=document.getElementById('vista'),menu=document.getElementById('menu');
   const marca=v=>menu.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
   function ir(v,hash){

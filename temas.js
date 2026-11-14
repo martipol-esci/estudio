@@ -35,5 +35,8 @@ window.ASIG = [
       ['Gustos', 'Gustos y hábitos'],
       ['Tiempo', 'El tiempo (il y a / il fait)'],
       ['Vocabulario', 'Vocabulario: objetos']
-    ] }
+    ] },
+  /* Mathematics: solo ejercicios (sin teoría), en inglés. Los generadores están en mates-ejercicios.js. */
+  { id: 'mates', nombre: 'Mathematics', emoji: '📐', color: 'var(--c-mat)', pagina: 'mates.html', prog: 'ma-prog',
+    secciones: ['Midterm 1', 'Midterm 2', 'Everything'], temas: [] }
 ];
