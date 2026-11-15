@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-14T11:00',
+  actualizado: '2026-11-15T19:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
