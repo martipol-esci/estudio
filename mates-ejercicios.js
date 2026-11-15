@@ -8,7 +8,7 @@ const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const pk = a => a[Math.floor(Math.random() * a.length)];
 const shuf = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
 const nz = (a, b) => { let v = 0; while (!v) v = ri(a, b); return v };
-const F = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('en-US', { maximumFractionDigits: d });
+const F = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('en-US', { maximumFractionDigits: d }).replace('-', '−');
 const E = x => '€' + (Math.round(x * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(Math.round(x * 100) / 100) ? 0 : 2, maximumFractionDigits: 2 });
 const sg = x => (x < 0 ? '− ' : '+ ') + F(Math.abs(x), 4);          /* "+ 3" / "− 3" */
 const neg = x => (x < 0 ? '−' : '') + F(Math.abs(x), 4);             /* "−3" */
@@ -423,6 +423,6 @@ add(18, () => { const c0 = ri(-5, 5), a = ri(1, 4), b = -2 * a, im = a + b + c0;
     `f(0, 0) = c = ${neg(c0)}.<br>Stationary at (1, 0): ∂f/∂x = 2ax + b = 0 at x = 1 → b = −2a.<br>f(1, 0) = a + b + c = a − 2a ${sg(c0)} = ${neg(im)} → −a = ${neg(im - c0)} → <b>a = ${a}</b> (and b = ${b}).`, 'Problem Set I · I6') });
 
 const NAMES = { 1: 'Percentages', 2: 'Sequences I', 3: 'Sequences II', 4: 'Simple and compound interest', 5: 'EAR', 6: 'Mortgages', 7: 'Introduction to one-variable functions', 8: 'Graph shifting', 9: 'Linear and exponential functions', 10: 'Polynomial functions', 11: 'Logarithmic functions', 12: 'Power and irrational functions', 13: 'Derivative function', 14: 'Derivative at a point and tangent line', 15: 'Stationary points and local optima', 16: 'Global minima and maxima', 17: 'Introduction to two-variable functions', 18: 'Partial derivatives' };
-window.MATES = { G, NAMES,
+window.MATES = { G, NAMES, add, H: { ri, pk, shuf, nz, F, E, sg, neg, par, sup, P, lin, num, mc, iv, pay, bal, PER, MW },
   make(g) { for (let i = 0; i < 30; i++) { let q = null; try { q = g.fn() } catch (e) {} if (q && (q.type === 'mc' ? q.opts.length === 4 && q.a >= 0 : Number.isFinite(q.ans))) { q.lec = g.lec; return q } } return null } };
 })();
