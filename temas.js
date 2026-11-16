@@ -7,7 +7,8 @@ window.ASIG = [
       ['T1', 'Purposeful Interaction'],
       ['T2', 'From Writing to Speaking, Diagnose & Revise'],
       ['T3', 'Information, Opinion and Evidence'],
-      ['T4', 'Presentation Design and Delivery']
+      ['T4', 'Presentation Design and Delivery'],
+      ['EXAM', 'Final exam preparation']
     ] },
   { id: 'business', nombre: 'Business Organization', emoji: '📊', color: 'var(--c-bus)', pagina: 'business.html', prog: 'bo-prog',
     secciones: ['Temario', 'Fórmulas', 'Exercises'],

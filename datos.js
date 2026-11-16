@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-15T19:00',
+  actualizado: '2026-11-16T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -67,7 +67,8 @@ window.DATOS = {
         { n: 'Seminar 2', nota: 6.5 },
         { n: 'Individual Reflection activity 1', nota: 9.3 },
         { n: 'Seminar Activity 3', nota: 7.5 },
-        { n: 'Seminar 4', nota: 8.0 }
+        { n: 'Seminar 4', nota: 8.0 },
+        { n: 'Seminar Exam', nota: 8.5 }
       ],
       pend: ['Seminar Activity 6 y 7', 'News article Presentation', 'Final Project', 'Final Exam'] },
     { asig: 'communication',
