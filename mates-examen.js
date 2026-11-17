@@ -248,6 +248,55 @@ add(16, () => { const k = pk([2, 3, 4, 5]), b = k + ri(2, 6), v = k / Math.E;
   return num(`Given the closed interval [0, ${b}], determine the global <b>maximum value</b> of f(x) = x · e<sup>−x/${k}</sup> (3 decimals).`, v, 3, '',
     `f′(x) = e<sup>−x/${k}</sup>(1 − x/${k}) = 0 → x = ${k}.<br>Candidates: f(0) = 0, f(${k}) = ${k}·e<sup>−1</sup> = ${F(v, 3)}, f(${b}) = ${F(b * Math.exp(-b / k), 3)}.<br>Global maximum = <b>${F(v, 3)}</b>, at x = ${k}.`, 'Midterm 2 (2025) · Q9') });
 
+/* ===================== Midterm 2 (16 Nov 2026, Version K) — same questions, new numbers ===================== */
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+const FR = (p, q) => { const g = gcd(p, q); p /= g; q /= g; return q === 1 ? `${p}` : `${p}/${q}` };
+const MT = n => `Midterm 2 (Nov 2026) · Q${n}`;
+add(12, () => { const a = ri(-4, 3), b = a + ri(1, 6), flip = Math.random() < .35;
+  const A = `(−∞, ${neg(a)}) ∪ (${neg(b)}, +∞)`, B = `(${neg(a)}, ${neg(b)})`, C = `(−∞, ${neg(a)}] ∪ [${neg(b)}, +∞)`, D = `ℝ \\ {${neg(a)}, ${neg(b)}}`, Bc = `[${neg(a)}, ${neg(b)}]`;
+  const inside = flip ? `${fac(a)}(${neg(b)} − x)` : `${fac(a)}${fac(b)}`;
+  return mc(`Determine the domain of the function f(x) = 1 / √(${inside}).`, flip ? B : A, flip ? [A, Bc, D] : [B, C, D],
+    `The square root needs a non-negative radicand, and it is in the denominator, so it cannot be 0: we need ${inside} <b>&gt; 0</b> (strictly).<br>Roots: x = ${neg(a)} and x = ${neg(b)}. ${flip ? `The product is positive between the roots.` : `The product is positive outside the roots.`}<br>Domain = <b>${flip ? B : A}</b> (open brackets because the denominator cannot be 0).`, MT(1)) });
+add(7, () => { const a = ri(1, 4), b = a + ri(1, 4), right = FR(a + b, 2 * b), W = [FR(a, 2 * b), '1', FR(b + 1, b), '0', FR(a, 4 * b)];
+  return mc(`Determine which of the following values <b>belongs</b> to the range of the function f(x) = (${x2} + ${a}) / (${x2} + ${b}).`, right, W,
+    `Rewrite: f(x) = 1 − ${b - a}/(${x2} + ${b}).<br>Since ${x2} + ${b} ∈ [${b}, +∞), the fraction ${b - a}/(${x2} + ${b}) takes the values in (0, ${FR(b - a, b)}].<br>So f(x) ∈ [1 − ${FR(b - a, b)}, 1) = <b>[${FR(a, b)}, 1)</b>: the minimum ${FR(a, b)} is reached at x = 0, and 1 is never reached (horizontal asymptote).<br>The only option in that interval is <b>${right}</b>.`, MT(2)) });
+add(9, () => { const k = pk([2, 3, 4, 5]), c = ri(1, 4), T = [`The function crosses the Y-axis at (0, ${1 + c}).`, 'The function is strictly decreasing.', `The function has a horizontal asymptote at y = ${c}.`, `The range of the function is (${c}, +∞).`],
+    Fl = ['The function is strictly increasing.', 'The function has a horizontal asymptote at y = 0.', `The function crosses the X-axis at x = −${c}.`, `The function crosses the Y-axis at (0, ${c}).`, `The range of the function is (0, +∞).`, `The function crosses the X-axis at x = ${c}.`];
+  return mc(`Consider the exponential function f(x) = ${k}<sup>−x</sup> + ${c}. Determine which of the following statements is <b>true</b>:`, pk(T), shuf(Fl),
+    `${k}<sup>−x</sup> = (1/${k})<sup>x</sup>: the base is between 0 and 1, so it is strictly <b>decreasing</b>, and ${k}<sup>−x</sup> &gt; 0 always.<br>Adding ${c} shifts it up: horizontal asymptote y = ${c} (as x → +∞) and range (${c}, +∞), so it never crosses the X-axis.<br>Y-intercept: f(0) = ${k}<sup>0</sup> + ${c} = ${1 + c} → (0, ${1 + c}).`, MT(3)) });
+add(11, () => { const k = pk([2, 3, 5, 7, 10]), a = ri(1, 9), b = ri(1, 6), L = `log<sub>${k}</sub>`;
+  return mc(`Consider the logarithmic equation ${L}(x + ${a}) = 1 + ${L}(x − ${b}). Determine which of the following equations is equivalent to the original equation:`, `(x + ${a}) / (x − ${b}) = ${k}`,
+    [`(x + ${a})(x − ${b}) = ${k}`, `(x + ${a}) / (x − ${b}) = 1/${k}`, `x + ${a} = x − ${b} ${sg(-k)}`, `x + ${a} = x − ${b} + ${k}`, `(x + ${a}) / (x − ${b}) = 1`],
+    `Move the logs to the same side: ${L}(x + ${a}) − ${L}(x − ${b}) = 1.<br>Quotient rule: ${L}[(x + ${a})/(x − ${b})] = 1.<br>Definition of logarithm: <b>(x + ${a})/(x − ${b}) = ${k}<sup>1</sup> = ${k}</b>.<br>(A log of a difference is not a difference of logs, so the options that "cancel" the logs are wrong.)`, MT(4)) });
+add(11, () => { const k = pk([2, 3, 4, 5, 10]), a = ri(1, 12), b = ri(1, 6), L = `log<sub>${k}</sub>`, x = (a + k * b) / (k - 1);
+  return num(`Solve the equation ${L}(x + ${a}) = 1 + ${L}(x − ${b}) (2 decimals if needed).`, x, 2, '',
+    `${L}(x + ${a}) − ${L}(x − ${b}) = 1 → (x + ${a})/(x − ${b}) = ${k}.<br>x + ${a} = ${k}x − ${k * b} → ${k - 1}x = ${a + k * b} → x = ${FR(a + k * b, k - 1)} = ${F(x, 2)}.<br>Check the domain: x − ${b} &gt; 0 ✓. Solution: <b>x = ${F(x, 2)}</b>.`, MT(4)) });
+add(10, () => { const c = pk([1, 2, 3, -2]), p = nz(-3, 3), q = nz(-4, 4); if (p === q) return null;
+  const co = [1, -(2 * p + q), p * p + 2 * p * q, -p * p * q].map(v => v * c), C = c === 1 ? '' : c === -1 ? '−' : String(c).replace('-', '−'), C2 = c === 1 ? '2' : String(2 * c).replace('-', '−');
+  return mc(`Choose the correct factorisation of the polynomial f(x) = ${P(co)}:`, `f(x) = ${C}${fac(p)}<sup>2</sup>${fac(q)}`,
+    [`f(x) = ${C}${fac(p)}${fac(q)}<sup>2</sup>`, `f(x) = ${c === 1 ? C2 : ''}${fac(p)}<sup>2</sup>${fac(q)}`, `f(x) = ${fac(p)}${fac(q)}<sup>2</sup>`, `f(x) = ${C}${fac(-p)}<sup>2</sup>${fac(-q)}`],
+    `Take out the common factor ${c}: f(x) = ${c}(${P(co.map(v => v / c))}).<br>Look for integer roots among the divisors of the constant term: x = ${neg(p)} and x = ${neg(q)} make it 0.<br>Ruffini with x = ${neg(p)} twice and x = ${neg(q)} once leaves remainder 0, so x = ${neg(p)} is a <b>double</b> root.<br>Check: (x ${sg(-p)})<sup>2</sup>(x ${sg(-q)}) = ${P(co.map(v => v / c))} ✓ → <b>f(x) = ${C}${fac(p)}<sup>2</sup>${fac(q)}</b>.`, MT(5)) });
+add(13, () => { const n = pk([2, 3, 4]), k = ri(2, 9), a = ri(1, 9), R = { 2: '√', 3: '∛', 4: '∜' }[n], d = `[${n}(${x2} + ${a})]`;
+  return mc(`Compute the derivative of the function f(x) = ln( ${R}( ${k} / (${x2} + ${a}) ) ).`, `f′(x) = −2x / ${d}`, [`f′(x) = −x / ${d}`, `f′(x) = −2x / (${x2} + ${a})`, `f′(x) = 2x / ${d}`, `f′(x) = −${2 * n}x / (${x2} + ${a})`],
+    `Simplify first with the log rules: f(x) = (1/${n})·ln(${k}/(${x2} + ${a})) = (1/${n})·[ln ${k} − ln(${x2} + ${a})].<br>ln ${k} is a constant (derivative 0), and (ln(${x2} + ${a}))′ = 2x/(${x2} + ${a}).<br>f′(x) = (1/${n})·(−2x/(${x2} + ${a})) = <b>−2x / ${d}</b>.`, MT(6)) });
+add(14, () => { const b = nz(-6, 6), h = pk([1, 2, 3, 4]), r = P([2, h + b], 'a');
+  return mc(`Determine the <b>average rate of change</b> of the function f(x) = ${P([1, b, 0])} on the interval [a, a + ${h}].`, r, [P([2, b - h], 'a'), P([2 * h, h * (h + b)], 'a'), P([1, h + b], 'a'), P([2, b], 'a'), P([2, h - b], 'a')],
+    `Average rate of change = [f(a + ${h}) − f(a)] / ${h}.<br>f(a + ${h}) = (a + ${h})<sup>2</sup> ${sg(b)}(a + ${h}) = a<sup>2</sup> + ${2 * h}a + ${h * h} ${sg(b)}a ${sg(b * h)}.<br>f(a + ${h}) − f(a) = ${2 * h}a + ${h * h} ${sg(b * h)} = ${P([2 * h, h * (h + b)], 'a')}.<br>Divide by ${h}: <b>${r}</b>.`, MT(7)) });
+add(14, () => { const a = pk([-1, 0, 1, 2, 3]), Ea = a === 0 ? '' : a === 1 ? 'e' : `e<sup>${neg(a)}</sup>`,
+    T = c => c === 0 ? `y = ${Ea}x` : (a === 0 ? `y = ${P([1, c])}` : `y = ${Ea}(${P([1, c])})`), right = T(1 - a);
+  return mc(`Determine the tangent line to the function f(x) = e<sup>x</sup> at x = ${neg(a)}.`, right, [T(-a), T(a + 1), `y = x + ${a === 0 ? 1 : Ea}`, T(1 + a === 1 - a ? 2 : 1 + a), T(-1 - a)],
+    `Tangent line: y = f(a) + f′(a)(x − a). Here f(x) = f′(x) = e<sup>x</sup>, so f(${neg(a)}) = f′(${neg(a)}) = e<sup>${neg(a)}</sup>.<br>y = e<sup>${neg(a)}</sup> + e<sup>${neg(a)}</sup>(x ${sg(-a)}) = e<sup>${neg(a)}</sup>(x ${sg(1 - a)}).<br><b>${right}</b>.`, MT(8)) });
+add(15, () => { const r1 = ri(-5, 0), r2 = r1 + ri(1, 3), r3 = r2 + ri(1, 3), d = `(x ${sg(-r1)})(x ${sg(-r2)})(x ${sg(-r3)})`.replace(/\(x \+ 0\)/g, 'x').replace(/\(x − 0\)/g, 'x');
+  const T = [`f has a local minimum at x = ${neg(r1)}.`, `f has a local maximum at x = ${neg(r2)}.`, `f has a local minimum at x = ${neg(r3)}.`, `f is increasing on (${neg(r1)}, ${neg(r2)}).`, `f is decreasing on (${neg(r2)}, ${neg(r3)}).`, 'f is a polynomial of degree 4.'],
+    Fl = ['f is a polynomial of degree 3.', `f has a local maximum at x = ${neg(r1)}.`, `f is decreasing on (${neg(r1)}, ${neg(r2)}).`, 'f has at most two stationary points.', `f has a local minimum at x = ${neg(r2)}.`, `f is increasing on (${neg(r2)}, ${neg(r3)}).`];
+  return mc(`Let f be a function whose derivative is f′(x) = ${d}. Which of the following statements is correct?`, pk(T), shuf(Fl),
+    `Stationary points: x = ${neg(r1)}, ${neg(r2)}, ${neg(r3)} (three of them). f′ is a degree-3 polynomial, so f has degree 4.<br>Sign of f′: (−∞, ${neg(r1)}) negative · (${neg(r1)}, ${neg(r2)}) positive · (${neg(r2)}, ${neg(r3)}) negative · (${neg(r3)}, +∞) positive.<br>So f decreases, increases, decreases, increases: <b>local minima at x = ${neg(r1)} and x = ${neg(r3)}</b>, <b>local maximum at x = ${neg(r2)}</b>.`, MT(9)) });
+add(16, () => { const L = pk([3, 4, 5]), R = pk([-1, -1, 1]), f = x => x * x * Math.exp(x), C = [-L, -2, R].concat(R > 0 ? [0] : []).sort((p, q) => p - q),
+    M = C.reduce((p, q) => f(q) > f(p) ? q : p), m = C.reduce((p, q) => f(q) < f(p) ? q : p), S = (u, v) => `Maximum at x = ${neg(u)} and minimum at x = ${neg(v)}.`, W = [S(m, M), `Maximum at x = ${neg(-L)} and no minimum.`];
+  C.forEach(u => C.forEach(v => { if (u !== v && !(u === M && v === m)) W.push(S(u, v)) }));
+  return mc(`Consider the function f(x) = ${x2}e<sup>x</sup> defined on the interval [${neg(-L)}, ${neg(R)}]. Where are the absolute extrema attained?`, S(M, m), shuf(W),
+    `f′(x) = 2x·e<sup>x</sup> + ${x2}e<sup>x</sup> = x·e<sup>x</sup>(x + 2) = 0 → x = 0 or x = −2.${R < 0 ? ' Only x = −2 lies in the interval.' : ' Both lie in the interval.'}<br>A continuous function on a closed interval attains its extrema at stationary points or endpoints:<br>${C.map(u => `f(${neg(u)}) = ${F(f(u), 3)}`).join(' · ')}.<br><b>${S(M, m)}</b>`, MT(10)) });
+
 /* ===================== Lectures 17–18 (Problem Set I) ===================== */
 add(18, () => { const a = ri(1, 3), x = nz(-2, 2), y = nz(-2, 2), w = pk(['xx', 'xy', 'yy']), e = Math.exp(x * y), v = w === 'xx' ? y * y * e : w === 'yy' ? x * x * e : (1 + x * y) * e;
   return num(`Consider f(x, y) = e<sup>xy</sup>. Compute the entry ∂<sup>2</sup>f/∂${w[0]}∂${w[1]} of its Hessian matrix at the point (${neg(x)}, ${neg(y)}) (3 decimals).`, v, 3, '',
