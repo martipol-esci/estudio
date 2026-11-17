@@ -475,12 +475,12 @@ $('#again').onclick=()=>{qz=null;quiz();$('#start').click()};$('#menu').onclick=
 v.innerHTML=sc+`<div class="card"><h2>Round ${qz.round}: ${bien.length} passed · ${mal.length} to repeat</h2>${bien.length?`<p class="ok"><b>✓ Passed</b></p><ul>${L(bien)}</ul>`:''}<p class="ko"><b>✗ To repeat</b></p><ul>${L(mal)}</ul><div class="row"><button class="pri" id="rep">Repeat the failed ones</button><button id="menu">Exit</button></div></div>`;
 $('#rep').onclick=()=>{mal.forEach(q=>{delete q.ord;q.draft=''});qz.qs=shuf(mal);qz.i=0;qz.wrong=[];qz.ok=[];qz.round++;showQ()};$('#menu').onclick=()=>{qz=null;quiz()}}
 /* load uploaded syllabus: db inside claude.ai, localStorage elsewhere */
-if(!window.claude){UPS=(window.AULA||[]).concat(LS.get('ct-uploads',[]));DBST='local';applyUploads()}
+UPS=(window.AULA||[]).concat(window.claude?[]:LS.get('ct-uploads',[]));if(!window.claude)DBST='local';applyUploads()
 render();
 if(window.claude)(async()=>{try{DB=await claude.use('db')}catch(e){DB=null}
-if(!DB){UPS=LS.get('ct-uploads',[]);DBST='local';applyUploads();rerender();return}
+if(!DB){UPS=(window.AULA||[]).concat(LS.get('ct-uploads',[]));DBST='local';applyUploads();rerender();return}
 const tm=setTimeout(()=>{if(DBST==='loading'){DBST='slow';rerender()}},10000);
-DB.collection('uploads').onSnapshot(s=>{if(!s.metadata.fromCache)clearTimeout(tm);DBST='ok';UPS=s.docs.map(d=>({id:d.id,...d.data()}));applyUploads();rerender()},
+DB.collection('uploads').onSnapshot(s=>{if(!s.metadata.fromCache)clearTimeout(tm);DBST='ok';UPS=(window.AULA||[]).concat(s.docs.map(d=>({id:d.id,...d.data()})));applyUploads();rerender()},
 e=>{clearTimeout(tm);DBST='err';rerender()})})();
 </script>
 </body></html>

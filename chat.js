@@ -99,7 +99,7 @@ function find(Ds, T) {
   return R.sort((a, b) => b.sc - a.sc);
 }
 function topicRef(n, D) { /* «tema 3», «T3», «OPS» */
-  const m = n.match(/\b(?:tema|topic|t) ?(\d+)\b/); let code = m ? 'T' + m[1] : /\bops\b/.test(n) ? 'OPS' : null;
+  const m = n.match(/\b(?:tema|topic|t) ?(\d+)\b/); let code = m ? 'T' + m[1] : /\bops\b/.test(n) ? 'T8' : null;
   if (!code) return -1; return D.T.findIndex(x => x.n === code);
 }
 const hasTopicRef = n => /\b(?:tema|topic|t) ?\d+\b|\bops\b/.test(n);

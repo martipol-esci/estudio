@@ -20,7 +20,7 @@ window.ASIG = [
       ['T5', 'Ethics & organization'],
       ['T6', 'Marketing'],
       ['T7', 'Human resources'],
-      ['OPS', 'Operations, vertical integration & outsourcing'],
+      ['T8', 'Operations, vertical integration & outsourcing'],
       ['T9', 'Finance']
     ] },
   { id: 'francais', nombre: 'Français A1', emoji: '🇫🇷', color: 'var(--c-fra)', pagina: 'francais.html', prog: 'fr-prog',

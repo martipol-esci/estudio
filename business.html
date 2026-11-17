@@ -154,7 +154,7 @@ const T=[
 {h:'Pay transparency y salarios',k:[['Salario medio 2024','29.540 € (H 32.058 / M 26.905) · brecha 16,1 %'],['SMI 2026','1.221 €/mes ×14 = 17.094 €'],['Media vs mediana','la media se infla por salarios altos'],['Directiva UE 2023/970','rango salarial antes de entrevista, no preguntar historial, derecho a info por género']],tr:'La brecha media no prueba por sí sola discriminación individual.'},
 {h:'Working time y HR metrics',k:[['Jornada','40 h máx. legal; 37,5 h rechazada (sept. 2025); 35 h públicos estatales'],['Flexibilidad','teletrabajo, horario flexible, comprimida, híbrido'],['Absenteeism','% horas perdidas: 7,6 % en 2025, coste 59.100 M€'],['Otras','turnover, time-to-hire, cost-per-hire, quality of hire, engagement, pay equity']],tr:'Una métrica describe, no explica la causa.'}]},
 
-{n:'OPS',t:'Operations, vertical integration & outsourcing',d:'Operaciones, cadena de suministro y resiliencia',s:[
+{n:'T8',t:'Operations, vertical integration & outsourcing',d:'Operaciones, cadena de suministro y resiliencia',s:[
 {h:'Operations management',k:[['Inputs','materiales, trabajo, energía, info, capital'],['Transformation','planificar, programar, controlar'],['Outputs','bienes o servicios'],['Services','intangibles, más contacto con el cliente']],tr:'Los servicios también tienen operaciones.'},
 {h:'Supply chain',k:[['Upstream','hacia proveedores'],['Downstream','hacia clientes'],['1st-tier','proveedor directo'],['2nd-tier','proveedor del proveedor']],tr:'Riesgo: ignorar dependencias de 2º/3er nivel.'},
 {h:'SCOR model',k:[['Plan','equilibrar demanda y oferta'],['Source','comprar'],['Make','producir'],['Deliver','pedidos, almacén, transporte'],['Return','devoluciones, reparación, reciclaje']],tr:'No olvides Return (clave en e-commerce).'},
@@ -552,12 +552,12 @@ $('#again').onclick=()=>{qz=null;quiz();$('#start').click()};$('#menu').onclick=
 v.innerHTML=`<div class="card"><h2>Round ${qz.round}: ${bien.length} right · ${mal.length} to repeat</h2>${bien.length?`<p class="ok"><b>✓ Right</b></p><ul>${L(bien)}</ul>`:''}<p class="ko"><b>✗ To repeat</b></p><ul>${L(mal)}</ul><div class="row"><button class="pri" id="rep">Repeat the wrong ones</button><button id="menu">Exit</button></div></div>`;
 $('#rep').onclick=()=>{mal.forEach(q=>{delete q.ord;q.draft=''});qz.qs=shuf(mal.map(q=>q.type==='num'&&q.gen?Object.assign({type:'num',gen:q.gen},q.gen()):q));qz.i=0;qz.wrong=[];qz.ok=[];qz.round++;showQ()};$('#menu').onclick=()=>{qz=null;quiz()}}
 /* load uploaded syllabus: db inside claude.ai, localStorage elsewhere */
-if(!window.claude){UPS=(window.AULA||[]).concat(LS.get('bo-uploads',[]));DBST='local';applyUploads()}
+UPS=(window.AULA||[]).concat(window.claude?[]:LS.get('bo-uploads',[]));if(!window.claude)DBST='local';applyUploads()
 render();
 if(window.claude)(async()=>{try{DB=await claude.use('db')}catch(e){DB=null}
-if(!DB){UPS=LS.get('bo-uploads',[]);DBST='local';applyUploads();rerender();return}
+if(!DB){UPS=(window.AULA||[]).concat(LS.get('bo-uploads',[]));DBST='local';applyUploads();rerender();return}
 const tm=setTimeout(()=>{if(DBST==='loading'){DBST='slow';rerender()}},10000);
-DB.collection('uploads').onSnapshot(s=>{if(!s.metadata.fromCache)clearTimeout(tm);DBST='ok';UPS=s.docs.map(d=>({id:d.id,...d.data()}));applyUploads();rerender()},
+DB.collection('uploads').onSnapshot(s=>{if(!s.metadata.fromCache)clearTimeout(tm);DBST='ok';UPS=(window.AULA||[]).concat(s.docs.map(d=>({id:d.id,...d.data()})));applyUploads();rerender()},
 e=>{clearTimeout(tm);DBST='err';rerender()})})();
 </script>
 </body></html>
