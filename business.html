@@ -44,6 +44,7 @@ label.r{display:inline-flex;gap:6px;align-items:center;margin-right:12px;font-si
 <div id="view"></div>
 </main>
 <script src="business-aula.js"></script>
+<script src="business-examen.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -366,7 +367,19 @@ Object.values(groups).forEach(g=>{let idx;const u0=g[0];
  if(u0.target==='new'){idx=T.length;T.push({n:u0.topic.n,t:u0.topic.t||u0.title,d:u0.topic.d||'Temario subido',s:[],up:1})}
  else{idx=T.findIndex(x=>x.n===u0.target);if(idx<0)return}
  g.forEach(u=>{(u.s||[]).forEach(s=>T[idx].s.push({...s,nu:1}));(u.mc||[]).forEach(q=>MC.push([idx,...q]));(u.wr||[]).forEach(q=>WR.push([idx,...q]));(u.fmc||[]).forEach(q=>FMC.push([idx,...q]))})});
-if(topic>=T.length)topic=0}
+buildExam();if(topic>=T.length)topic=0}
+/* Tema «Final Exam»: toda la teoría de T1–T9 (sin lo excluido), con un puente antes de cada tema y las relaciones entre temas (business-examen.js). */
+function buildExam(){const E=window.EXAMEN;if(!E)return;const idx=T.length,s=[];window.EXIDX=idx;
+E.intro.forEach(x=>s.push(x));
+T.slice(0,idx).filter(t=>/^T\d+$/.test(t.n)).forEach(t=>{const p=E.puente[t.n];
+ if(p)s.push({h:`🔗 ${t.n} · ${t.t}: de dónde viene y adónde lleva`,k:[['Viene de',p.viene]].concat(p.k)});
+ t.s.forEach(x=>{if(E.excluir.some(e=>x.h.includes(e)))return;const y={...x,h:`${t.n} · ${x.h}`};delete y.nu;
+  if(x.f){y.f=x.f.filter(fm=>!E.quitarFormula.some(r=>r.test(fm)));if(!y.f.length)delete y.f}
+  if(t.n==='T9'&&y.f)y.tr=(x.tr?x.tr+' · ':'')+'En el examen no habrá cálculos de finanzas: basta con entender qué significa.';s.push(y)})});
+E.final.forEach(x=>s.push(x));
+T.push({n:'EXAM',t:'Final Exam',d:'Toda la teoría de T1–T9 unida y relacionada, sin lo que no entra · preguntas tipo examen en ✍️ Exercises → EXAM',s});
+E.mc.forEach(q=>MC.push([idx,...q]));E.wr.forEach(q=>WR.push([idx,...q]));
+if(!window._exCalc&&window.EXAMEN_CALC){window._exCalc=1;CALC.push(...window.EXAMEN_CALC)}}
 const loadScript=src=>new Promise((ok,ko)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>ko(new Error('No se pudo cargar el lector de archivos.'));document.head.appendChild(s)});
 async function fileText(file){const n=file.name.toLowerCase();
 if(/\.(txt|md|csv)$/.test(n))return await file.text();

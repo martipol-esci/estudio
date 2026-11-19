@@ -21,7 +21,8 @@ window.ASIG = [
       ['T6', 'Marketing'],
       ['T7', 'Human resources'],
       ['T8', 'Operations, vertical integration & outsourcing'],
-      ['T9', 'Finance']
+      ['T9', 'Finance'],
+      ['EXAM', 'Final Exam']
     ] },
   { id: 'francais', nombre: 'Français A1', emoji: '🇫🇷', color: 'var(--c-fra)', pagina: 'francais.html', prog: 'fr-prog',
     secciones: ['Aprender', 'Ejercicios', 'Pronunciar', 'Conversar', 'Micro'],
