@@ -188,5 +188,62 @@ window.AULA = [
     ['What are the main roles of financial intermediaries?',
      ['maturity|plazo', 'diversification|diversificacion|risk|riesgo', 'cost|coste|information|informacion', 'payment|pago']
      , 'They transfer funds from savers to investors, provide maturity intermediation, reduce risk through diversification, reduce the costs of contracting and information processing, and provide a payments mechanism.']
+  ] },
+
+{ gid: 'aula-bo-t7-linkedin', part: 0, createdAt: 5, title: 'LinkedIn Profile Guide', target: 'T7', topic: {},
+  s: [
+    { h: 'LinkedIn: por qué empezar ya y cómo crear la cuenta',
+      k: [['Por qué en primer curso', 'recruiters, coordinadores de prácticas y programas de exchange te buscan antes de contactarte; al graduarte tendrás 3 años de contactos, proyectos y logros'],
+          ['Email', 'uno personal que seguirás usando después de la universidad, no el de estudiante'],
+          ['Nombre', 'el real, escrito exactamente igual que en el CV'],
+          ['Custom URL', 'linkedin.com/in/nombre-apellido · queda más limpio en el CV y en la firma del email']],
+      tr: 'Email personal · nombre como en el CV · URL personalizada.' },
+    { h: 'Foto, banner y headline',
+      k: [['Foto', 'reciente, la cara ocupa casi todo el encuadre, fondo liso, buena luz, vestido como para una entrevista · nada de fotos de grupo, gafas de sol o vacaciones'],
+          ['Banner', 'imagen ancha de 1584 × 396 px: skyline, campus o diseño relacionado con business/marketing (Canva tiene plantillas)'],
+          ['Headline', 'aparece en búsquedas, comentarios y solicitudes · «Student» no dice nada'],
+          ['Estructura del headline', 'quién eres + qué te interesa + qué te hace distinto · p. ej. International Business & Marketing Student at [School] | Interested in Digital Marketing & Global Brands | English · Spanish · French']],
+      tr: 'Headline = quién eres | qué te interesa | qué te diferencia.' },
+    { h: 'About section',
+      k: [['Cómo escribirlo', 'en primera persona, como una presentación en un café, 3 o 4 párrafos cortos'],
+          ['1 · How you got here', 'un momento o experiencia real que te llevó al business o al marketing'],
+          ['2 · What you’re doing now', 'tus estudios y las habilidades que trabajas'],
+          ['3 · Where you’re heading', 'industrias, puestos o mercados que te interesan'],
+          ['4 · An invitation', '«I’m always happy to connect with people working in…»'],
+          ['Evitar', 'frases vacías como «passionate, hard-working team player»: las usa todo el mundo']],
+      tr: 'Pasado → presente → futuro → invitación. Honesto y concreto.' },
+    { h: 'Education, experience, skills y projects',
+      k: [['Education', 'escuela, grado, campo y año de graduación previsto; en Activities: clubs, asociaciones, case competitions, planes de exchange; añade cursos relevantes'],
+          ['Experience', 'cuentan trabajos a tiempo parcial, voluntariado, negocio familiar, organizar eventos o llevar redes sociales · di qué hiciste y qué resultado tuvo (p. ej. de 300 a 1.100 seguidores en un semestre)'],
+          ['Skills', '10–15 que encajen de verdad (market research, social media marketing, Excel, Canva, presentations, cross-cultural communication) · fija las 3 principales'],
+          ['Languages', 'cada idioma con su nivel · en international business suele ser lo que te hace destacar'],
+          ['Certificados gratuitos', 'Google Digital Marketing o Analytics, HubSpot Inbound Marketing, Meta Blueprint, LinkedIn Learning'],
+          ['Projects', 'trabajos de clase, case studies, market-entry analyses, con enlace a las slides o al PDF · con el tiempo es un pequeño portfolio']],
+      tr: 'Experiencia = qué hiciste + resultado. Idiomas con nivel.' },
+    { h: 'Red de contactos y mantenimiento',
+      k: [['Con quién empezar', 'compañeros, profesores, teaching assistants, antiguos jefes, contactos de la familia'],
+          ['Contactar a alguien nuevo', 'siempre con una nota personal corta (quién eres + por qué le escribes)'],
+          ['A quién seguir', '10–20 empresas en las que te gustaría trabajar y la página de alumni de tu escuela'],
+          ['Keep it alive', 'unos 15 minutos a la semana · comentarios con contenido (destacan más que los likes) · compartir algo una vez al mes · revisar el perfil al final de cada semestre']] },
+    { h: 'Quick checklist del perfil',
+      k: [['Imagen', 'foto profesional y banner · custom URL'],
+          ['Texto', 'headline que diga más que «Student» · About escrito'],
+          ['Contenido', 'education con activities · al menos una experiencia · 10+ skills y tus idiomas · un certificado o proyecto'],
+          ['Red y visibilidad', '50+ conexiones · perfil público']],
+      tr: 'Checklist: foto + banner + URL + headline + About + education + 1 experiencia + 10 skills + 1 certificado + 50 conexiones + público.' }
+  ],
+  mc: [
+    ['Which email should you use to create your LinkedIn account, according to the guide?', ['Your student email', 'A personal email you will keep using after university', 'Your school’s generic email', 'Any temporary email'], 1, 'Use a personal email you will still use after graduating, not your student address.'],
+    ['What is the recommended structure for a LinkedIn headline?', ['Just “Student”', 'Who you are, what interests you and what makes you different', 'Your full CV', 'Only your school name'], 1, '“Student” tells people nothing; say who you are, what interests you and what makes you a bit different.'],
+    ['What is the recommended order of the About section?', ['Skills, salary, contact', 'How you got here, what you are doing now, where you are heading, an invitation', 'Grades, awards, hobbies', 'A list of buzzwords'], 1, 'Four short first-person paragraphs: past, present, future and an invitation to connect.'],
+    ['How many skills does the guide recommend listing?', ['3', '10–15 that really fit', '50+', 'As many as possible'], 1, 'Choose 10–15 relevant skills and pin your top three.'],
+    ['What should you always add when connecting with someone new?', ['Your CV', 'A short personal note', 'A request for a job', 'Nothing'], 1, 'Always add a short personal note saying who you are and why you are reaching out.'],
+    ['How much time per week does the guide say is enough to keep your profile alive?', ['About 15 minutes', '5 hours', 'One full day', 'None, once it is done'], 0, 'About fifteen minutes a week: thoughtful comments, a monthly share and a refresh every semester.']
+  ],
+  fmc: [],
+  wr: [
+    ['Describe the main elements of a strong LinkedIn profile for a first-year business student.',
+     ['photo|foto', 'headline', 'about', 'skill|languages|idioma', 'connection|conexion|network|red'],
+     'A professional photo and banner, a custom URL, a headline that says who you are, what interests you and what makes you different, a first-person About section (past, present, future, invitation), education with activities, at least one experience with results, 10–15 skills plus languages with levels, a certificate or project, 50+ connections and a public profile.']
   ] }
 ];
