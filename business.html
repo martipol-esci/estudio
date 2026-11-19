@@ -492,7 +492,9 @@ const fNorm=s=>String(s).replace(/<[^>]+>/g,'').replace(/^[^:=]{1,25}:\s*(?=\S.*
 function formRows(){const done=FORM.map(r=>fNorm(r[2]));const rows=FORM.map(([n,a,b])=>({n,a,b}));
 T.forEach(t=>t.s.forEach(s=>(s.f||[]).forEach(f=>{const k=fNorm(f);if(!k||done.some(d=>d===k||d.includes(k)||k.includes(d)))return;done.push(k);rows.push({n:t.n,a:s.h.replace(/<[^>]+>/g,''),b:f})})));
 return T.map(t=>({t,r:rows.filter(x=>x.n===t.n)})).filter(g=>g.r.length)}
-function form(){const FS=`font-family:'Cambria Math','Times New Roman',serif;font-size:16px`;$('#view').innerHTML=`<div class="card"><h3>Fórmulas esenciales</h3><table><tr><th>Concepto</th><th>Fórmula</th></tr>${formRows().map(g=>`<tr><th colspan="2">${g.t.n} · ${g.t.t}</th></tr>${g.r.map(x=>`<tr><td>${x.a}</td><td style="${FS}">${x.b}</td></tr>`).join('')}`).join('')}</table></div>
+/* Fórmulas que NO entran en el examen final (instrucciones del profesor: T1 págs. 9, 10, 15 y 34) */
+const noEx=x=>/^(Slutsky|Absolute risk aversion|Relative risk aversion|CARA|CRRA|Bayes|Arrow–Pratt)$/i.test(x.a)||/slutsky|ℒ|lagrang|P\(H\|E\)|A\(w\)|R\(w\)/i.test(x.b);
+function form(){const FS=`font-family:'Cambria Math','Times New Roman',serif;font-size:16px`;$('#view').innerHTML=`<div class="card"><h3>Fórmulas esenciales</h3><p class="mut" style="margin-top:0">🚫 = no entra en el examen final · en T9 no habrá cálculos, solo conceptos.</p><table><tr><th>Concepto</th><th>Fórmula</th></tr>${formRows().map(g=>`<tr><th colspan="2">${g.t.n} · ${g.t.t}${g.t.n==='T9'?' <span class="mut" style="font-weight:400">· en el examen solo conceptos, sin cálculos</span>':''}</th></tr>${g.r.map(x=>noEx(x)?`<tr style="opacity:.55"><td>🚫 <s>${x.a}</s><br><span class="ko" style="font-size:12px">No entra en el examen</span></td><td style="${FS}"><s>${x.b}</s></td></tr>`:`<tr><td>${x.a}</td><td style="${FS}">${x.b}</td></tr>`).join('')}`).join('')}</table></div>
 <div class="card"><h3>Diferencias clave</h3><table><tr><th>Conceptos</th><th>Diferencia</th></tr>${DIFF.map(([a,b])=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join('')}</table></div>`}
 
 /* ---------- exercises (English UI) ---------- */
