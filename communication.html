@@ -310,7 +310,7 @@ function cleanUp(r){const o={s:[],mc:[],ex:[]};if(!r||typeof r!=='object')return
 if(r.topic&&typeof r.topic==='object')o.topic={t:S_(r.topic.t),d:S_(r.topic.d)};
 (Array.isArray(r.s)?r.s:[]).forEach(s=>{if(!s||!isS(s.h))return;const x={h:S_(s.h)};
  if(Array.isArray(s.k))x.k=s.k.filter(p=>Array.isArray(p)&&isS(p[0])).map(p=>[S_(p[0]),S_(p[1]||'')]);
- if(Array.isArray(s.f))x.f=s.f.filter(isS).map(S_);if(isS(s.ej))x.ej=S_(s.ej);if(isS(s.tr))x.tr=S_(s.tr);
+ if(Array.isArray(s.p))x.p=s.p.filter(isS).map(S_);if(Array.isArray(s.f))x.f=s.f.filter(isS).map(S_);if(isS(s.ej))x.ej=S_(s.ej);if(isS(s.tr))x.tr=S_(s.tr);
  if(Array.isArray(s.tbl)&&s.tbl.length>1&&s.tbl.every(Array.isArray))x.tbl=s.tbl.map(r=>r.map(c=>S_(String(c))));o.s.push(x)});
 o.mc=(Array.isArray(r.mc)?r.mc:[]).filter(q=>Array.isArray(q)&&isS(q[0])&&Array.isArray(q[1])&&q[1].length===4&&q[1].every(isS)&&Number.isInteger(q[2])&&q[2]>=0&&q[2]<4).map(q=>[S_(q[0]),q[1].map(S_),q[2],S_(q[3]||'')]);
 o.ex=(Array.isArray(r.ex)?r.ex:[]).filter(q=>q&&CRIT[q.c]&&isS(q.q)&&isS(q.m)&&Array.isArray(q.k)&&q.k.some(isS)).map(q=>{const x={c:q.c,q:S_(q.q),m:S_(q.m),k:q.k.filter(isS).map(k=>{const p=k.split('|');return [esc(p[0].trim()).slice(0,200)].concat(p.slice(1).map(w=>w.toLowerCase().trim().slice(0,60)).filter(Boolean)).join('|')}).filter(k=>k.includes('|')||k.length)};if(isS(q.cs))x.cs=S_(q.cs).replace(/\n/g,'<br>');x.k=x.k.map(k=>k.includes('|')?k:k+'|'+norm(k));return x});
@@ -377,7 +377,7 @@ function learn(){const tp=T[topic];
 $('#view').innerHTML=`<div class="chips">${T.map((x,i)=>`<button class="${i===topic?'on':''}" data-t="${i}">${x.n} · ${x.t}</button>`).join('')}</div>
 <h2 class="topic-h">${tp.n} · ${tp.t}</h2><p class="mut topic-sub">${tp.d}</p>
 <div class="card toc">${tp.s.map((s,i)=>`<a href="#s${i}">${i+1}. ${s.h}</a>`).join('')}</div>
-${tp.s.map((s,i)=>`<section class="card" id="s${i}"><h3>${i+1}. ${s.nu?'🆕 ':''}${s.h}</h3>${(s.f||[]).map(f=>`<div class="fx">${f}</div>`).join('')}${s.k?`<ul class="k">${s.k.map(([a,b])=>`<li><b>${a}</b>: ${b}</li>`).join('')}</ul>`:''}${s.tbl?tblH(s.tbl):''}${s.ej?`<div class="ej">💡 <b>Ej:</b> ${s.ej}</div>`:''}${s.tr?`<div class="tr">⚠️ <b>Trampa:</b> ${s.tr}</div>`:''}</section>`).join('')}
+${tp.s.map((s,i)=>`<section class="card" id="s${i}"><h3>${i+1}. ${s.nu?'🆕 ':''}${s.h}</h3>${(s.p||[]).map(x=>`<p style="margin:8px 0;line-height:1.6">${x}</p>`).join('')}${(s.f||[]).map(f=>`<div class="fx">${f}</div>`).join('')}${s.k?`<ul class="k">${s.k.map(([a,b])=>`<li><b>${a}</b>: ${b}</li>`).join('')}</ul>`:''}${s.tbl?tblH(s.tbl):''}${s.ej?`<div class="ej">💡 <b>Ej:</b> ${s.ej}</div>`:''}${s.tr?`<div class="tr">⚠️ <b>Trampa:</b> ${s.tr}</div>`:''}</section>`).join('')}
 <div class="row"><button class="pri" id="go">Practicar ${tp.n} →</button></div>`;
 document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{topic=+b.dataset.t;LS.set('ct-topic',topic);learn();scrollTo(0,0)});
 $('#go').onclick=()=>{tab='quiz';LS.set('ct-tab',tab);qz=null;CFG.t=String(topic);render();scrollTo(0,0)}}
