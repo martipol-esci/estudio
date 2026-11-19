@@ -405,7 +405,17 @@ window.AULA = [
           ['Consequence 3', 'los gobiernos recaudan (Bélgica €223,7 M) y aparecen tasas nacionales'],
           ['Priority', 'la 1 es la más importante porque es la única demostrada en toda la UE y dura mientras exista la tasa'],
           ['Subscription invitation', 'cierra invitando a suscribirse a la revista para seguir la historia']],
-      tr: 'Explica cada consecuencia con palabras sencillas (qué pasa + por qué + un dato) y justifica la prioridad: es lo que puntúa.' }
+      tr: 'Explica cada consecuencia con palabras sencillas (qué pasa + por qué + un dato) y justifica la prioridad: es lo que puntúa.' },
+    { h: '📝 Artículo modelo para la Question 3 (285 palabras con el titular)',
+      k: [['Headline', 'Why Your €5 Online Order Just Got More Expensive'],
+          ['Engaging introduction', 'Remember when a T-shirt from Shein, Temu or AliExpress cost less than a coffee? Those days are fading. Since 1 July 2026, the European Union has charged €3 on every item in parcels worth up to €150, and since November a €2 handling fee has been added on top. The rule runs until July 2028 in all 27 member states. Here is what it means for business.'],
+          ['Consequence 1', 'First, the platforms are changing how they ship. Instead of sending millions of small parcels, they now send goods in bulk to warehouses inside Europe, where the normal tariff is often much cheaper. Small parcels entering the EU fell by 60% between July and September, and Shein is expanding its warehouses in Poland.'],
+          ['Consequence 2', 'Second, shoppers are feeling the price. In Germany, the three platforms’ sales dropped by 35.5% in the third quarter. However, European shops have not benefited yet, and weaker consumer confidence also played a part, so the duty is not the only cause.'],
+          ['Consequence 3', 'Third, governments are collecting money and writing new rules. Belgium alone raised €223.7 million in about seven weeks, while France and Romania already charge their own national fees, which could split the European market.'],
+          ['Priority', 'So which consequence matters most? The first one. It is the only effect already measured across the whole EU, and it is likely to last as long as the duty does. If you dream of working in logistics, e-commerce or international trade, this is the change to watch: supply chains are being redesigned right now.'],
+          ['Subscription invitation', 'Want to understand the news that will shape your career? Subscribe to our magazine and get one clear business story in your inbox every week.']],
+      ej: 'Por qué funciona: pregunta cercana al lector en la introducción · cada consecuencia empieza con First / Second / Third y lleva un dato · lenguaje sencillo, sin tecnicismos · la prioridad se justifica con las dos razones del grupo (medido en toda la UE + dura lo que la tasa) · se conecta con el futuro profesional de los lectores · cierre con invitación a suscribirse.',
+      tr: 'No lo memorices palabra por palabra: aprende la estructura y los datos, y escríbelo con tus palabras. Cuenta que quede entre 270 y 300 palabras con el titular.' }
   ],
   mc: [
     ['In Singin’ in the Rain, why is Lina Lamont a problem when the studio moves to talkies?', ['She cannot dance', 'Her shrill voice and strong accent contradict her elegant image', 'She refuses to act', 'She is too old'], 1, 'In silent films her voice was never heard; in talkies her pronunciation destroys her glamorous image.'],
