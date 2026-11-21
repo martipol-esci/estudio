@@ -309,6 +309,51 @@ add(17, () => { const a = ri(1, 4), b = ri(1, 4), c = ri(-5, 5), k = pk([2, -1, 
   return mc(`Consider f(x, y) = ${a === 1 ? '' : a}${x2} + ${b === 1 ? '' : b}y<sup>2</sup> ${sg(c)}. Determine the section ${sx ? 'x' : 'y'} = ${neg(k)}.`, right, sx ? [`g(y) = ${P([b, 0, a * k + c], 'y')}`, `g(x) = ${P([a, 0, b * k * k + c])}`, `g(y) = ${P([b, 0, c], 'y')}`, `g(y) = ${P([a * k * k + b, 0, c], 'y')}`] : [`g(x) = ${P([a, 0, b * k + c])}`, `g(y) = ${P([b, 0, a * k * k + c], 'y')}`, `g(x) = ${P([a, 0, c])}`, `g(x) = ${P([a + b * k * k, 0, c])}`],
     `A section fixes one variable and leaves a one-variable function of the other.<br>Substitute ${sx ? 'x' : 'y'} = ${neg(k)}: ${sx ? `${a}·${k * k} + ${b}y<sup>2</sup> ${sg(c)}` : `${a}${x2} + ${b}·${k * k} ${sg(c)}`}.<br><b>${right}</b> — a parabola.`, 'Problem Set I · I2') });
 
+/* ===================== Lecture 19 · Linear programming (Problem Set J) ===================== */
+MATES.NAMES[19] = 'Linear programming';
+/* constraint [a, b, c] means a·x + b·y ≤ c */
+const gcd2 = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+const ineq = ([a, b, c], rel) => { const t = (k, v) => k === 0 ? '' : `${k === 1 ? '' : k === -1 ? '−' : neg(k)}${v}`, xs = t(a, 'x'), ys = t(b, 'y');
+  const lhs = xs && ys ? `${xs} ${b < 0 ? '−' : '+'} ${Math.abs(b) === 1 ? '' : Math.abs(b)}y` : xs || ys; return `${lhs} ${rel || '≤'} ${neg(c)}`; };
+const nice = ([a, b, c]) => { const g = gcd2(gcd2(a, b), c), s = (a < 0 || (a === 0 && b < 0)) ? -1 : 1; return [s * a / g, s * b / g, s * c / g, s]; };
+const show = k => { const [a, b, c, s] = nice(k); return ineq([a, b, c], s < 0 ? '≥' : '≤'); };
+const vertices = C => { const V = [];
+  for (let i = 0; i < C.length; i++) for (let j = i + 1; j < C.length; j++) { const [a1, b1, c1] = C[i], [a2, b2, c2] = C[j], d = a1 * b2 - a2 * b1; if (!d) continue;
+    const x = (c1 * b2 - c2 * b1) / d + 0, y = (a1 * c2 - a2 * c1) / d + 0;
+    if (C.every(([a, b, c]) => a * x + b * y <= c + 1e-9) && !V.some(v => Math.abs(v[0] - x) < 1e-9 && Math.abs(v[1] - y) < 1e-9)) V.push([x, y]); }
+  return V; };
+const pt = v => `(${F(v[0], 2)}, ${F(v[1], 2)})`;
+const lineThrough = (P, Q, R) => { let a = Q[1] - P[1], b = P[0] - Q[0], c = a * P[0] + b * P[1]; if (a * R[0] + b * R[1] > c) { a = -a; b = -b; c = -c; } return [a, b, c]; };
+const tri = () => { for (let i = 0; i < 50; i++) { const A = [ri(0, 4), ri(0, 4)], B = [ri(5, 11), ri(0, 5)], Cc = [ri(1, 9), ri(5, 10)], ar = (B[0] - A[0]) * (Cc[1] - A[1]) - (Cc[0] - A[0]) * (B[1] - A[1]);
+  if (Math.abs(ar) >= 12) return [A, B, Cc]; } return null; };
+add(19, () => { const T = tri(); if (!T) return null; const [A, B, Cc] = T, C = [lineThrough(A, B, Cc), lineThrough(B, Cc, A), lineThrough(Cc, A, B)];
+  const a = nz(-6, 6), b = nz(-6, 6), mx = Math.random() < .5, Fv = v => a * v[0] + b * v[1] + 0, V = vertices(C), best = V.reduce((p, q) => (mx ? Fv(q) > Fv(p) : Fv(q) < Fv(p)) ? q : p);
+  if (V.length !== 3 || V.filter(v => Fv(v) === Fv(best)).length > 1) return null;
+  return num(`${mx ? 'Maximise' : 'Minimise'} F(x, y) = ${a === 1 ? "" : a === -1 ? "−" : neg(a)}x ${b < 0 ? "−" : "+"} ${Math.abs(b) === 1 ? "" : Math.abs(b)}y subject to: ${C.map(show).join('; ')}. What is the optimal value of F?`, Fv(best), 0, '',
+    `The feasible region is the triangle whose vertices are the intersections of each pair of boundary lines: ${V.map(pt).join(', ')}.<br>The optimum of a linear function on a bounded region is attained at a vertex: ${V.map(v => `F${pt(v)} = ${F(Fv(v))}`).join(' · ')}.<br>${mx ? 'Maximum' : 'Minimum'} at ${pt(best)}: <b>F = ${F(Fv(best))}</b>.`, 'Problem Set J · J1–J2') });
+add(19, () => { const T = tri(); if (!T) return null; const [A, B, Cc] = T, C = [lineThrough(A, B, Cc), lineThrough(B, Cc, A), lineThrough(Cc, A, B)];
+  const right = C.map(show).join('; '), flip = k => k.map(z => -z), wrong = [0, 1, 2].map(i => C.map((k, j) => j === i ? show(flip(k)) : show(k)).join('; '));
+  return mc(`Which inequalities define the closed triangle with vertices A${pt(A)}, B${pt(B)} and C${pt(Cc)}?`, right, wrong,
+    `Each side lies on the line through two vertices; the inequality sign is chosen so that the third vertex satisfies it.<br>AB, checked with C: ${show(C[0])} · BC, checked with A: ${show(C[1])} · CA, checked with B: ${show(C[2])}.<br><b>${right}</b>`, 'Problem Set J · J3') });
+add(19, () => { const T = tri(); if (!T) return null; const [A, B, Cc] = T, C = [lineThrough(A, B, Cc), lineThrough(B, Cc, A), lineThrough(Cc, A, B)], kind = pk(['in', 'bd', 'out']);
+  let p; if (kind === 'in') p = [(A[0] + B[0] + Cc[0]) / 3, (A[1] + B[1] + Cc[1]) / 3]; else if (kind === 'bd') p = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2]; else p = [B[0] + 2, B[1] + ri(-1, 1)];
+  if (!Number.isInteger(p[0] * 2) || !Number.isInteger(p[1] * 2)) return null;
+  const val = C.map(([a, b, c]) => [a * p[0] + b * p[1], c]), real = val.some(([l, c]) => l > c + 1e-9) ? 'out' : val.some(([l, c]) => Math.abs(l - c) < 1e-9) ? 'bd' : 'in', L = { in: 'An interior point', bd: 'A boundary point', out: 'Outside the region' };
+  return mc(`The region R is defined by ${C.map(show).join('; ')}. The point P${pt(p)} is…`, L[real], [L.in, L.bd, L.out, 'A vertex of the region'],
+    `Substitute P into each inequality: ${C.map((k, i) => { const [a, b, c, s] = nice(k), l = a * p[0] + b * p[1]; return `${show(k)} → ${F(l, 2)} ${s < 0 ? "≥" : "≤"} ${neg(c)}${Math.abs(val[i][0] - val[i][1]) < 1e-9 ? " (equality)" : val[i][0] > val[i][1] ? " ✘" : " ✔"}` }).join(" · ")}.<br>${real === 'out' ? 'One inequality fails → <b>outside</b>.' : real === 'bd' ? 'All hold and one is an equality → <b>boundary point</b>.' : 'All hold strictly → <b>interior point</b>.'}`, 'Problem Set J · J4') });
+add(19, () => { const mx = ri(6, 12), my = ri(6, 12), h1 = ri(1, 2), h2 = ri(2, 4), H = ri(Math.max(mx * h1, my * h2) - 2, mx * h1 + my * h2 - 4), p1 = ri(3, 9), p2 = ri(8, 20);
+  const C = [[1, 0, mx], [0, 1, my], [h1, h2, H], [-1, 0, 0], [0, -1, 0]], V = vertices(C), Fv = v => p1 * v[0] + p2 * v[1] + 0, best = V.reduce((p, q) => Fv(q) > Fv(p) ? q : p);
+  if (!best.every(Number.isInteger) || V.filter(v => Fv(v) === Fv(best)).length > 1) return null;
+  return num(`A craftsperson decorates jugs and vases each month: at most ${mx} jugs and at most ${my} vases. A jug takes ${h1} hour${h1 > 1 ? 's' : ''} and a vase ${h2} hours, with at most ${H} hours per month. The profit is €${p1} per jug and €${p2} per vase, and all production is sold. What is the maximum monthly profit?`, Fv(best), 0, '€',
+    `x = jugs, y = vases. Maximise F = ${p1}x + ${p2}y subject to x ≤ ${mx}, y ≤ ${my}, ${h1 === 1 ? '' : h1}x + ${h2}y ≤ ${H}, x, y ≥ 0.<br>Vertices: ${V.map(pt).join(', ')}.<br>${V.map(v => `F${pt(v)} = ${F(Fv(v))}`).join(' · ')}.<br>Best: ${best[0]} jugs and ${best[1]} vases → <b>€${F(Fv(best))}</b>.`, 'Problem Set J · J5') });
+add(19, () => { const s1 = pk([0.5, 1]), s2 = pk([1, 1.5, 2]), e1 = ri(6, 10), e2 = ri(4, 8), x0 = ri(3, 12), y0 = ri(2, 10), S = s1 * x0 + s2 * y0, Eg = e1 * x0 + e2 * y0, p1 = ri(6, 12), p2 = ri(8, 16);
+  if (!Number.isInteger(S) || !(s1 / s2 < p1 / p2 && p1 / p2 < e1 / e2)) return null;
+  if (s1 === s2 && e1 === e2) return null;
+  const C = [[s1, s2, S], [e1, e2, Eg], [-1, 0, 0], [0, -1, 0]], V = vertices(C), Fv = v => p1 * v[0] + p2 * v[1] + 0, best = V.reduce((p, q) => Fv(q) > Fv(p) ? q : p);
+  if (!best.every(Number.isInteger) || V.filter(v => Fv(v) === Fv(best)).length > 1 || best[0] === 0 || best[1] === 0) return null;
+  return num(`A bakery makes two cakes. Cake A needs ${F(s1)} kg of sugar and ${e1} eggs and sells for €${p1}; cake B needs ${F(s2)} kg of sugar and ${e2} eggs and sells for €${p2}. There are ${S} kg of sugar and ${Eg} eggs in stock. What is the maximum revenue?`, Fv(best), 0, '€',
+    `x = cakes A, y = cakes B. Maximise R = ${p1}x + ${p2}y subject to ${F(s1)}x + ${s2 === 1 ? "" : F(s2)}y ≤ ${S} (sugar), ${e1}x + ${e2}y ≤ ${Eg} (eggs), x, y ≥ 0.<br>Vertices: ${V.map(pt).join(', ')}.<br>${V.map(v => `R${pt(v)} = ${F(Fv(v))}`).join(' · ')}.<br>Best: ${best[0]} cakes A and ${best[1]} cakes B → <b>€${F(Fv(best))}</b>.`, 'Problem Set J · J6') });
+
 /* ===================== remove the one-step warm-ups ===================== */
 const EASY = [/Calculate the percentage change in the exchange rate\.$/, /Determine the percentage markup on the cost price/, /^Classify the sequence/, /is invested at <b>simple<\/b> interest/, /^Solve the equation log<sub>\d+<\/sub>\(x\) = \d+\.$/, /^Solve the equation ln\(e<sup>/, /^Solve the equation √\(x \+ \d+\) = \d+\.$/, /^Compute \d+<sup>/, /What is its y-intercept\?$/, /^Determine the range of f\(x\) = \(x [+−]/, /Compute the image of the point/, /have a horizontal tangent line\?$/, /^Find the <b>largest<\/b> root of f\(x\) = /, /compute f′\(−?\d+\)\.$/, /Determine the transport cost in month n = /, /Determine the number of units produced in month \d+ \(round/, /^Determine the domain of f\(x\) = (√|∛)\(x − \d+\)\.$/, /Calculate C\(\d+\) − C\(\d+\)/, /^Calculate the sum of all the terms of the arithmetic sequence/, /Calculate the salary after both changes/];
 const easy = g => { for (let i = 0; i < 6; i++) { let q = null; try { q = g.fn() } catch (e) {} if (q) return EASY.some(re => re.test(q.q)) } return false };

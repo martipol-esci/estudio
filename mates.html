@@ -64,7 +64,7 @@ const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 const MODES={m1:{t:'Midterm 1',d:'Lectures 1–6 · percentages, sequences, interest, EAR and mortgages',f:l=>l<=6},
              m2:{t:'Midterm 2',d:'Lectures 7–16 · functions, logarithms, derivatives and optimisation',f:l=>l>=7&&l<=16},
-             all:{t:'Everything',d:'All lectures (1–18), including functions of two variables',f:()=>true}};
+             all:{t:'Everything',d:'All lectures (1–19), including functions of two variables and linear programming',f:()=>true}};
 let P=LS.get('ma-prog',{});                    /* {m1:{ok,n}, m2:{ok,n}, all:{ok,n}} — also read by the Asignaturas page */
 let S=null;                                    /* current session: {mode, lec, deck, q, ok, n, wrong} */
 

@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-19T12:00',
+  actualizado: '2026-11-21T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -23,11 +23,13 @@ window.DATOS = {
     { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'entregada', tipo: 'entrega', peso: 20,
       porque: 'Enviada por el grupo 5 (302) y pendiente de calificar.' },
     { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 15,
-      porque: 'Es el trabajo más largo de los que quedan: conviene avanzarlo esta semana.' },
+      porque: 'Vence MAÑANA domingo a las 23:59 y en el aula aún no consta nada enviado.' },
     { t: 'Final Project · presentación (PPT)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'pendiente', tipo: 'entrega', peso: 5,
       porque: 'Va con el documento. Las exposiciones son del 23 al 25 de noviembre: 10 min + 5 de preguntas.' },
+    { t: 'Problem Set J', asig: 'mates', donde: 'Seminaris', vence: '2026-11-26T08:00', estado: 'pendiente', tipo: 'seminario',
+      porque: 'Programación lineal (región factible, vértices y óptimo). Aún sin enviar; tienes 2 intentos. Puedes practicarlo en Maths → Everything → L19.' },
     { t: 'News article · presentación (PPT)', asig: 'business', donde: 'News article Presentation', vence: '2026-11-11T23:59', estado: 'entregada', tipo: 'entrega',
-      porque: 'Enviada y pendiente de calificar.' }
+      porque: 'Calificada: 7,2.' }
   ],
 
   /* Fechas que no son entregas */
@@ -69,9 +71,11 @@ window.DATOS = {
         { n: 'Individual Reflection activity 1', nota: 9.3 },
         { n: 'Seminar Activity 3', nota: 7.5 },
         { n: 'Seminar 4', nota: 8.0 },
+        { n: 'Seminar Activity 6', nota: 7.8 },
+        { n: 'News article Presentation', nota: 7.2 },
         { n: 'Seminar Exam', nota: 8.5 }
       ],
-      pend: ['Seminar Activity 6 y 7', 'News article Presentation', 'Final Project', 'Final Exam'] },
+      pend: ['Seminar Activity 7', 'Final Project', 'Final Exam'] },
     { asig: 'communication',
       items: [
         { n: 'Activity 1: Internship letter', nota: 6.5 },
