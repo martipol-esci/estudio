@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-22T21:00',
+  actualizado: '2026-11-23T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -62,16 +62,21 @@ window.DATOS = {
         { n: 'Examen parcial 2', nota: 7.33, det: 'Nota del test' }
       ],
       pend: ['Problem Sets A, C, D, E, G e I', 'Examen final'] },
-    { asig: 'francais',
-      items: [ { n: 'Examen parcial 1', nota: 9.5, det: '10 % del trimestre 1' } ],
-      pend: ['Examen parcial 2 (10 %)', 'Treball autònom (10 %)', 'Participació i tasques (10 %)', 'Examen trimestral (60 %)'] },
+    { asig: 'francais', media: 8.38, mediaTxt: 'Evaluación continua del trimestre (40 %): 3,35 de 4 según AulaESCI',
+      items: [
+        { n: 'Examen parcial 1', nota: 9.5, det: '10 % del trimestre 1' },
+        { n: 'Examen parcial 2', nota: 8.0, det: '10 % del trimestre 1' },
+        { n: 'Treball autònom', nota: 8.0, det: '10 % del trimestre 1' },
+        { n: 'Participació i tasques', nota: 8.0, det: '10 % del trimestre 1' }
+      ],
+      pend: ['Examen trimestral (60 %)'] },
     { asig: 'business',
       items: [
         { n: 'Seminar 2', nota: 6.5 },
         { n: 'Individual Reflection activity 1', nota: 9.3 },
         { n: 'Seminar Activity 3', nota: 7.5 },
         { n: 'Seminar 4', nota: 8.0 },
-        { n: 'Seminar Activity 6', nota: 7.8 },
+        { n: 'Seminar Activity 6', nota: 7.8, det: 'El 23 nov ya no se ve en el aula (puede estar en revisión)' },
         { n: 'News article Presentation', nota: 7.2 },
         { n: 'Seminar Exam', nota: 8.5 }
       ],
