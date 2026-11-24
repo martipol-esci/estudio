@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-24T12:00',
+  actualizado: '2026-11-24T20:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -26,8 +26,8 @@ window.DATOS = {
       porque: 'Enviado el 22 de noviembre y pendiente de calificar.' },
     { t: 'Final Project · presentación (PPT)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'entregada', tipo: 'entrega', peso: 5,
       porque: 'Enviada el 22 de noviembre. Las exposiciones son del 23 al 25 de noviembre: 10 min + 5 de preguntas.' },
-    { t: 'Problem Set J', asig: 'mates', donde: 'Seminaris', vence: '2026-11-26T08:00', estado: 'pendiente', tipo: 'seminario',
-      porque: 'Programación lineal (región factible, vértices y óptimo). Aún sin enviar; tienes 2 intentos. Puedes practicarlo en Maths → Everything → L19.' },
+    { t: 'Problem Set J', asig: 'mates', donde: 'Seminaris', vence: '2026-11-26T08:00', estado: 'entregada', tipo: 'seminario',
+      porque: 'Enviado el 24 de noviembre y pendiente de calificar (intento 1 de 2).' },
     { t: 'News article · presentación (PPT)', asig: 'business', donde: 'News article Presentation', vence: '2026-11-11T23:59', estado: 'entregada', tipo: 'entrega',
       porque: 'Calificada: 7,2.' }
   ],
