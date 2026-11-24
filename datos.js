@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-23T12:00',
+  actualizado: '2026-11-24T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -81,7 +81,7 @@ window.DATOS = {
         { n: 'Seminar Exam', nota: 8.5 }
       ],
       pend: ['Seminar Activity 7', 'Final Project', 'Final Exam'] },
-    { asig: 'communication',
+    { asig: 'communication', media: 6.9, mediaTxt: 'Continuous evaluation (fórmula 80/20), calculada por AulaESCI: cada actividad vale un 33,33 %',
       items: [
         { n: 'Activity 1: Internship letter', nota: 6.5 },
         { n: 'Activity 2: Communicator analyses', nota: 6.0 },
