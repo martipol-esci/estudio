@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Horario · Estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="campus.css">
+<style>
+main{max-width:1240px}
+.hbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 6px}
+.hbar h1{font-size:clamp(20px,3.6vw,28px);font-weight:800;color:var(--ink);margin:0;min-width:0}
+.hbar .sp{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.opts{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 2px 12px;font-size:14px;color:var(--mut)}
+.opts label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:var(--ink)}
+.wrap{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow:auto;max-height:calc(100dvh - 190px);-webkit-overflow-scrolling:touch}
+.grid{display:grid;grid-template-columns:52px repeat(7,minmax(108px,1fr));min-width:808px;position:relative}
+.hd{position:sticky;top:0;z-index:4;background:#fff;border-bottom:1px solid var(--bd);padding:8px 6px;text-align:center;font:800 13.5px Montserrat,sans-serif;color:var(--ink)}
+.hd small{display:block;font:600 12px "Open Sans",sans-serif;color:var(--mut);margin-top:1px}
+.hd.hoy{color:var(--gold2)}.hd.hoy small{color:var(--gold2)}
+.hd.c0{left:0;z-index:5}
+.tcol{position:sticky;left:0;z-index:3;background:#fff;border-right:1px solid var(--bd)}
+.tcol span{position:absolute;right:6px;transform:translateY(-50%);font-size:11.5px;color:var(--mut);font-weight:600}
+.day{position:relative;border-left:1px solid var(--bd);cursor:copy}
+.day.hoy{background:#fffaf0}
+.day .ln{position:absolute;left:0;right:0;border-top:1px solid #eef2f7;pointer-events:none}
+.day .ln.m{border-top-style:dashed;border-color:#f4f6f9}
+.now{position:absolute;left:0;right:0;border-top:2px solid var(--r3);z-index:2;pointer-events:none}
+.now::before{content:"";position:absolute;left:-5px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--r3)}
+.blk{position:absolute;border-radius:9px;padding:3px 7px;font-size:12.5px;line-height:1.22;overflow:hidden;cursor:pointer;border:0;text-align:left;font-family:inherit;
+  background:color-mix(in srgb,var(--c) 16%,#fff);color:color-mix(in srgb,var(--c) 70%,#000);border-left:4px solid var(--c);z-index:1}
+.blk:hover{z-index:3;box-shadow:0 6px 18px rgba(11,37,64,.18)}
+.blk b{display:block;font-weight:700;overflow-wrap:anywhere}
+.blk.cor{white-space:nowrap;text-overflow:ellipsis}.blk.cor b{display:inline;margin-left:4px}.blk.cor b+i{display:none}
+.blk i{font-style:normal;font-size:11.5px;opacity:.85}
+.blk.fijo{cursor:default;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c) 10%,#fff) 0 6px,color-mix(in srgb,var(--c) 15%,#fff) 6px 12px)}
+.blk.fijo:hover{box-shadow:none}
+.days7{display:flex;flex-wrap:wrap;gap:6px}
+.days7 label{display:inline-flex!important;align-items:center;gap:5px;border:1px solid var(--bd);border-radius:99px;padding:6px 11px;cursor:pointer;font-size:13px}
+.days7 input{width:auto!important}
+.days7 label:has(input:checked){background:#fff7e6;border-color:var(--gold)}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--bd);cursor:pointer;background:var(--c)}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.tip{font-size:13px;color:var(--mut);margin:10px 2px 26px}
+.err{color:var(--r3);font-size:13px;min-height:1em;margin:0}
+@media (max-width:560px){.wrap{max-height:none}.hbar .sp .btn{padding:8px 14px}}
+</style>
+</head><body>
+<header class="top"><div class="in">
+  <a class="brand" href="index.html"><i>🎓</i><span>Estudio</span></a>
+  <nav class="nav">
+    <a href="asignaturas.html">Asignaturas</a>
+    <a href="agenda.html">Calendario</a>
+    <a href="notas.html">Notas</a><a href="modelos.html">Exámenes</a><a class="on" href="horario.html">Horario</a>
+    <a href="actualizar.html">Temario nuevo</a>
+  </nav>
+</div></header>
+
+<main>
+<div class="hbar">
+  <h1 id="tit">Esta semana</h1>
+  <div class="sp">
+    <button class="ib" id="ant" aria-label="Semana anterior">‹</button>
+    <button class="btn sec" id="hoyb" style="padding:8px 16px">Hoy</button>
+    <button class="ib" id="sig" aria-label="Semana siguiente">›</button>
+    <button class="btn pri" id="nuevo" style="padding:9px 18px">＋ Añadir</button>
+  </div>
+</div>
+<div class="opts">
+  <span id="rango"></span>
+  <label><input type="checkbox" id="vcl" checked> Mostrar clases y exámenes</label>
+  <button class="btn sec" id="vaciar" style="padding:6px 14px;font-size:13px;margin-left:auto">Vaciar esta semana</button>
+</div>
+
+<div class="wrap" id="wrap"><div class="grid" id="grid"></div></div>
+<p class="tip">Toca un hueco de la tabla para añadir algo a esa hora, o toca lo que ya has puesto para cambiarlo o borrarlo. Cada semana empieza vacía el lunes. Se guarda solo en este dispositivo.</p>
+</main>
+
+<dialog id="dlg"><form method="dialog" id="frm">
+  <h3 id="dt">Añadir al horario</h3>
+  <label>¿Qué vas a hacer?<input id="ft" maxlength="80" required placeholder="Escríbelo tú"></label>
+  <div class="two">
+    <label>Desde<input id="fi" type="time" required step="300"></label>
+    <label>Hasta (opcional)<input id="ff" type="time" step="300"></label>
+  </div>
+  <label id="ldias">Día<div class="days7" id="fd"></div></label>
+  <label>Color<div class="sw" id="fc"></div></label>
+  <p class="err" id="ferr"></p>
+  <div class="acts">
+    <button type="button" class="btn del" id="bdel">Eliminar</button>
+    <button type="button" class="btn sec" id="bcan">Cancelar</button>
+    <button type="submit" class="btn pri">Guardar</button>
+  </div>
+</form></dialog>
+
+<script src="datos.js"></script>
+<script>
+const $=s=>document.querySelector(s),D=window.DATOS||{};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DN=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],DC=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const COL=['#f7a833','#0891b2','#10a37f','#6d4aff','#e5484d','#db2777','#64748b'];
+const KEY='horario-semanas',HH=62,ULTIMA_CLASE='2026-11-30';
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const lunes=d=>{d=new Date(d.getFullYear(),d.getMonth(),d.getDate());d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
+const mins=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
+const hm=m=>Math.floor(m/60)+':'+String(m%60).padStart(2,'0');
+let DB={};try{DB=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){DB={}}
+const guarda=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+let sem=lunes(new Date()),edit=null,color=COL[0],verCl=true,H0=7,armado=0;
+try{verCl=localStorage.getItem('horario-clases')!=='0'}catch(e){}
+$('#vcl').checked=verCl;
+
+/* Clases (horario de ESCI) y exámenes de esa semana: fijos, no se editan aquí */
+function fijos(){
+  if(!verCl)return[];const out=[];
+  (D.horario||[]).forEach(r=>r.dias.forEach((c,i)=>{if(!c)return;
+    const f=new Date(sem);f.setDate(f.getDate()+i);if(ymd(f)>ULTIMA_CLASE)return;
+    const t=/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/.exec(c.aula||'')||/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/.exec(r.hora);
+    const a=D.asig[c.asig]||{};
+    out.push({d:i,ini:mins(t[1]),fin:mins(t[2]),t:(a.emoji||'')+' '+(a.nombre||c.asig),sub:(c.aula||'').replace(/\s*·?\s*\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}\s*/,' · ').replace(/^ · | · $/g,''),c:a.color||'#64748b',fijo:1})}));
+  (D.fechas||[]).filter(e=>e.tipo==='examen'&&e.hora).forEach(e=>{const i=Math.round((new Date(e.desde+'T00:00')-sem)/864e5);
+    if(i<0||i>6)return;const a=D.asig[e.asig]||{},h=/De (\d{1,2}:\d{2}) a (\d{1,2}:\d{2})/.exec(e.nota||'');const ini=mins(e.hora);
+    out.push({d:i,ini,fin:h?mins(h[2]):ini+120,t:'📝 '+e.t,sub:'',c:'var(--r3)',fijo:1})});
+  return out}
+
+function pinta(){
+  const k=ymd(sem),mios=(DB[k]||[]).map(x=>Object.assign({},x)),todo=fijos().concat(mios);
+  const hoy=ymd(new Date()),esta=ymd(lunes(new Date()))===k;
+  const fin=new Date(sem);fin.setDate(fin.getDate()+6);
+  const f=d=>d.toLocaleDateString('es-ES',{day:'numeric',month:'long'});
+  $('#tit').textContent=esta?'Esta semana':k===ymd(new Date(lunes(new Date()).getTime()+7*864e5))?'La semana que viene':k<ymd(lunes(new Date()))?'Semana pasada':'Semana del '+f(sem);
+  $('#rango').textContent='Del '+f(sem)+' al '+f(fin);
+  /* franja visible: de 7 a 24 h, ampliada si hay algo fuera */
+  let h0=7,h1=24;todo.forEach(e=>{h0=Math.min(h0,Math.floor(e.ini/60));h1=Math.max(h1,Math.ceil((e.fin||e.ini+30)/60))});h1=Math.min(h1,24);
+  H0=h0;const H=(h1-h0)*HH,y=m=>(m-h0*60)/60*HH;
+  let g='<div class="hd c0"></div>';
+  for(let i=0;i<7;i++){const d=new Date(sem);d.setDate(d.getDate()+i);g+=`<div class="hd${ymd(d)===hoy?' hoy':''}">${DN[i]}<small>${d.getDate()} ${d.toLocaleDateString('es-ES',{month:'short'}).replace('.','')}</small></div>`}
+  g+=`<div class="tcol" style="height:${H}px">${Array.from({length:h1-h0},(_,i)=>i?`<span style="top:${i*HH}px">${h0+i}:00</span>`:'').join('')}</div>`;
+  for(let i=0;i<7;i++){const d=new Date(sem);d.setDate(d.getDate()+i);
+    const L=todo.filter(e=>e.d===i).map(e=>(e.fe=e.fin&&e.fin>e.ini?e.fin:e.ini+30,e)).sort((a,b)=>a.ini-b.ini||a.fe-b.fe);
+    /* carriles para lo que se solapa */
+    const lanes=[];let grp=[],gEnd=-1;const cierra=()=>{const n=Math.max(...grp.map(e=>e.lane))+1;grp.forEach(e=>e.n=n);grp=[]};
+    L.forEach(e=>{if(e.ini>=gEnd&&grp.length){cierra();lanes.length=0}let l=lanes.findIndex(x=>x<=e.ini);if(l<0){l=lanes.length;lanes.push(0)}lanes[l]=e.fe;e.lane=l;grp.push(e);gEnd=Math.max(gEnd,e.fe)});if(grp.length)cierra();
+    let c=`<div class="day${ymd(d)===hoy?' hoy':''}" data-d="${i}" style="height:${H}px">`;
+    for(let j=0;j<h1-h0;j++)c+=`<div class="ln" style="top:${j*HH}px"></div><div class="ln m" style="top:${j*HH+HH/2}px"></div>`;
+    L.forEach(e=>{const w=100/e.n,top=y(e.ini),hgt=Math.max(y(e.fe)-top-2,20);
+      c+=`<button type="button" class="blk${e.fijo?' fijo':''}${hgt<44?' cor':''}" ${e.id?`data-id="${esc(e.id)}"`:''} style="--c:${e.c};top:${top+1}px;height:${hgt}px;left:calc(${e.lane*w}% + 3px);width:calc(${w}% - 6px)" title="${esc(e.t)}">
+        <i>${hm(e.ini)}${e.fin&&e.fin>e.ini?' – '+hm(e.fin):''}</i><b>${esc(e.t)}</b>${e.sub?`<i>${esc(e.sub)}</i>`:''}</button>`});
+    if(ymd(d)===hoy){const n=new Date(),m=n.getHours()*60+n.getMinutes();if(m>=h0*60&&m<=h1*60)c+=`<div class="now" style="top:${y(m)}px"></div>`}
+    g+=c+'</div>'}
+  $('#grid').innerHTML=g;
+  $('#vaciar').style.display=(DB[k]||[]).length?'':'none';
+}
+
+/* editor */
+$('#fc').innerHTML=COL.map(c=>`<button type="button" style="--c:${c}" data-c="${c}" aria-label="Color"></button>`).join('');
+const marcaColor=c=>{color=c;$('#fc').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c))};
+$('#fc').onclick=e=>{const b=e.target.closest('button');if(b)marcaColor(b.dataset.c)};
+function abrir(e,dia,min){
+  edit=e||null;$('#ferr').textContent='';
+  $('#dt').textContent=e?'Cambiar':'Añadir al horario';
+  $('#ft').value=e?e.t:'';$('#fi').value=e?hm(e.ini).padStart(5,'0'):(min!=null?hm(min).padStart(5,'0'):'');
+  $('#ff').value=e&&e.fin?hm(e.fin).padStart(5,'0'):'';
+  const sel=e?[e.d]:[dia!=null?dia:Math.max(0,Math.round((lunes(new Date())-sem)/864e5)===0?(new Date().getDay()+6)%7:0)];
+  $('#ldias').firstChild.textContent=e?'Día':'Día (puedes marcar varios)';
+  $('#fd').innerHTML=DC.map((n,i)=>`<label><input type="${e?'radio':'checkbox'}" name="fd" value="${i}"${sel.includes(i)?' checked':''}>${n}</label>`).join('');
+  marcaColor(e?e.c:color);$('#bdel').style.display=e?'':'none';
+  $('#dlg').showModal();if(!e)$('#ft').focus()}
+$('#bcan').onclick=()=>$('#dlg').close();
+$('#bdel').onclick=()=>{const k=ymd(sem);DB[k]=(DB[k]||[]).filter(x=>x.id!==edit.id);if(!DB[k].length)delete DB[k];guarda();$('#dlg').close();pinta()};
+$('#frm').addEventListener('submit',ev=>{
+  const t=$('#ft').value.trim(),ini=mins($('#fi').value),fin=mins($('#ff').value);
+  const dias=[...$('#fd').querySelectorAll('input:checked')].map(x=>+x.value);
+  const err=!t?'Escribe qué vas a hacer.':ini==null?'Pon la hora de inicio.':fin!=null&&fin<=ini?'La hora de fin tiene que ser después de la de inicio.':!dias.length?'Marca al menos un día.':'';
+  if(err){ev.preventDefault();$('#ferr').textContent=err;return}
+  const k=ymd(sem),L=DB[k]=DB[k]||[];
+  if(edit){Object.assign(L.find(x=>x.id===edit.id)||{},{t,ini,fin,d:dias[0],c:color})}
+  else dias.forEach((d,j)=>L.push({id:Date.now().toString(36)+j,t,ini,fin,d,c:color}));
+  guarda();pinta()});
+
+$('#grid').addEventListener('click',e=>{
+  const b=e.target.closest('.blk');if(b){if(b.dataset.id){const x=(DB[ymd(sem)]||[]).find(z=>z.id===b.dataset.id);if(x)abrir(x)}return}
+  const d=e.target.closest('.day');if(!d)return;
+  const r=d.getBoundingClientRect(),h0=H0;
+  const m=h0*60+Math.floor((e.clientY-r.top)/HH*2)*30;abrir(null,+d.dataset.d,Math.min(m,23*60+30))});
+$('#nuevo').onclick=()=>abrir(null);
+$('#ant').onclick=()=>{sem.setDate(sem.getDate()-7);pinta()};
+$('#sig').onclick=()=>{sem.setDate(sem.getDate()+7);pinta()};
+$('#hoyb').onclick=()=>{sem=lunes(new Date());pinta();scrollAhora()};
+$('#vcl').onchange=e=>{verCl=e.target.checked;try{localStorage.setItem('horario-clases',verCl?'1':'0')}catch(x){}pinta()};
+$('#vaciar').onclick=e=>{const b=e.currentTarget;if(!armado){armado=1;b.textContent='¿Seguro? Toca otra vez para borrar';setTimeout(()=>{armado=0;b.textContent='Vaciar esta semana'},4000);return}armado=0;b.textContent='Vaciar esta semana';delete DB[ymd(sem)];guarda();pinta()};
+function scrollAhora(){const n=$('.now');if(n)$('#wrap').scrollTop=Math.max(0,n.offsetTop-120)}
+/* limpia semanas de hace más de 8 semanas */
+(function(){const lim=new Date(lunes(new Date()));lim.setDate(lim.getDate()-56);const l=ymd(lim);let c=0;Object.keys(DB).forEach(k=>{if(k<l){delete DB[k];c++}});if(c)guarda()})();
+pinta();scrollAhora();
+setInterval(()=>{if(!$('#dlg').open)pinta()},60000);
+</script>
+</body></html>

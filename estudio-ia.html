@@ -49,6 +49,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
     <a href="#calendario" data-v="calendario">Calendario</a>
     <a href="#notas" data-v="notas">Notas</a>
     <a href="#examenes" data-v="examenes">Exámenes</a>
+    <a href="#horario" data-v="horario">Horario</a>
   </nav>
 </div></header>
 <iframe id="vista" title="Página de estudio" hidden></iframe>
@@ -88,8 +89,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 /* Navegación: todo vive en esta página. El chat es la vista principal; asignaturas, calendario y notas se cargan en el marco #vista.
    Las páginas de dentro traen su propia barra y enlaces a index.html: se oculta la barra y esos enlaces vuelven al chat. */
 (function(){
-  const PAG={asignaturas:'asignaturas.html',calendario:'agenda.html',notas:'notas.html',examenes:'modelos.html'},
-        DE={'asignaturas.html':'asignaturas','business.html':'asignaturas','communication.html':'asignaturas','francais.html':'asignaturas','mates.html':'asignaturas','agenda.html':'calendario','notas.html':'notas','modelos.html':'examenes'};
+  const PAG={asignaturas:'asignaturas.html',calendario:'agenda.html',notas:'notas.html',examenes:'modelos.html',horario:'horario.html'},
+        DE={'asignaturas.html':'asignaturas','business.html':'asignaturas','communication.html':'asignaturas','francais.html':'asignaturas','mates.html':'asignaturas','agenda.html':'calendario','notas.html':'notas','modelos.html':'examenes','horario.html':'horario'};
   const f=document.getElementById('vista'),menu=document.getElementById('menu');
   const marca=v=>menu.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
   function ir(v,hash){
