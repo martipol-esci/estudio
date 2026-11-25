@@ -102,7 +102,8 @@ const DN=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],
 const COL=['#f7a833','#0891b2','#10a37f','#6d4aff','#e5484d','#db2777','#64748b'];
 const KEY='horario-semanas',ULTIMA_CLASE='2026-11-30',INI=6,FIN=23;let HH=40;
 /* Fijo todas las semanas, como las clases */
-const FIJO_SEMANAL=[{d:0,ini:'20:45',fin:'22:30',t:'⚽ Fútbol'},{d:2,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'},{d:4,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'}];
+const FIJO_SEMANAL=[{d:0,ini:'20:45',fin:'22:30',t:'⚽ Fútbol'},{d:2,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'},{d:4,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'},
+  ...[0,1,2,3,4].map(d=>({d,ini:'16:00',fin:'17:00',t:'💼 Treballar',c:'#0891b2'}))];
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const lunes=d=>{d=new Date(d.getFullYear(),d.getMonth(),d.getDate());d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
 const mins=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
@@ -115,7 +116,7 @@ $('#vcl').checked=verCl;
 
 /* Clases (horario de ESCI) y exámenes de esa semana: fijos, no se editan aquí */
 function fijos(){
-  const out=FIJO_SEMANAL.map(x=>({d:x.d,ini:mins(x.ini),fin:mins(x.fin),t:x.t,sub:'',c:'#10a37f',fijo:1}));
+  const out=FIJO_SEMANAL.map(x=>({d:x.d,ini:mins(x.ini),fin:mins(x.fin),t:x.t,sub:'',c:x.c||'#10a37f',fijo:1}));
   if(!verCl)return out;
   (D.horario||[]).forEach(r=>r.dias.forEach((c,i)=>{if(!c)return;
     const f=new Date(sem);f.setDate(f.getDate()+i);if(ymd(f)>ULTIMA_CLASE)return;
