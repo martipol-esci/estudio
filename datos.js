@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-24T20:00',
+  actualizado: '2026-11-25T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -76,7 +76,7 @@ window.DATOS = {
         { n: 'Individual Reflection activity 1', nota: 9.3 },
         { n: 'Seminar Activity 3', nota: 7.5 },
         { n: 'Seminar 4', nota: 8.0 },
-        { n: 'Seminar Activity 6', nota: 7.8, det: 'El 23 nov ya no se ve en el aula (puede estar en revisión)' },
+        { n: 'Seminar Activity 6', nota: 7.3, det: 'Revisada: antes era un 7,8' },
         { n: 'News article Presentation', nota: 7.2 },
         { n: 'Seminar Exam', nota: 8.5 }
       ],
@@ -85,8 +85,9 @@ window.DATOS = {
       items: [
         { n: 'Activity 1: Internship letter', nota: 6.5 },
         { n: 'Activity 2: Communicator analyses', nota: 6.0 },
-        { n: 'Activity 3: Andy Coles 1', nota: 8.2 }
+        { n: 'Activity 3: Andy Coles 1', nota: 8.2 },
+        { n: 'Final Presentations', nota: 6.0, det: 'AulaESCI la cuenta aparte, no entra en el 6,90' }
       ],
-      pend: ['Final Presentations', 'Final Exam (communication block)'] }
+      pend: ['Final Exam (communication block)'] }
   ]
 };
