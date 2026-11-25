@@ -12,7 +12,7 @@ main{max-width:1240px}
 .hbar .sp{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .opts{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 2px 12px;font-size:14px;color:var(--mut)}
 .opts label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:var(--ink)}
-.wrap{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow:auto;max-height:calc(100dvh - 190px);-webkit-overflow-scrolling:touch}
+.wrap{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 .grid{display:grid;grid-template-columns:52px repeat(7,minmax(108px,1fr));min-width:808px;position:relative}
 .hd{position:sticky;top:0;z-index:4;background:#fff;border-bottom:1px solid var(--bd);padding:8px 6px;text-align:center;font:800 13.5px Montserrat,sans-serif;color:var(--ink)}
 .hd small{display:block;font:600 12px "Open Sans",sans-serif;color:var(--mut);margin-top:1px}
@@ -43,7 +43,8 @@ main{max-width:1240px}
 .sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
 .tip{font-size:13px;color:var(--mut);margin:10px 2px 26px}
 .err{color:var(--r3);font-size:13px;min-height:1em;margin:0}
-@media (max-width:560px){.wrap{max-height:none}.hbar .sp .btn{padding:8px 14px}}
+.blk.cor{font-size:11.5px;padding:1px 6px;line-height:1.2}
+@media (max-width:560px){.hbar .sp .btn{padding:8px 14px}}
 </style>
 </head><body>
 <header class="top"><div class="in">
@@ -99,7 +100,9 @@ const $=s=>document.querySelector(s),D=window.DATOS||{};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DN=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],DC=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 const COL=['#f7a833','#0891b2','#10a37f','#6d4aff','#e5484d','#db2777','#64748b'];
-const KEY='horario-semanas',HH=62,ULTIMA_CLASE='2026-11-30';
+const KEY='horario-semanas',ULTIMA_CLASE='2026-11-30',INI=6,FIN=23;let HH=40;
+/* Fijo todas las semanas, como las clases */
+const FIJO_SEMANAL=[{d:0,ini:'20:45',fin:'22:30',t:'⚽ Fútbol'},{d:2,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'},{d:4,ini:'21:00',fin:'22:30',t:'⚽ Fútbol'}];
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const lunes=d=>{d=new Date(d.getFullYear(),d.getMonth(),d.getDate());d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
 const mins=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
@@ -112,7 +115,8 @@ $('#vcl').checked=verCl;
 
 /* Clases (horario de ESCI) y exámenes de esa semana: fijos, no se editan aquí */
 function fijos(){
-  if(!verCl)return[];const out=[];
+  const out=FIJO_SEMANAL.map(x=>({d:x.d,ini:mins(x.ini),fin:mins(x.fin),t:x.t,sub:'',c:'#10a37f',fijo:1}));
+  if(!verCl)return out;
   (D.horario||[]).forEach(r=>r.dias.forEach((c,i)=>{if(!c)return;
     const f=new Date(sem);f.setDate(f.getDate()+i);if(ymd(f)>ULTIMA_CLASE)return;
     const t=/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/.exec(c.aula||'')||/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/.exec(r.hora);
@@ -130,22 +134,23 @@ function pinta(){
   const f=d=>d.toLocaleDateString('es-ES',{day:'numeric',month:'long'});
   $('#tit').textContent=esta?'Esta semana':k===ymd(new Date(lunes(new Date()).getTime()+7*864e5))?'La semana que viene':k<ymd(lunes(new Date()))?'Semana pasada':'Semana del '+f(sem);
   $('#rango').textContent='Del '+f(sem)+' al '+f(fin);
-  /* franja visible: de 7 a 24 h, ampliada si hay algo fuera */
-  let h0=7,h1=24;todo.forEach(e=>{h0=Math.min(h0,Math.floor(e.ini/60));h1=Math.max(h1,Math.ceil((e.fin||e.ini+30)/60))});h1=Math.min(h1,24);
+  /* franja visible fija: de 6:00 a 23:00; la altura de cada hora se ajusta para que quepa todo sin bajar */
+  const h0=INI,h1=FIN,w0=$('#wrap'),top0=w0.getBoundingClientRect().top+scrollY;
+  HH=Math.max(20,Math.min(62,Math.floor((innerHeight-top0-50-(w0.scrollWidth>w0.clientWidth?14:0))/(h1-h0))));
   H0=h0;const H=(h1-h0)*HH,y=m=>(m-h0*60)/60*HH;
   let g='<div class="hd c0"></div>';
   for(let i=0;i<7;i++){const d=new Date(sem);d.setDate(d.getDate()+i);g+=`<div class="hd${ymd(d)===hoy?' hoy':''}">${DN[i]}<small>${d.getDate()} ${d.toLocaleDateString('es-ES',{month:'short'}).replace('.','')}</small></div>`}
   g+=`<div class="tcol" style="height:${H}px">${Array.from({length:h1-h0},(_,i)=>i?`<span style="top:${i*HH}px">${h0+i}:00</span>`:'').join('')}</div>`;
   for(let i=0;i<7;i++){const d=new Date(sem);d.setDate(d.getDate()+i);
-    const L=todo.filter(e=>e.d===i).map(e=>(e.fe=e.fin&&e.fin>e.ini?e.fin:e.ini+30,e)).sort((a,b)=>a.ini-b.ini||a.fe-b.fe);
+    const L=todo.filter(e=>e.d===i).map(e=>(e.fe=e.fin&&e.fin>e.ini?e.fin:e.ini+30,e)).filter(e=>e.fe>h0*60&&e.ini<h1*60).sort((a,b)=>a.ini-b.ini||a.fe-b.fe);
     /* carriles para lo que se solapa */
     const lanes=[];let grp=[],gEnd=-1;const cierra=()=>{const n=Math.max(...grp.map(e=>e.lane))+1;grp.forEach(e=>e.n=n);grp=[]};
     L.forEach(e=>{if(e.ini>=gEnd&&grp.length){cierra();lanes.length=0}let l=lanes.findIndex(x=>x<=e.ini);if(l<0){l=lanes.length;lanes.push(0)}lanes[l]=e.fe;e.lane=l;grp.push(e);gEnd=Math.max(gEnd,e.fe)});if(grp.length)cierra();
     let c=`<div class="day${ymd(d)===hoy?' hoy':''}" data-d="${i}" style="height:${H}px">`;
     for(let j=0;j<h1-h0;j++)c+=`<div class="ln" style="top:${j*HH}px"></div><div class="ln m" style="top:${j*HH+HH/2}px"></div>`;
-    L.forEach(e=>{const w=100/e.n,top=y(e.ini),hgt=Math.max(y(e.fe)-top-2,20);
+    L.forEach(e=>{const w=100/e.n,top=y(Math.max(e.ini,h0*60)),hgt=Math.max(y(Math.min(e.fe,h1*60))-top-2,14);
       c+=`<button type="button" class="blk${e.fijo?' fijo':''}${hgt<44?' cor':''}" ${e.id?`data-id="${esc(e.id)}"`:''} style="--c:${e.c};top:${top+1}px;height:${hgt}px;left:calc(${e.lane*w}% + 3px);width:calc(${w}% - 6px)" title="${esc(e.t)}">
-        <i>${hm(e.ini)}${e.fin&&e.fin>e.ini?' – '+hm(e.fin):''}</i><b>${esc(e.t)}</b>${e.sub?`<i>${esc(e.sub)}</i>`:''}</button>`});
+        <i>${hm(e.ini)}${e.fin&&e.fin>e.ini&&hgt>=44?' – '+hm(e.fin):''}</i><b>${esc(e.t)}</b>${e.sub?`<i>${esc(e.sub)}</i>`:''}</button>`});
     if(ymd(d)===hoy){const n=new Date(),m=n.getHours()*60+n.getMinutes();if(m>=h0*60&&m<=h1*60)c+=`<div class="now" style="top:${y(m)}px"></div>`}
     g+=c+'</div>'}
   $('#grid').innerHTML=g;
@@ -192,7 +197,7 @@ $('#vaciar').onclick=e=>{const b=e.currentTarget;if(!armado){armado=1;b.textCont
 function scrollAhora(){const n=$('.now');if(n)$('#wrap').scrollTop=Math.max(0,n.offsetTop-120)}
 /* limpia semanas de hace más de 8 semanas */
 (function(){const lim=new Date(lunes(new Date()));lim.setDate(lim.getDate()-56);const l=ymd(lim);let c=0;Object.keys(DB).forEach(k=>{if(k<l){delete DB[k];c++}});if(c)guarda()})();
-pinta();scrollAhora();
+pinta();addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(pinta,150)});
 setInterval(()=>{if(!$('#dlg').open)pinta()},60000);
 </script>
 </body></html>
