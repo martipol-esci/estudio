@@ -21,7 +21,7 @@ window.DATOS = {
     { t: 'Problem Set I', asig: 'mates', donde: 'Seminaris', vence: '2026-11-19T08:00', estado: 'entregada', tipo: 'seminario',
       porque: 'Enviado y pendiente de calificar (intento 1 de 2).' },
     { t: 'Final Presentations', asig: 'communication', donde: 'Presentación final', vence: '2026-11-19T12:00', estado: 'entregada', tipo: 'entrega', peso: 20,
-      porque: 'Enviada por el grupo 5 (302) y pendiente de calificar.' },
+      porque: 'Enviada por el grupo 5 (302). Calificada: 6,0.' },
     { t: 'Final Project · documento (PDF/Word)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'entregada', tipo: 'entrega', peso: 15,
       porque: 'Enviado el 22 de noviembre y pendiente de calificar.' },
     { t: 'Final Project · presentación (PPT)', asig: 'business', donde: 'Final Project', vence: '2026-11-22T23:59', estado: 'entregada', tipo: 'entrega', peso: 5,
