@@ -1,6 +1,6 @@
 /* Datos leídos de AulaESCI. Son una foto del momento indicado en «actualizado»: se regeneran cada vez que Claude vuelve a leer el aula. */
 window.DATOS = {
-  actualizado: '2026-11-25T12:00',
+  actualizado: '2026-11-26T12:00',
 
   /* Nombres y colores de las asignaturas que aparecen en tareas y notas */
   asig: {
@@ -15,7 +15,7 @@ window.DATOS = {
   /* Tareas, ya ordenadas por prioridad (la primera es la más urgente). estado: 'pendiente' | 'entregada' */
   tareas: [
     { t: 'Seminar Activity 7', asig: 'business', donde: 'Seminarios (grupo 302)', vence: '2026-11-11T23:30', estado: 'entregada', tipo: 'seminario',
-      porque: 'Enviada el 11 de noviembre y pendiente de calificar.' },
+      porque: 'Calificada: 8,8.' },
     { t: 'Problem Set H', asig: 'mates', donde: 'Seminaris', vence: '2026-11-12T08:00', estado: 'entregada', tipo: 'seminario',
       porque: 'Entregado y calificado: 6,0.' },
     { t: 'Problem Set I', asig: 'mates', donde: 'Seminaris', vence: '2026-11-19T08:00', estado: 'entregada', tipo: 'seminario',
@@ -78,14 +78,16 @@ window.DATOS = {
         { n: 'Seminar 4', nota: 8.0 },
         { n: 'Seminar Activity 6', nota: 7.3, det: 'Revisada: antes era un 7,8' },
         { n: 'News article Presentation', nota: 7.2 },
+        { n: 'Seminar Activity 7', nota: 8.8 },
         { n: 'Seminar Exam', nota: 8.5 }
       ],
-      pend: ['Seminar Activity 7', 'Final Project', 'Final Exam'] },
+      pend: ['Final Project', 'Final Exam'] },
     { asig: 'communication', media: 6.9, mediaTxt: 'Continuous evaluation (fórmula 80/20), calculada por AulaESCI: cada actividad vale un 33,33 %',
       items: [
         { n: 'Activity 1: Internship letter', nota: 6.5 },
         { n: 'Activity 2: Communicator analyses', nota: 6.0 },
         { n: 'Activity 3: Andy Coles 1', nota: 8.2 },
+        { n: 'Activity 4: Essay', nota: 4.2, det: 'No consta entrega online. El aula todavía no la incluye en el 6,90' },
         { n: 'Final Presentations', nota: 6.0, det: 'AulaESCI la cuenta aparte, no entra en el 6,90' }
       ],
       pend: ['Final Exam (communication block)'] }
