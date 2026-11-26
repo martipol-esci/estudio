@@ -81,8 +81,8 @@ main{max-width:1240px}
   <h3 id="dt">Añadir al horario</h3>
   <label>¿Qué vas a hacer?<input id="ft" maxlength="80" required placeholder="Escríbelo tú"></label>
   <div class="two">
-    <label>Desde<input id="fi" type="time" required step="300"></label>
-    <label>Hasta (opcional)<input id="ff" type="time" step="300"></label>
+    <label>Desde (00:00–23:59)<input id="fi" type="text" inputmode="numeric" maxlength="5" placeholder="Ej. 09:00" autocomplete="off"></label>
+    <label>Hasta (opcional)<input id="ff" type="text" inputmode="numeric" maxlength="5" placeholder="Ej. 10:30" autocomplete="off"></label>
   </div>
   <label id="ldias">Día<div class="days7" id="fd"></div></label>
   <label>Color<div class="sw" id="fc"></div></label>
@@ -107,6 +107,12 @@ const FIJO_SEMANAL=[{d:0,ini:'20:45',fin:'22:30',t:'⚽ Fútbol'},{d:2,ini:'21:0
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const lunes=d=>{d=new Date(d.getFullYear(),d.getMonth(),d.getDate());d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
 const mins=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
+/* Hora escrita a mano, en formato de 24 h: acepta 9, 09, 930, 0930, 9:30, 9.30 o 21h. Devuelve minutos (0–1440) o null si no es válida. */
+const leeHora=s=>{s=String(s||'').trim().toLowerCase().replace(/h$/,'').replace(/[.,h ]/g,':');let h,m;
+  if(/^\d{1,2}$/.test(s)){h=+s;m=0}else if(/^\d{3,4}$/.test(s)){h=+s.slice(0,-2);m=+s.slice(-2)}else{const r=/^(\d{1,2}):(\d{1,2})$/.exec(s);if(!r)return null;h=+r[1];m=+r[2]}
+  return h>24||m>59||(h===24&&m)?null:h*60+m};
+const fmtHora=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
+['#fi','#ff'].forEach(s=>document.querySelector(s).addEventListener('blur',e=>{const v=leeHora(e.target.value);if(v!=null)e.target.value=fmtHora(v)}));
 const hm=m=>Math.floor(m/60)+':'+String(m%60).padStart(2,'0');
 let DB={};try{DB=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){DB={}}
 const guarda=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
@@ -175,9 +181,9 @@ function abrir(e,dia,min){
 $('#bcan').onclick=()=>$('#dlg').close();
 $('#bdel').onclick=()=>{const k=ymd(sem);DB[k]=(DB[k]||[]).filter(x=>x.id!==edit.id);if(!DB[k].length)delete DB[k];guarda();$('#dlg').close();pinta()};
 $('#frm').addEventListener('submit',ev=>{
-  const t=$('#ft').value.trim(),ini=mins($('#fi').value),fin=mins($('#ff').value);
+  const vi=$('#fi').value.trim(),vf=$('#ff').value.trim(),t=$('#ft').value.trim(),ini=leeHora(vi),fin=vf?leeHora(vf):null;
   const dias=[...$('#fd').querySelectorAll('input:checked')].map(x=>+x.value);
-  const err=!t?'Escribe qué vas a hacer.':ini==null?'Pon la hora de inicio.':fin!=null&&fin<=ini?'La hora de fin tiene que ser después de la de inicio.':!dias.length?'Marca al menos un día.':'';
+  const err=!t?'Escribe qué vas a hacer.':!vi?'Escribe la hora de inicio, por ejemplo 09:00.':ini==null||ini>=1440?'La hora de inicio no es válida: escríbela entre 00:00 y 23:59.':vf&&fin==null?'La hora de fin no es válida: escríbela entre 00:00 y 24:00.':fin!=null&&fin<=ini?'La hora de fin tiene que ser después de la de inicio.':!dias.length?'Marca al menos un día.':'';
   if(err){ev.preventDefault();$('#ferr').textContent=err;return}
   const k=ymd(sem),L=DB[k]=DB[k]||[];
   if(edit){Object.assign(L.find(x=>x.id===edit.id)||{},{t,ini,fin,d:dias[0],c:color})}

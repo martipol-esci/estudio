@@ -57,7 +57,7 @@
   <label>Título<input id="ft" maxlength="80" required></label>
   <div class="two">
     <label>Día<input id="fd" type="date" required></label>
-    <label>Hora (opcional)<input id="fh" type="time"></label>
+    <label>Hora (opcional, 00:00–23:59)<input id="fh" type="text" inputmode="numeric" maxlength="5" placeholder="Ej. 09:30" autocomplete="off"></label>
   </div>
   <div class="two">
     <label>Asignatura<select id="fa"></select></label>
@@ -109,9 +109,16 @@ function pinta(){
 }
 
 /* editor */
+/* Hora escrita a mano en formato de 24 h: acepta 9, 930, 9:30, 9.30 o 21h */
+const leeHora=s=>{s=String(s||'').trim().toLowerCase().replace(/h$/,'').replace(/[.,h ]/g,':');if(!s)return null;let h,m;
+  if(/^\d{1,2}$/.test(s)){h=+s;m=0}else if(/^\d{3,4}$/.test(s)){h=+s.slice(0,-2);m=+s.slice(-2)}else{const r=/^(\d{1,2}):(\d{1,2})$/.exec(s);if(!r)return null;h=+r[1];m=+r[2]}
+  return h>23||m>59?null:h*60+m};
+const fmtHora=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
+const valHora=()=>{const i=$('#fh'),v=i.value.trim();i.setCustomValidity(v&&leeHora(v)==null?'Escribe la hora entre 00:00 y 23:59, por ejemplo 09:30.':'')};
+$('#fh').addEventListener('input',valHora);$('#fh').addEventListener('blur',()=>{const v=leeHora($('#fh').value);if(v!=null)$('#fh').value=fmtHora(v);valHora()});
 $('#fa').innerHTML='<option value="">Sin asignatura</option>'+Object.keys(D.asig).map(k=>`<option value="${k}">${esc(D.asig[k].nombre)}</option>`).join('');
 $('#fk').innerHTML=Object.keys(CAL.TIPOS).map(k=>`<option value="${k}">${CAL.TIPOS[k]}</option>`).join('');
-function leer(){const p=$('#fp').value;return{t:$('#ft').value.trim(),desde:$('#fd').value,hora:$('#fh').value,asig:$('#fa').value,tipo:$('#fk').value,
+function leer(){const p=$('#fp').value;return{t:$('#ft').value.trim(),desde:$('#fd').value,hora:(v=>v==null?'':fmtHora(v))(leeHora($('#fh').value)),asig:$('#fa').value,tipo:$('#fk').value,
   peso:$('#fk').value==='entrega'&&p!==''?Number(p):null,nota:$('#fn').value.trim(),hecha:$('#fx').checked}}
 function previa(){const e=Object.assign({src:edit?edit.src:'mio',hasta:edit?edit.hasta:''},leer());$('#lp').style.display=e.tipo==='entrega'?'':'none';
   if(!e.desde){$('#prev').innerHTML='';return}const n=CAL.nivel(e);$('#prev').innerHTML=`Se verá como <span class="lv n${n}">${CAL.NIV[n]}</span>`}
